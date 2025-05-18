@@ -19,7 +19,7 @@ const ClientFooter = () => {
       <div className="bg-[#696faa] text-white px-6 py-8 border-t">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-14 text-sm">
           <div>
-            <img src="/img/SEVEND.png" alt="Logo" className="w-28 mb-4" />
+            <img src="/img/logo.png" alt="Logo" className="w-28 mb-4" />
             <p className="mb-2"><i className="fas fa-envelope mr-2"></i>support@sevendperfume.com</p>
             <p className="mb-2"><i className="fas fa-phone mr-2"></i>0897 777 007</p>
             <p className="mb-2"><i className="fas fa-map-marker-alt mr-2"></i>Tầng 5, Toà nhà Lotus Building<br />Số 2 Duy Tân, DVH, Cầu Giấy, Hà Nội</p>

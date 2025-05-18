@@ -6,7 +6,7 @@ const ClientHeader = () => {
       <div className="max-w-[1280px] mx-auto px-6 h-full flex items-center justify-between">
         <div className="h-full flex items-center">
           <Link to={"/"}>
-            <img src="/img/SEVEND.png" alt="Logo" className="h-6 object-contain" />
+            <img src="/img/logo.png" alt="Logo" className="h-6 object-contain" />
           </Link>
         </div>
 
