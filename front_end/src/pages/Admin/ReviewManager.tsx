@@ -1,6 +1,6 @@
 const ReviewManager = () => {
   return (
-    <div>Tránh</div>
+    <div>PBT</div>
   )
 }
 
