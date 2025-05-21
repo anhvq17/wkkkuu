@@ -1,7 +1,7 @@
-const VariantManager = () => {
+const UserManager = () => {
   return (
     <div>Quang</div>
   )
 }
 
-export default VariantManager
+export default UserManager
