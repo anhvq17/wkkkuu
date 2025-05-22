@@ -1,0 +1,18 @@
+{
+  "variants": [
+    {
+      "id": "90e1",
+      "volume": "500",
+      "price": "1000",
+      "stock_quantity": "10",
+      "image": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ekko_19.jpg"
+    },
+    {
+      "volume": "50",
+      "price": "4004",
+      "stock_quantity": "10",
+      "image": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_85.jpg",
+      "id": "ecda"
+    }
+  ]
+}

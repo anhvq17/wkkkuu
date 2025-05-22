@@ -6,13 +6,15 @@ import CategoryManager from "../pages/Admin/CategoryManager"
 import ProductManager from "../pages/Admin/ProductManager"
 import ReviewManager from "../pages/Admin/ReviewManager"
 import UserManager from "../pages/Admin/UserManager"
-import VariantManager from "../pages/Admin/VariantManager"
+import VariantManager from "../pages/Admin/Variant/VariantManager"
 import VoucherManager from "../pages/Admin/VoucherManager"
 
 import NotFound from "../pages/NotFound"
 import OrderManager from "../pages/Admin/OrderManager/OrderManager"
 import OrderManagerDetail from "../pages/Admin/OrderManager/OrderManagerDetail"
 import Edit_OrderManager from "../pages/Admin/OrderManager/Edit_OrderManager"
+import AddVariant from "../pages/Admin/Variant/AddVariant"
+import EditVariant from "../pages/Admin/Variant/EditVariant"
 
 const AdminRoutes = {
   path: '/dashboard',
@@ -28,6 +30,8 @@ const AdminRoutes = {
     { path: 'reviews', element: <ReviewManager /> },
     { path: 'users', element: <UserManager /> },
     { path: 'variants', element: <VariantManager /> },
+    { path: 'variants/:id', element: <EditVariant /> },
+    { path: 'variants/add', element: <AddVariant /> },
     { path: 'vouchers', element: <VoucherManager /> },
 
     // Khi đường dẫn sai hoặc không tồn tại, dẫn đến trang NotFound
