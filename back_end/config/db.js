@@ -1,11 +1,13 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-export default async function connectMongoDB(dbUrl) {
+const connectMongoDB = async (uri) => {
   try {
-    //mongodb://127.0.0.1:27017/db_name
-    await mongoose.connect(dbUrl);
-    console.log("Connect successfully!!!");
-  } catch (error) {
-    console.log("Connect failure!!!");
+    await mongoose.connect(uri);
+    console.log('✅ MongoDB connected');
+  } catch (err) {
+    console.error('❌ MongoDB connection failed:', err);
+    process.exit(1);
   }
-}
+};
+
+export default connectMongoDB;
