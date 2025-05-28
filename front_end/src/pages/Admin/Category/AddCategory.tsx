@@ -1,7 +1,113 @@
-const AddCategory = () => {
-  return (
-    <div>AddCategory</div>
-  )
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+interface Category {
+  _id: string;
+  name: string;
+  description: string;
+  status: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export default AddCategory
+const AddCategory = () => {
+  const navigate = useNavigate();
+  const [form, setForm] = useState<Omit<Category, '_id' | 'createdAt' | 'updatedAt'>>({
+    name: '',
+    description: '',
+    status: true,
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: name === 'status' ? value === 'true' : value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const stored = localStorage.getItem('categories');
+    const list: Category[] = stored ? JSON.parse(stored) : [];
+
+    const newCategory: Category = {
+      _id: Date.now().toString(),
+      ...form,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    localStorage.setItem('categories', JSON.stringify([newCategory, ...list]));
+
+    alert('🎉 Thêm danh mục thành công!');
+    navigate('/dashboard/categories');
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto px-6 py-10 bg-white shadow-xl rounded-xl mt-8">
+      <h1 className="text-3xl font-semibold text-gray-800 mb-8 text-center">🗂️ Thêm Danh Mục Mới</h1>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Tên danh mục</label>
+          <input
+            id="name"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Nhập tên danh mục"
+            required
+            className="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring focus:ring-blue-200"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
+          <select
+            id="status"
+            name="status"
+            value={form.status.toString()}
+            onChange={handleChange}
+            className="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring focus:ring-blue-200"
+          >
+            <option value="true">Hoạt động</option>
+            <option value="false">Tạm khoá</option>
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
+          <textarea
+            id="description"
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            placeholder="Nhập mô tả danh mục"
+            required
+            className="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring focus:ring-blue-200"
+          />
+        </div>
+
+        <div className="flex justify-between">
+          <button
+            type="button"
+            onClick={() => navigate('/dashboard/categories')}
+            className="bg-gray-300 text-gray-800 font-medium px-5 py-2 rounded-lg hover:bg-gray-400 transition"
+          >
+            🔙 Quay lại
+          </button>
+          <button
+            type="submit"
+            className="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            ➕ Thêm danh mục
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default AddCategory;

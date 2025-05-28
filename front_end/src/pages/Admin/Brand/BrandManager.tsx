@@ -1,60 +1,68 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 
-const brands = [
-  {
-    _id: "1",
-    name: "Chanel",
-    image: "https://picsum.photos/200",
-    createdAt: "2024-05-01T10:00:00Z",
-    updatedAt: "2024-05-10T12:00:00Z",
-  },
-  {
-    _id: "2",
-    name: "Dior",
-    image: "https://picsum.photos/300",
-    createdAt: "2024-05-02T11:00:00Z",
-    updatedAt: "2024-05-12T12:00:00Z",
-  },
-  {
-    _id: "3",
-    name: "Gucci",
-    image: "https://picsum.photos/400",
-    createdAt: "2024-05-03T12:00:00Z",
-    updatedAt: "2024-05-14T12:00:00Z",
-  },
-];
+interface Brand {
+  _id: string;
+  name: string;
+  image: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 const BrandManager = () => {
+  const [brands, setBrands] = useState<Brand[]>([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("brands");
+    if (stored) setBrands(JSON.parse(stored));
+  }, []);
+
+  const handleDelete = (_id: string) => {
+    if (window.confirm("Bạn có chắc muốn xoá thương hiệu này?")) {
+      const updated = brands.filter((b) => b._id !== _id);
+      setBrands(updated);
+      localStorage.setItem("brands", JSON.stringify(updated));
+    }
+  };
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-2">
         <h1 className="text-2xl font-semibold mb-4">Danh sách thương hiệu</h1>
-        <Link to={`/dashboard/brands/add`}>
-          <button className="border bg-blue-600 hover:bg-blue-700 text-white hover:text-white px-3 py-1 rounded-md text-xs transition duration-200">Thêm</button>
+        <Link to="/dashboard/brands/add">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs">Thêm</button>
         </Link>
       </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200 text-sm">
+
+    
+        <table  className="min-w-full bg-white border text-sm">
           <thead>
             <tr className="bg-black text-white text-left">
-              <th className="px-3 py-2 border-b">ID</th>
-              <th className="px-3 py-2 border-b">Tên thương hiệu</th>
-              <th className="px-3 py-2 border-b">Hình ảnh</th>
-              <th className="px-3 py-2 border-b">Hành động</th>
+              <th className="px-4 py-2">ID</th>
+              <th className="px-4 py-2">Tên thương hiệu</th>
+              <th className="px-4 py-2">Hình ảnh</th>
+              <th className="px-4 py-2">Hành động</th>
             </tr>
           </thead>
           <tbody>
             {brands.map((brand) => (
               <tr key={brand._id} className="hover:bg-gray-50">
-                <td className="px-3 py-2 border-b">{brand._id}</td>
-                <td className="px-3 py-2 border-b">{brand.name}</td>
-                <td className="px-3 py-2 border-b">
+                <td className="px-4 py-2">{brand._id}</td>
+                <td className="px-4 py-2">{brand.name}</td>
+                <td className="px-4 py-2">
                   <img src={brand.image} alt={brand.name} className="h-8" />
                 </td>
-                <td className="px-3 py-2 border-b space-x-1">
-                  <button className="border bg-red-600 hover:bg-red-700 text-white hover:text-white px-3 py-1 rounded-md text-xs transition duration-200">Xoá</button>
+                <td className="px- py-2 space-x-1">
+                  <button
+                    onClick={() => handleDelete(brand._id)}
+                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-xs"
+                  >
+                    Xoá
+                  </button>
                   <Link to={`/dashboard/brands/edit/${brand._id}`}>
-                    <button className="border bg-green-600 hover:bg-green-700 text-white hover:text-white px-3 py-1 rounded-md text-xs transition duration-200">Sửa</button>
+                    <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs">
+                      Sửa
+                    </button>
                   </Link>
                 </td>
               </tr>
@@ -62,7 +70,6 @@ const BrandManager = () => {
           </tbody>
         </table>
       </div>
-    </div>
   );
 };
 
