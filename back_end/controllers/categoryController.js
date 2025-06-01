@@ -32,7 +32,7 @@ export const getCategoryDetail = async (req,res) => {
 export const deleteCategory = async (req,res) => {
     try {
         const category = await CategoryModel.findByIdAndDelete(req.params.id);
-        if(!brand){
+        if(!category){
             return res.status(404).json({
                 message: 'Not Found'
             })
@@ -53,7 +53,7 @@ export const updateCategory = async (req,res) => {
         const category = await CategoryModel.findByIdAndUpdate(req.params.id,req.body, {
             new: true
         });
-        if(!brand){
+        if(!category){
             return res.status(404).json({
                 message: 'Not Found'
             })

@@ -11,7 +11,7 @@ import User from './models/userModel.js';
 
 
 dotenv.config();
-connectMongoDB(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/datn");
+connectMongoDB(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/DATN");
 
 const app = express();
 
