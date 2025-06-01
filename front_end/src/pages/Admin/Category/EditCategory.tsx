@@ -1,111 +1,98 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 
-interface Category {
-  _id: string;
+interface CategoryForm {
   name: string;
   description: string;
-  status: boolean;
-  createdAt: string;
-  updatedAt: string;
+  status: "activated" | "deactivated";
 }
 
 const EditCategory = () => {
-  const { id } = useParams();
   const navigate = useNavigate();
-  const [form, setForm] = useState<Category | null>(null);
+  const { id } = useParams<{ id: string }>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<CategoryForm>();
 
   useEffect(() => {
-    const stored = localStorage.getItem('categories');
-    if (stored && id) {
-      const list: Category[] = JSON.parse(stored);
-      const found = list.find((c) => c._id === id);
-      if (found) {
-        setForm(found);
-      } else {
-        alert('❌ Danh mục không tồn tại!');
-        navigate('/dashboard/categories');
+    async function fetchCategory() {
+      try {
+        const res = await axios.get(`http://localhost:3000/categories/${id}`);
+        reset(res.data.data);// reset form với dữ liệu lấy về
+      } catch (error) {
+        alert("Lỗi khi tải chi tiết danh mục");
+        console.error(error);
       }
     }
-  }, [id, navigate]);
+    if (id) {
+      fetchCategory();
+    }
+  }, [id, reset]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    if (!form) return;
-    setForm((prev) => ({
-      ...(prev as Category),
-      [name]: name === 'status' ? value === 'true' : value,
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form) return;
-
-    const stored = localStorage.getItem('categories');
-    if (stored) {
-      const list: Category[] = JSON.parse(stored);
-      const updatedList = list.map((c) =>
-        c._id === form._id
-          ? { ...form, updatedAt: new Date().toISOString() }
-          : c
-      );
-      localStorage.setItem('categories', JSON.stringify(updatedList));
-      alert('✅ Cập nhật danh mục thành công!');
-      navigate('/dashboard/categories');
+  const onSubmit = async (data: CategoryForm) => {
+    try {
+      await axios.put(`http://localhost:3000/categories/${id}`, data);
+      alert("Cập nhật danh mục thành công");
+      navigate("/dashboard/categories");
+    } catch (error) {
+      alert("Lỗi khi cập nhật danh mục");
+      console.error(error);
     }
   };
-
-  if (!form) return <div className="text-center py-8 text-gray-500">Đang tải danh mục...</div>;
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-10 bg-white shadow-xl rounded-xl mt-8">
-      <h1 className="text-3xl font-semibold text-gray-800 mb-8 text-center">✏️ Chỉnh Sửa Danh Mục</h1>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <h1 className="text-3xl font-semibold text-gray-800 mb-8 text-center">
+        ✏️ Chỉnh sửa Danh Mục
+      </h1>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Tên danh mục</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Tên danh mục
+          </label>
           <input
-            id="name"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            required
-            className="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring focus:ring-green-200"
+            {...register("name", { required: "Tên danh mục là bắt buộc" })}
+            className="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring focus:ring-blue-200"
+            placeholder="Nhập tên danh mục"
           />
+          {errors.name && (
+            <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+          )}
         </div>
 
         <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
-          <select
-            id="status"
-            name="status"
-            value={form.status.toString()}
-            onChange={handleChange}
-            className="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring focus:ring-green-200"
-          >
-            <option value="true">Hoạt động</option>
-            <option value="false">Tạm khoá</option>
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Mô tả
+          </label>
           <textarea
-            id="description"
-            name="description"
-            value={form.description}
-            onChange={handleChange}
-            required
-            className="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring focus:ring-green-200"
+            {...register("description")}
+            className="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring focus:ring-blue-200"
+            placeholder="Mô tả danh mục (tuỳ chọn)"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Trạng thái
+          </label>
+          <select
+            {...register("status")}
+            className="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring focus:ring-blue-200"
+          >
+            <option value="activated">Kích hoạt</option>
+            <option value="deactivated">Không kích hoạt</option>
+          </select>
         </div>
 
         <div className="flex justify-between">
           <button
             type="button"
-            onClick={() => navigate('/dashboard/categories')}
+            onClick={() => navigate("/dashboard/categories")}
             className="bg-gray-300 text-gray-800 font-medium px-5 py-2 rounded-lg hover:bg-gray-400 transition"
           >
             🔙 Quay lại
