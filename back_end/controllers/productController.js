@@ -1,4 +1,5 @@
 import ProductModel from "../models/ProductModel"
+import { productSchema } from "../validations/product";
 
 export const getAllProducts = async (req,res) => {
     try {
@@ -53,6 +54,16 @@ export const deleteProduct = async (req,res) => {
 
 export const createProduct = async (req,res) => {
     try {
+        const { error } = productSchema.validate(req.body, { abortEarly: false });
+
+        if (error) {
+        const errors = error.details.map(err => err.message);
+        return res.status(400).json({
+        message: 'Validation failed',
+        errors
+      });
+    }
+
         const product = await ProductModel.create(req.body);
         return res.status(200).json({
             message:'Create Product',

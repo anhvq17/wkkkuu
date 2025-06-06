@@ -4,6 +4,10 @@ import Login from "../pages/Auth/Login"
 import Register from "../pages/Auth/Register"
 import Cart from "../pages/Client/Cart"
 import NotFound from "../pages/NotFound"
+import ProductDetails from "../pages/Client/ProductDetails"
+import ProductList from "../pages/Client/ProductList"
+import Order from "../pages/Client/Order"
+import OrderNews from "../pages/Client/OrderNews"
 
 const ClientRoutes = {
   path: '/',
@@ -13,6 +17,10 @@ const ClientRoutes = {
     { path: 'login', element: <Login /> },
     { path: 'register', element: <Register /> },
     { path: 'cart', element: <Cart /> },
+    { path: 'productdetails', element: <ProductDetails /> },
+    { path: 'products', element: <ProductList /> },
+    { path: 'orders', element: <Order/>},
+    { path: 'ordernews', element: <OrderNews/>},
 
     // Khi đường dẫn sai hoặc không tồn tại, dẫn đến trang NotFound
     { path: '*', element: <NotFound homePath="/"/> },
