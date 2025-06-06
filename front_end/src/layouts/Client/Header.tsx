@@ -1,6 +1,19 @@
-import { Link } from "react-router-dom"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const ClientHeader = () => {
+  const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (keyword.trim()) {
+      navigate(`/search?q=${encodeURIComponent(keyword.trim())}`);
+      setKeyword("");
+    }
+  };
+
   return (
     <header className="w-full h-[60px] bg-[#fdfdfd] shadow-md">
       <div className="max-w-[1280px] mx-auto px-6 h-full flex items-center justify-between">
@@ -23,10 +36,18 @@ const ClientHeader = () => {
         </nav>
 
         <div className="flex items-center space-x-6 text-xl text-black">
-          <div className="relative">
-            <input type="text" placeholder="Tìm kiếm" className="border border-gray-300 rounded-full px-4 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-black" />
-            <i className="fas fa-search absolute right-3 top-1 text-base"></i>
-          </div>
+          <form onSubmit={handleSearch} className="relative">
+            <input
+              type="text"
+              placeholder="Tìm kiếm"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              className="border border-gray-300 rounded-full px-4 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-black"
+            />
+            <button type="submit">
+              <i className="fas fa-search absolute right-3 top-1 text-base text-gray-600"></i>
+            </button>
+          </form>
           <div className="h-5 border-l border-gray-300"></div>
           <Link to={"/login"} className="hover:text-gray-600">
             <i className="fas fa-user text-base"></i>
@@ -38,7 +59,7 @@ const ClientHeader = () => {
         </div>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default ClientHeader
+export default ClientHeader;
