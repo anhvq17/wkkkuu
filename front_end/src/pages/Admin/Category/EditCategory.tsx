@@ -36,7 +36,7 @@ const EditCategory = () => {
 
   const onSubmit = async (data: CategoryForm) => {
     try {
-      await axios.put(`http://localhost:3000/categories/${id}`, data);
+      await axios.patch(`http://localhost:3000/categories/${id}`, data);
       alert("Cập nhật danh mục thành công");
       navigate("/dashboard/categories");
     } catch (error) {
