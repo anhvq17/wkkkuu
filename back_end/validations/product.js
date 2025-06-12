@@ -36,11 +36,5 @@ export const productSchema = Joi.object({
       'any.required': 'brandId là bắt buộc',
     }),
 
-  // status: Joi.string()
-  //   .valid('Còn hàng', 'Hết hàng')
-  //   .default('Còn hàng')
-  //   .messages({
-  //     'any.only': 'Trạng thái chỉ có thể là "Còn hàng" hoặc "Hết hàng"',
-  //   }),
 
 });
