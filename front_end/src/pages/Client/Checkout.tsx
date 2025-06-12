@@ -69,7 +69,6 @@ const Checkout = () => {
 
       <div className="w-1/2 bg-[#eaf0f2] p-10">
         <div className="space-y-6">
-          {/* Product 1 */}
           <div className="flex items-center space-x-4">
             <img src="https://byvn.net/QbEB" alt="Product" className="w-20 h-20 object-cover rounded" />
             <div className="flex-1">
@@ -83,7 +82,6 @@ const Checkout = () => {
             </div>
           </div>
 
-          {/* Product 2 */}
           <div className="flex items-center space-x-4">
             <img src="https://byvn.net/CD9y" alt="Product" className="w-20 h-20 object-cover rounded" />
             <div className="flex-1">
