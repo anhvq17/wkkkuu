@@ -1,6 +1,6 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { EyeOff, Eye } from 'lucide-react';
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,10 +10,18 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState('');
 
+  // ✅ Kiểm tra đăng nhập
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('role');
+
+  if (token) {
+    // ⛔ Đã đăng nhập thì chuyển hướng (không render form)
+    return <Navigate to={role === 'admin' ? '/admin' : '/'} replace />;
+  }
+
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Validate
     if (!phone || !password) {
       setMessage('Vui lòng nhập đầy đủ số điện thoại và mật khẩu.');
       return;
@@ -40,17 +48,11 @@ const Login = () => {
         setMessage('Đăng nhập thành công!');
         localStorage.setItem('token', data.token);
         localStorage.setItem('role', data.user.role);
-        localStorage.setItem('user', JSON.stringify(data.user)); // nếu cần
-
-        // Phát sự kiện để cập nhật UI ngay (không cần F5)
-        window.dispatchEvent(new Event("loginChanged"));
+        localStorage.setItem('user', JSON.stringify(data.user));
+        window.dispatchEvent(new Event('loginChanged'));
 
         setTimeout(() => {
-          if (data.user.role === 'admin') {
-            navigate('/admin');
-          } else {
-            navigate('/');
-          }
+          navigate(data.user.role === 'admin' ? '/admin' : '/');
         }, 1000);
       }
     } catch (err) {
