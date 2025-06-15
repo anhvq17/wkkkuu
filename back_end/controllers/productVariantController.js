@@ -89,3 +89,16 @@ export const createVariant = async (req, res) => {
     return res.status(400).json({ message: error.message });
   }
 };
+
+// lấy toàn bộ biến thể lên update
+export const getVariantsByProductId = async (req, res) => {
+  try {
+    const variants = await ProductVariantModel.find({ productId: req.params.productId });
+    return res.status(200).json({
+      message: 'Variants by Product ID',
+      data: variants
+    });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
