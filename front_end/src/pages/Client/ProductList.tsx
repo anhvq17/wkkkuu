@@ -94,8 +94,8 @@ const ProductList = () => {
                 />
                 <h3 className="text-sm font-medium leading-5">{product.name}</h3>
                 <p className="text-red-600 text-2xl font-bold mb-3">
-  {(+product.price || 0).toFixed(3)}
-</p>
+                  {(+product.price || 0).toFixed(3)}
+                </p>
               </Link>
             ))}
           </div>

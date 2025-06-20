@@ -36,9 +36,9 @@ const SearchResults = () => {
           Kết quả tìm kiếm cho: <span className="text-[#5f518e]">"{query}"</span>
         </h1>
         {filteredProducts.length === 0 ? (
-          <div className="w-full flex flex-col items-center justify-center p-24">
-            <img src="img/notfound.png" className="w-20 h-20 mb-4"/>
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">
+          <div className="w-full flex flex-col items-center justify-center p-14 mb-12">
+            <img src="img/notfound.png" className="w-32 h-32 mb-4"/>
+            <h2 className="text-3xl font-semibold text-gray-700 mb-2">
               Oops! Không tìm thấy sản phẩm nào :(
             </h2>
             <p className="text-gray-500 text-sm text-center max-w-md">
