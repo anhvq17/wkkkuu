@@ -7,6 +7,20 @@ import {
 } from "sub-vn";
 import AddressSelector from "../../components/AddressSelector";
 
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  volume: string;
+  fragrance: string;
+  image: {
+    src: string;
+    width?: number;
+    height?: number;
+  };
+}
+
 const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [address, setAddress] = useState<{
@@ -18,6 +32,7 @@ const Checkout = () => {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("user") || "{}");
@@ -25,13 +40,39 @@ const Checkout = () => {
       setFullName(userInfo.username || "");
       setPhone(userInfo.phone || "");
     }
+
+    const raw = localStorage.getItem("cart");
+    if (raw) {
+      try {
+        const data = JSON.parse(raw);
+        const items: CartItem[] = data.map((item: any) => ({
+          id: `${item._id}-${item.selectedScent}-${item.selectedVolume}`,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          volume: item.selectedVolume,
+          fragrance: item.selectedScent,
+          image: typeof item.image === "string"
+            ? { src: item.image, width: 100, height: 100 }
+            : item.image,
+        }));
+        setCartItems(items);
+      } catch (error) {
+        console.error("Lỗi khi parse localStorage:", error);
+      }
+    }
   }, []);
 
   const { province: selectedProvince, district: selectedDistrict, ward: selectedWard } = address;
 
   const isFormValid = () => {
-    return fullName && phone && selectedProvince && selectedDistrict && selectedWard && detailAddress;
+    return fullName && phone && selectedProvince && selectedDistrict && selectedWard && detailAddress && cartItems.length > 0;
   };
+
+  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const shippingFee = 0;
+  const discount = 0;
+  const total = subtotal + shippingFee - discount;
 
   const handleSubmit = async () => {
     if (!isFormValid()) {
@@ -52,6 +93,8 @@ const Checkout = () => {
           detail: detailAddress,
         },
         paymentMethod,
+        items: cartItems,
+        total,
       });
       setIsLoading(false);
       window.location.href = "/ordersuccessfully";
@@ -182,72 +225,85 @@ const Checkout = () => {
               </div>
             </div>
           </div>
-
-          {/* Right Column - Order Summary */}
           <div className="lg:w-1/3">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 sticky top-6">
-              {/* Header */}
               <div className="px-6 py-4 border-b border-gray-200">
                 <h2 className="text-lg font-semibold text-gray-800">Đơn hàng của bạn</h2>
               </div>
-
-              {/* Order Items */}
               <div className="p-6 space-y-4">
-                <div className="flex items-center space-x-4">
-                  <img
-                    src="https://byvn.net/CD9y"
-                    alt="Product"
-                    className="w-16 h-16 object-cover rounded-md"
-                  />
-                  <div className="flex-1">
-                    <h4 className="font-medium text-gray-800">JEAN PAUL GAULTIER</h4>
-                    <p className="text-sm text-gray-500">Dung tích: 100ml</p>
-                    <p className="text-sm text-gray-500">Hương vị: Nhẹ nhàng</p>
+                {cartItems.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 mb-4">Giỏ hàng trống</p>
+                    <Link
+                      to="/"
+                      className="inline-block px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+                    >
+                      Tiếp tục mua sắm
+                    </Link>
                   </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-gray-800">70.000₫</p>
-                    <p className="text-sm text-gray-500">x1</p>
-                  </div>
-                </div>
-                <div className="border-t border-gray-200 pt-4 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Tạm tính</span>
-                    <span className="text-gray-800">70.000₫</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Phí vận chuyển</span>
-                    <span className="text-green-600 font-medium">Miễn phí</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Giảm giá</span>
-                    <span className="text-red-600">-0₫</span>
-                  </div>
-                </div>
-                <div className="border-t border-gray-200 pt-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold text-gray-800">Tổng cộng</span>
-                    <span className="text-xl font-bold text-orange-500">70.000₫</span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">Đã bao gồm VAT</p>
-                </div>
-                <button
-                  onClick={handleSubmit}
-                  disabled={!isFormValid() || isLoading}
-                  className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-lg transition-colors duration-200"
-                >
-                  {isLoading ? "Đang xử lý..." : "Đặt hàng"}
-                </button>
+                ) : (
+                  <>
+                    {cartItems.map((item) => (
+                      <div key={item.id} className="flex items-center space-x-4">
+                        <img
+                          src={item.image.src}
+                          alt={item.name}
+                          className="w-16 h-16 object-cover rounded-md"
+                        />
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-800">{item.name}</h4>
+                          <p className="text-sm text-gray-500">Dung tích: {item.volume}ml</p>
+                          <p className="text-sm text-gray-500">Hương vị: {item.fragrance}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-gray-800">
+                            {(item.price * item.quantity).toLocaleString()}₫
+                          </p>
+                          <p className="text-sm text-gray-500">x{item.quantity}</p>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="border-t border-gray-200 pt-4 space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Tạm tính</span>
+                        <span className="text-gray-800">{subtotal.toLocaleString()}₫</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Phí vận chuyển</span>
+                        <span className="text-green-600 font-medium">Miễn phí</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Giảm giá</span>
+                        <span className="text-red-600">-{discount.toLocaleString()}₫</span>
+                      </div>
+                    </div>
+                    <div className="border-t border-gray-200 pt-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg font-semibold text-gray-800">Tổng cộng</span>
+                        <span className="text-xl font-bold text-orange-500">{total.toLocaleString()}₫</span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">Đã bao gồm VAT</p>
+                    </div>
+                    <button
+                      onClick={handleSubmit}
+                      disabled={!isFormValid() || isLoading}
+                      className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-lg transition-colors duration-200"
+                    >
+                      {isLoading ? "Đang xử lý..." : "Đặt hàng"}
+                    </button>
 
-                <p className="text-xs text-gray-500 text-center">
-                  Bằng việc đặt hàng, bạn đồng ý với{" "}
-                  <Link to="/terms" className="text-orange-500 hover:underline">
-                    Điều khoản sử dụng
-                  </Link>{" "}
-                  và{" "}
-                  <Link to="/privacy" className="text-orange-500 hover:underline">
-                    Chính sách bảo mật
-                  </Link>
-                </p>
+                    <p className="text-xs text-gray-500 text-center">
+                      Bằng việc đặt hàng, bạn đồng ý với{" "}
+                      <Link to="/terms" className="text-orange-500 hover:underline">
+                        Điều khoản sử dụng
+                      </Link>{" "}
+                      và{" "}
+                      <Link to="/privacy" className="text-orange-500 hover:underline">
+                        Chính sách bảo mật
+                      </Link>
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </div>
