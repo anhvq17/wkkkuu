@@ -17,6 +17,6 @@ declare module 'sub-vn' {
   }
 
   export function getProvinces(): Province[];
-  export function getDistrictsByProvinceCode(code: string): District[];
-  export function getWardsByDistrictCode(code: string): Ward[];
+  export function getDistrictsByProvinceCode(provinceCode: string): District[];
+  export function getWardsByDistrictCode(districtCode: string): Ward[];
 }

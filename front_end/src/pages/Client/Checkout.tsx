@@ -82,7 +82,7 @@ const Checkout = () => {
             </div>
 
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">Quận/Huyện (toàn quốc)</label>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Quận/Huyện</label>
               <select
                 value={districtCode}
                 onChange={(e) => setDistrictCode(e.target.value)}
@@ -98,7 +98,7 @@ const Checkout = () => {
             </div>
 
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">Phường/Xã (toàn quốc)</label>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Phường/Xã</label>
               <select
                 value={wardCode}
                 onChange={(e) => setWardCode(e.target.value)}
