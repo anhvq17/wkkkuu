@@ -23,6 +23,7 @@ const ClientRoutes = {
     { path: 'cart', element: <Cart /> },
     { path: 'productdetails/:id', element: <ProductDetails /> },
     { path: 'products', element: <ProductList /> },
+    { path: 'products/:id', element: <ProductDetails /> },
     { path: 'orders', element: <Order/>},
     { path: 'ordernews', element: <OrderNews/>},
     { path: 'checkout', element: <Checkout/>},
