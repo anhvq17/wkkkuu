@@ -31,6 +31,14 @@ import AddVoucher from "../pages/Admin/Voucher/AddVoucher"
 import EditVoucher from "../pages/Admin/Voucher/EditVoucher"
 
 import NotFound from "../pages/NotFound"
+import AttributeManager from "../pages/Admin/Attribute/AttributeManager"
+import AddAttribute from "../pages/Admin/Attribute/AddAttribute"
+import EditAttribute from "../pages/Admin/Attribute/EditAttribute"
+import TrashAttribute from "../pages/Admin/Attribute/TrashAttribute"
+import AddAttributeValue from "../pages/Admin/AttributeValue/AddAttributeValue"
+import AttributeValueManager from "../pages/Admin/AttributeValue/AttributeValueManager"
+import TrashAttributeValue from "../pages/Admin/AttributeValue/TrashAttributeValue"
+import EditAttributeValue from "../pages/Admin/AttributeValue/EditAttributeValue"
 
 const AdminRoutes = {
   path: '/admin',
@@ -58,6 +66,19 @@ const AdminRoutes = {
 
     { path: 'users', element: <UserManager /> },
 
+    //Attribute
+    { path: 'attributes/add', element: <AddAttribute /> },
+    { path: 'attributes', element: <AttributeManager /> },
+    { path: 'attributes/trash', element: <TrashAttribute /> },
+    { path: 'attributes/edit/:id', element: <EditAttribute /> },
+
+    //Attribute-value attribute-values
+    { path: 'attribute-values/add', element: <AddAttributeValue /> },
+    { path: 'attribute-values', element: <AttributeValueManager /> },
+    { path: 'attribute-values/trash', element: <TrashAttributeValue /> },
+    { path: 'attribute-values/edit/:id', element: <EditAttributeValue /> },
+
+    //variant
     { path: 'variants', element: <VariantManager /> },
     { path: 'variants/add', element: <AddVariant /> },
     { path: 'variants/edit/:id', element: <EditVariant /> },
@@ -67,7 +88,7 @@ const AdminRoutes = {
     { path: 'vouchers/edit/:id', element: <EditVoucher /> },
 
     // Khi đường dẫn sai hoặc không tồn tại, dẫn đến trang NotFound
-    { path: '*', element: <NotFound homePath="/admin"/> },
+    { path: '*', element: <NotFound homePath="/admin" /> },
   ]
 }
 

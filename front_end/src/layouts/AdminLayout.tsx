@@ -15,7 +15,7 @@ const AdminLayout = () => {
           collapsed ? 'pl-[60px]' : 'pl-[240px]'
         }`}
       >
-        <div className="p-6">
+        <div className="p-4">
           <Outlet />
         </div>
       </div>
