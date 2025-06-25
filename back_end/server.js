@@ -8,11 +8,10 @@ import categoryRouter from "./routes/categoryRoutes.js";
 import brandRouter from "./routes/brandRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import orderRouter from "./routes/orderRoutes.js";
-
+import paymentRouter from "./routes/paymentRoutes.js";
 
 import User from './models/userModel.js';
 import productVariantRouter from "./routes/productVariantRoutes.js";
-
 
 dotenv.config();
 connectMongoDB(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/DATN");
@@ -20,7 +19,15 @@ connectMongoDB(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/DATN");
 const app = express();
 
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ 
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174', 
+    'http://localhost:5175',
+    'http://localhost:3000'
+  ],
+  credentials: true
+}));
 
 app.post('/register', async (req, res) => {
   const { username, email, phone, password } = req.body;
@@ -48,9 +55,9 @@ app.use('/categories', categoryRouter);
 app.use('/', authRouter);
 app.use('/comments', commentsRoute);
 app.use('/orders', orderRouter);
+app.use('/payment', paymentRouter);
 
 app.use('/variant',productVariantRouter)
-app.use('/comments', commentsRoute);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);

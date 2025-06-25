@@ -25,17 +25,26 @@ const Cart = () => {
       try {
         const data = JSON.parse(raw);
 
-        const items: CartItem[] = data.map((item: any) => ({
-          id: `${item._id}-${item.selectedScent}-${item.selectedVolume}`,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          volume: item.selectedVolume,
-          fragrance: item.selectedScent,
-          image: typeof item.image === "string"
-            ? { src: item.image, width: 100, height: 100 }
-            : item.image,
-        }));
+        const items: CartItem[] = data.map((item: any) => {
+          // Handle both variantId (from ProductDetails) and _id (from Cart save)
+          const variantId = item.variantId || item._id;
+          if (!variantId) {
+            console.warn("Item thiếu variantId/_id:", item);
+            return null;
+          }
+          
+          return {
+            id: `${variantId}-${item.selectedScent || item.fragrance || 'unknown'}-${item.selectedVolume || item.volume || 'unknown'}`,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            volume: item.selectedVolume || item.volume,
+            fragrance: item.selectedScent || item.fragrance,
+            image: typeof item.image === "string"
+              ? { src: item.image, width: 100, height: 100 }
+              : item.image,
+          };
+        }).filter(Boolean); // Remove null items
 
         setCartItems(items);
       } catch (error) {
@@ -61,7 +70,7 @@ const Cart = () => {
 
   const saveToLocalStorage = (items: CartItem[]) => {
     const formatted = items.map((item) => ({
-      _id: item.id.split("-")[0],
+      variantId: item.id.split("-")[0],
       name: item.name,
       price: item.price,
       quantity: item.quantity,

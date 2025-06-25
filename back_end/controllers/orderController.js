@@ -1,13 +1,25 @@
-import Order from '../models/OrderModel.js';
+import Order from '../models/orderModel.js';
 import OrderItem from '../models/OrderItemModel.js';
 
 export const createOrder = async (req, res) => {
   try {
-    const { userId, items } = req.body;
+    const { userId, fullName, phone, address, paymentMethod, items } = req.body;
+
+    if (!userId || !fullName || !phone || !address || !items?.length) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
 
     const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-    const order = await Order.create({ userId, totalAmount, status: 'pending' });
+    const order = await Order.create({
+      userId,
+      fullName,
+      phone,
+      address,
+      paymentMethod,
+      totalAmount,
+      status: 'pending'
+    });
 
     await Promise.all(items.map(item => OrderItem.create({
       orderId: order._id,
@@ -21,6 +33,7 @@ export const createOrder = async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 };
+
 
 export const getAllOrders = async (req, res) => {
   try {
