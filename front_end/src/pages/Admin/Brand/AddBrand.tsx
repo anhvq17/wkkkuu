@@ -19,7 +19,7 @@ const AddBrand = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      // 1. Upload ảnh lên Cloudinary
+      // Upload ảnh lên Cloudinary
       const file = data.image[0];
       const formData = new FormData();
       formData.append("file", file);
@@ -32,7 +32,7 @@ const AddBrand = () => {
 
       const imageUrl = cloudRes.data.secure_url;
 
-      // 2. Gửi dữ liệu brand về server
+      // Gửi dữ liệu brand về server
       await axios.post("http://localhost:3000/brands", {
         name: data.name,
         image: imageUrl,
