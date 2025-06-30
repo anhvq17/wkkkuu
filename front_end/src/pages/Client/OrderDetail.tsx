@@ -104,7 +104,7 @@ const OrderDetail = () => {
             >
               {loading ? 'Đang tải...' : 'Làm mới'}
             </button>
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+           <span className={`px-3 py-1 rounded-full text-sm font-medium ${
               order.status === 'paid' ? 'bg-green-100 text-green-800' :
               order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
               order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
@@ -117,7 +117,6 @@ const OrderDetail = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Thông tin đơn hàng */}
           <div>
             <h2 className="text-lg font-semibold mb-4">Thông tin đơn hàng</h2>
             <div className="space-y-3">
@@ -155,11 +154,9 @@ const OrderDetail = () => {
                 <span className="font-medium">Trạng thái thanh toán:</span>
                 <span className={`ml-2 px-2 py-1 rounded text-xs ${
                   order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
-                  order.paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-red-100 text-red-800'
+                  'bg-yellow-100 text-yellow-800'
                 }`}>
-                  {order.paymentStatus === 'paid' ? 'Đã thanh toán' :
-                   order.paymentStatus === 'pending' ? 'Chờ thanh toán' : 'Thanh toán thất bại'}
+                  {order.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
                 </span>
               </div>
               <div>

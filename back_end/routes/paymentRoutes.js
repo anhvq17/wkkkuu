@@ -24,7 +24,7 @@ paymentRouter.get("/create_payment", (req, res) => {
   const vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 
   let ipAddr = req.ip;
-  let txnRef = orderId || moment().format("YYYYMMDDHHmmss");
+  let txnRef = orderId ? `${orderId}-${Date.now()}` : moment().format("YYYYMMDDHHmmss");
   let bankCode = req.query.bankCode || "NCB";
 
   let createDate = moment().format("YYYYMMDDHHmmss");
@@ -76,13 +76,14 @@ paymentRouter.get("/check_payment", (req, res) => {
   console.log("vnp_TxnRef (orderId):", query.vnp_TxnRef);
   console.log("vnp_ResponseCode:", query.vnp_ResponseCode);
 
+  let originalOrderId = query.vnp_TxnRef ? query.vnp_TxnRef.split("-")[0] : null;
+
   if (vnp_SecureHash === checkSum) {
     if (query.vnp_ResponseCode === "00") {
-      // Update order payment status using vnp_TxnRef as orderId
-      if (query.vnp_TxnRef) {
-        console.log("Attempting to update order with ID:", query.vnp_TxnRef);
+      if (originalOrderId) {
+        console.log("Attempting to update order with ID:", originalOrderId);
         Order.findByIdAndUpdate(
-          query.vnp_TxnRef,
+          originalOrderId,
           { 
             paymentStatus: 'paid',
             status: 'paid'
@@ -97,7 +98,7 @@ paymentRouter.get("/check_payment", (req, res) => {
               status: updatedOrder.status
             });
           } else {
-            console.log('Order not found with ID:', query.vnp_TxnRef);
+            console.log('Order not found with ID:', originalOrderId);
           }
         }).catch(err => {
           console.error('Error updating order payment status:', err);
