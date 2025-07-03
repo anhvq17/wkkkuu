@@ -73,6 +73,7 @@ const ProductDetails = () => {
   const [attributes, setAttributes] = useState<AttributeType[]>([]);
   const [attributeValues, setAttributeValues] = useState<AttributeValueType[]>([]);
   
+  
   // ========================= USER INFO =========================
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -240,8 +241,7 @@ const ProductDetails = () => {
 
   if (matched) {
     setSelectedVariant(matched);
-    setQuantity(1);
-    setMainImg(matched.image); // Cập nhật ảnh theo biến thể
+    setQuantity(1); // Cập nhật ảnh theo biến thể
   } else {
     setSelectedVariant(null);
   }
@@ -587,11 +587,15 @@ const uniqueVolumes = [
       <button
         key={`${scent}-${idx}`}
         onClick={() => {
-          setSelectedScent(scent);
-          const matchedVol = variants.find((v) => v.flavors === scent);
-          const vol = matchedVol?.volume ? String(matchedVol.volume) : '';
-          setSelectedVolume(vol);
-        }}
+  setSelectedScent(scent);
+  const volumesByScent = variants
+    .filter((v) => v.flavors === scent)
+    .map((v) => v.volume);
+
+  const minVolume = Math.min(...volumesByScent);
+  setSelectedVolume(minVolume.toString());
+}}
+
         className={`px-3 py-1 border rounded text-sm hover:bg-[#696faa] hover:text-white ${
           selectedScent === scent ? 'bg-[#5f518e] text-white' : ''
         }`}
@@ -629,8 +633,10 @@ const uniqueVolumes = [
             setSelectedScent(scentValue);
             setSelectedVolume(String(vol));
             setSelectedVariant(matched);
-            setMainImg(matched.image);
             setQuantity(1);
+            
+            // ❌ KHÔNG đổi ảnh tự động
+            // ✅ Ảnh sẽ chỉ đổi khi người dùng click thumbnail
           }
         }}
         className={`px-3 py-1 border rounded text-sm hover:bg-[#696faa] hover:text-white ${
