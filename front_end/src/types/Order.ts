@@ -44,18 +44,35 @@ export interface Order {
   fullName: string;
   phone: string;
   address: Address;
-  status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'processed' | 'shipping' | 'shipped' | 'delivered' | 'cancelled';
   totalAmount: number;
   paymentMethod: 'cod' | 'vnpay';
-  paymentStatus: 'pending' | 'paid' | 'failed';
+  paymentStatus: 'paid' | 'unpaid';
   createdAt: string;
   updatedAt: string;
 }
 
-export interface OrderItem {
+interface OrderItem {
   _id: string;
-  orderId: string;
-  variantId: string;
+  variantId: {
+    _id: string;
+    image: string;
+    productId: {
+      _id: string;
+      name: string;
+      image: string;
+    };
+    attributes?: {
+      attributeId: {
+        _id: string;
+        name: string;
+      };
+      valueId: {
+        _id: string;
+        value: string;
+      };
+    }[];
+  };
   quantity: number;
   price: number;
 }

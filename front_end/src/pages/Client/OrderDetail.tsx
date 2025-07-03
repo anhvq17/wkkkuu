@@ -5,13 +5,27 @@ import type { Order } from '../../types/Order';
 
 interface OrderItem {
   _id: string;
-  variantId: string;
+  variantId: {
+    _id: string;
+    image: string;
+    productId: {
+      _id: string;
+      name: string;
+      image: string;
+    };
+    attributes?: {
+      attributeId: {
+        _id: string;
+        name: string;
+      };
+      valueId: {
+        _id: string;
+        value: string;
+      };
+    }[];
+  };
   quantity: number;
   price: number;
-  product?: {
-    name: string;
-    image: string;
-  };
 }
 
 const OrderDetail = () => {
@@ -43,10 +57,11 @@ const OrderDetail = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'pending': return 'Chờ xử lý';
-      case 'paid': return 'Đã thanh toán';
-      case 'shipped': return 'Đang giao hàng';
-      case 'delivered': return 'Đã giao hàng';
-      case 'cancelled': return 'Đã hủy';
+      case 'processed': return 'Đã xử lý';
+      case 'shipping': return 'Đang giao hàng';
+      case 'shipped': return 'Đã giao hàng';
+      case 'delivered': return 'Đã nhận hàng';
+      case 'cancelled': return 'Đã huỷ đơn hàng';
       default: return status;
     }
   };
@@ -61,24 +76,20 @@ const OrderDetail = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5f518e] mx-auto mb-4"></div>
-          <p className="text-gray-500">Đang tải thông tin đơn hàng...</p>
-        </div>
+      <div className="container mx-auto px-4 py-8 text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5f518e] mx-auto mb-4"></div>
+        <p className="text-gray-500">Đang tải thông tin đơn hàng...</p>
       </div>
     );
   }
 
   if (error || !order) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <p className="text-red-500">{error || 'Không tìm thấy đơn hàng'}</p>
-          <Link to="/orders" className="text-[#5f518e] underline mt-4 inline-block">
-            Quay lại danh sách đơn hàng
-          </Link>
-        </div>
+      <div className="container mx-auto px-4 py-8 text-center">
+        <p className="text-red-500">{error || 'Không tìm thấy đơn hàng'}</p>
+        <Link to="/orders" className="text-[#5f518e] underline mt-4 inline-block">
+          Quay lại danh sách đơn hàng
+        </Link>
       </div>
     );
   }
@@ -96,87 +107,30 @@ const OrderDetail = () => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Chi tiết đơn hàng #{order._id}</h1>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={fetchOrderData}
-              disabled={loading}
-              className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 disabled:bg-gray-300"
-            >
-              {loading ? 'Đang tải...' : 'Làm mới'}
-            </button>
-           <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-              order.status === 'paid' ? 'bg-green-100 text-green-800' :
-              order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-              order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
-              order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-              'bg-red-100 text-red-800'
-            }`}>
-              {getStatusText(order.status)}
-            </span>
-          </div>
+          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+            order.status === 'paid' ? 'bg-green-100 text-green-800' :
+            order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+            order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
+            order.status === 'delivered' ? 'bg-green-100 text-green-800' :
+            'bg-red-100 text-red-800'
+          }`}>
+            {getStatusText(order.status)}
+          </span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
             <h2 className="text-lg font-semibold mb-4">Thông tin đơn hàng</h2>
-            <div className="space-y-3">
-              <div>
-                <span className="font-medium">Mã đơn hàng:</span>
-                <span className="ml-2 text-gray-600">{order._id}</span>
-              </div>
-              <div>
-                <span className="font-medium">Ngày đặt:</span>
-                <span className="ml-2 text-gray-600">
-                  {new Date(order.createdAt).toLocaleString("vi-VN")}
-                </span>
-              </div>
-              <div>
-                <span className="font-medium">Họ và tên:</span>
-                <span className="ml-2 text-gray-600">{order.fullName}</span>
-              </div>
-              <div>
-                <span className="font-medium">Số điện thoại:</span>
-                <span className="ml-2 text-gray-600">{order.phone}</span>
-              </div>
-              <div>
-                <span className="font-medium">Địa chỉ giao hàng:</span>
-                <span className="ml-2 text-gray-600">
-                  {order.address.detail}, {order.address.ward}, {order.address.district}, {order.address.province}
-                </span>
-              </div>
-              <div>
-                <span className="font-medium">Phương thức thanh toán:</span>
-                <span className="ml-2 text-gray-600">
-                  {getPaymentMethodText(order.paymentMethod)}
-                </span>
-              </div>
-              <div>
-                <span className="font-medium">Trạng thái thanh toán:</span>
-                <span className={`ml-2 px-2 py-1 rounded text-xs ${
-                  order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
-                  'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {order.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
-                </span>
-              </div>
-              <div>
-                <span className="font-medium">Trạng thái đơn hàng:</span>
-                <span className={`ml-2 px-2 py-1 rounded text-xs ${
-                  order.status === 'paid' ? 'bg-green-100 text-green-800' :
-                  order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                  order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
-                  order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                  'bg-red-100 text-red-800'
-                }`}>
-                  {getStatusText(order.status)}
-                </span>
-              </div>
-              <div>
-                <span className="font-medium">Tổng tiền:</span>
-                <span className="ml-2 text-lg font-bold text-red-500">
-                  {order.totalAmount.toLocaleString()}₫
-                </span>
-              </div>
+            <div className="space-y-3 text-gray-700 text-sm">
+              <p><strong>Mã đơn hàng:</strong> {order._id}</p>
+              <p><strong>Ngày đặt:</strong> {new Date(order.createdAt).toLocaleString("vi-VN")}</p>
+              <p><strong>Họ và tên:</strong> {order.fullName}</p>
+              <p><strong>Số điện thoại:</strong> {order.phone}</p>
+              <p><strong>Địa chỉ giao hàng:</strong> {order.address.detail}, {order.address.ward}, {order.address.district}, {order.address.province}</p>
+              <p><strong>Phương thức thanh toán:</strong> {getPaymentMethodText(order.paymentMethod)}</p>
+              <p><strong>Trạng thái đơn hàng:</strong> {getStatusText(order.status)}</p>
+              <p><strong>Trạng thái thanh toán:</strong> {order.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}</p>
+              <p><strong>Tổng tiền:</strong> <span className="text-red-500 font-bold text-lg">{order.totalAmount.toLocaleString()}₫</span></p>
             </div>
           </div>
         </div>
@@ -197,17 +151,29 @@ const OrderDetail = () => {
                 {orderItems.map((item) => (
                   <tr key={item._id}>
                     <td className="px-4 py-3">
-                      <div className="flex items-center">
-                        {item.product?.image && (
-                          <img 
-                            src={item.product.image} 
-                            alt={item.product.name} 
-                            className="w-12 h-12 object-cover rounded mr-3"
+                      <div className="flex items-start gap-3">
+                        {item.variantId?.productId?.image && (
+                          <img
+                            src={item.variantId.productId.image}
+                            alt={item.variantId.productId.name}
+                            className="w-12 h-12 object-cover rounded"
                           />
                         )}
-                        <span className="text-sm text-gray-900">{item.product?.name || 'Sản phẩm'}</span>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {item.variantId?.productId?.name || 'Sản phẩm'}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {item.variantId?.attributes?.map((attr, i) => (
+                              <span key={i}>
+                                {attr.attributeId?.name}: {attr.valueId?.value}{' '}
+                              </span>
+                            ))}
+                          </p>
+                        </div>
                       </div>
                     </td>
+
                     <td className="px-4 py-3 text-sm text-gray-900">{item.quantity}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{item.price.toLocaleString()}₫</td>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">
@@ -234,4 +200,3 @@ const OrderDetail = () => {
 };
 
 export default OrderDetail;
-

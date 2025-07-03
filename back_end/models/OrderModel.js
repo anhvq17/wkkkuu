@@ -11,10 +11,10 @@ const orderSchema = new mongoose.Schema({
     detail: { type: String, required: true },
   },
   paymentStatus: {
-  type: String,
-  enum: ['pending', 'paid', 'failed'],
-  default: 'pending'
-},
+    type: String,
+    enum: ['paid', 'unpaid'],
+    default: 'unpaid'
+  },
 
   paymentMethod: {
     type: String,
@@ -23,7 +23,7 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'paid', 'shipped', 'cancelled'],
+    enum: ['pending', 'processed', 'shipping', 'shipped', 'delivered', 'cancelled'],
     default: 'pending',
   },
   totalAmount: { type: Number, required: true },

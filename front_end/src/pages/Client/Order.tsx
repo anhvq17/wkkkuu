@@ -27,10 +27,11 @@ const OrderList = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'pending': return 'Chờ xử lý';
-      case 'paid': return 'Đã thanh toán';
-      case 'shipped': return 'Đang giao hàng';
-      case 'delivered': return 'Đã giao hàng';
-      case 'cancelled': return 'Đã hủy';
+      case 'processed': return 'Đã xử lý';
+      case 'shipping': return 'Đang giao hàng';
+      case 'shipped': return 'Đã giao hàng';
+      case 'delivered': return 'Đã nhận hàng';
+      case 'cancelled': return 'Đã huỷ đơn hàng';
       default: return status;
     }
   };
