@@ -114,7 +114,7 @@ const ProductDetails = () => {
         const firstScent = variantList[0].flavors;
         const firstByScent = variantList.find((v) => v.flavors === firstScent);
         setSelectedScent(firstScent);
-        setSelectedVolume(firstByScent?.volume.toString() || '');
+        setSelectedVolume(firstByScent?.volume?.toString() || '');
         setSelectedVariant(firstByScent || null);
         setMainImg(firstByScent?.image || variantList[0].image);
       }
@@ -436,7 +436,7 @@ const ProductDetails = () => {
                 {[...new Set(
                   variants
                     .filter((v) => v.flavors === selectedScent)
-                    .map((v) => v.volume.toString())
+                    .map((v) => v?.volume?.toString())
                 )].map((vol) => (
                   <button
                     key={vol}

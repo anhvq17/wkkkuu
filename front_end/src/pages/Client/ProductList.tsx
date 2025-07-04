@@ -66,7 +66,7 @@ const ProductList = () => {
   }, [selectedCategory, selectedBrand, selectedPriceRange]);
 
   const filteredProducts = products.filter((product) => {
-    const firstVariant = product.variants[0];
+    const firstVariant = product.variants?.[0];
 
     const matchCategory = selectedCategory
       ? product.categoryId.name === selectedCategory
@@ -100,7 +100,7 @@ const ProductList = () => {
     startIndex,
     startIndex + productsPerPage
   );
-
+  
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center text-sm mb-5">
@@ -216,7 +216,8 @@ const ProductList = () => {
         <main className="lg:w-3/4">
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {currentProducts.map((product) => {
-              const firstVariant = product.variants[0];
+              const firstVariant = product.variants?.[0];
+              console.log(firstVariant?.image);
               return (
                 <Link
                   to={`/productdetails/${product._id}`}
@@ -225,7 +226,7 @@ const ProductList = () => {
                 >
                   <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-3">
                     <img
-                      src={firstVariant.image}
+                      src={firstVariant?.image}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -242,7 +243,7 @@ const ProductList = () => {
                     </span>
                   </div>
                   <div className="text-red-500 font-semibold text-sm text-left">
-                    {firstVariant.price.toLocaleString()}
+                    {firstVariant?.price.toLocaleString()}
                   </div>
                 </Link>
               );
