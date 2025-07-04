@@ -1,5 +1,6 @@
 import Order from '../models/orderModel.js';
 import OrderItem from '../models/OrderItemModel.js';
+import { notifyOrderStatus } from '../server.js';
 
 export const createOrder = async (req, res) => {
   try {
@@ -37,7 +38,7 @@ export const createOrder = async (req, res) => {
 
 export const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find().populate('userId');
+    const orders = await Order.find().populate('userId').sort({ createdAt: -1 })
     return res.status(200).json(orders);
   } catch (err) {
     return res.status(500).json({ error: err.message });
@@ -78,6 +79,12 @@ export const getOrdersByUser = async (req, res) => {
 export const updateOrder = async (req, res) => {
   try {
     const updated = await Order.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
+    // 👇 Nếu có cập nhật trạng thái thì emit socket
+    if (req.body.status) {
+      notifyOrderStatus(updated._id.toString(), updated.status);
+    }
+
     return res.status(200).json(updated);
   } catch (err) {
     return res.status(400).json({ error: err.message });

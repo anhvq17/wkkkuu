@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getOrderById } from '../../services/Order';
 import type { Order } from '../../types/Order';
+import { io, Socket } from 'socket.io-client';
+
+const socket: Socket = io("http://localhost:3000");
 
 interface OrderItem {
   _id: string;
@@ -37,7 +40,6 @@ const OrderDetail = () => {
 
   const fetchOrderData = async () => {
     if (!orderId) return;
-
     try {
       setLoading(true);
       const data = await getOrderById(orderId);
@@ -52,24 +54,27 @@ const OrderDetail = () => {
 
   useEffect(() => {
     fetchOrderData();
-  }, [orderId]);
+
+    socket.on("orderStatusChanged", (payload: { orderId: string; status: string }) => {
+      if (payload.orderId === orderId) {
+        fetchOrderData();
+      }
+    });
+
+    return () => {
+      socket.off("orderStatusChanged");
+    };
+  }, []);
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case "pending":
-        return "Chờ xác nhận";
-      case "confirmed":
-        return "Đã xác nhận";
-      case "processing":
-        return "Đang giao hàng";
-      case "delivered":
-        return "Đã giao hàng";
-      case "success":
-        return "Giao hàng thành công";
-      case "cancel":
-        return "Đã huỷ đơn hàng";
-      default:
-        return status;
+      case "pending": return "Chờ xác nhận";
+      case "confirmed": return "Đã xác nhận";
+      case "processing": return "Đang giao hàng";
+      case "delivered": return "Đã giao hàng";
+      case "success": return "Giao hàng thành công";
+      case "cancel": return "Đã huỷ đơn hàng";
+      default: return status;
     }
   };
 
@@ -116,18 +121,18 @@ const OrderDetail = () => {
           <h1 className="text-2xl font-bold text-gray-800">Chi tiết đơn hàng #{order._id}</h1>
           <span className={`px-3 py-1 rounded-full text-sm font-medium ${
             order.status === "pending"
-            ? "bg-yellow-100 text-yellow-800"
-            : order.status === "confirmed"
-            ? "bg-indigo-100 text-indigo-800"
-            : order.status === "processing"
-            ? "bg-blue-100 text-blue-800"
-            : order.status === "delivered"
-            ? "bg-green-100 text-green-800"
-            : order.status === "success"
-            ? "bg-emerald-100 text-emerald-800"
-            : order.status === "cancel"
-            ? "bg-red-100 text-red-800"
-            : "bg-gray-100 text-gray-800"
+              ? "bg-yellow-100 text-yellow-800"
+              : order.status === "confirmed"
+              ? "bg-indigo-100 text-indigo-800"
+              : order.status === "processing"
+              ? "bg-blue-100 text-blue-800"
+              : order.status === "delivered"
+              ? "bg-green-100 text-green-800"
+              : order.status === "success"
+              ? "bg-emerald-100 text-emerald-800"
+              : order.status === "cancel"
+              ? "bg-red-100 text-red-800"
+              : "bg-gray-100 text-gray-800"
           }`}>
             {getStatusText(order.status)}
           </span>
@@ -188,7 +193,6 @@ const OrderDetail = () => {
                         </div>
                       </div>
                     </td>
-
                     <td className="px-4 py-3 text-sm text-gray-900">{item.quantity}</td>
                     <td className="px-4 py-3 text-sm text-gray-900">{item.price.toLocaleString()}₫</td>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">

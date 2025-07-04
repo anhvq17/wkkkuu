@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3000");
 
 interface OrderItem {
   variantId: {
-    productId: {
-      name: string;
-    };
-    attributes: {
-      valueId: {
-        value: string;
-      };
-    }[];
+    productId: { name: string };
+    attributes: { valueId: { value: string } }[];
   };
   price: number;
   quantity: number;
@@ -44,11 +41,8 @@ interface OrderResponse {
   items: OrderItem[];
 }
 
-
-
 const DetailOrder = () => {
   const { orderId } = useParams();
-  // console.log(orderId);
   const [order, setOrder] = useState<OrderResponse | null>(null);
   const [status, setStatus] = useState("");
 
@@ -57,7 +51,6 @@ const DetailOrder = () => {
       try {
         const res = await fetch(`http://localhost:3000/orders/${orderId}`);
         const data = await res.json();
-        console.log(data);
         setOrder(data);
         setStatus(data.order.status || "pending");
       } catch (err) {
@@ -78,10 +71,17 @@ const DetailOrder = () => {
         body: JSON.stringify({ status }),
       });
 
-      console.log(res);
-
       if (res.ok) {
-        setOrder((prev) => (prev ? { ...prev, status } : prev));
+        // Cập nhật local state
+        setOrder((prev) =>
+          prev ? { ...prev, order: { ...prev.order, status } } : prev
+        );
+
+        // 🔥 Phát sự kiện WebSocket sau khi cập nhật thành công
+        socket.emit("orderStatusChanged", {
+          orderId,
+          status,
+        });
       } else {
         alert("Không thể cập nhật trạng thái");
       }
@@ -89,7 +89,6 @@ const DetailOrder = () => {
       console.error("Lỗi khi cập nhật trạng thái:", err);
     }
   };
-  // handleSaveStatus();
 
   if (!order) return <div className="p-4">Đang tải đơn hàng...</div>;
 
@@ -102,6 +101,7 @@ const DetailOrder = () => {
       <h2 className="text-2xl font-semibold mb-6">
         Chi tiết đơn hàng - {order.order._id}
       </h2>
+
       <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
         <div>
           <strong>Khách hàng:</strong> {order.order.fullName}
@@ -138,7 +138,7 @@ const DetailOrder = () => {
         </thead>
         <tbody>
           {order.items?.length ? (
-            order.items?.map((item, index) => (
+            order.items.map((item, index) => (
               <tr key={index} className="border">
                 <td className="px-4 py-2">{item.variantId.productId.name}</td>
                 <td className="px-4 py-2">
@@ -197,12 +197,14 @@ const getStatusText = (status: string) => {
   switch (status) {
     case "pending":
       return "Đang xử lý";
+    case "confirmed":
+      return "Đã xác nhận";
     case "processing":
       return "Đang giao hàng";
+    case "delivered":
+      return "Đã giao hàng";
     case "success":
       return "Giao thành công";
-    case "refund":
-      return "Đã hoàn hàng";
     case "cancel":
       return "Đã hủy";
     default:

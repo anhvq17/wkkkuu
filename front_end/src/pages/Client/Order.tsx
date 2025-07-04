@@ -9,20 +9,24 @@ const OrderList = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
-        const data = await getOrdersByUser(user._id);
-        if (Array.isArray(data)) {
-          setOrderList(data);
-        }
-      } catch (err: any) {
-        setError(err.message || "Đã xảy ra lỗi khi tải dữ liệu.");
-      } finally {
-        setLoading(false);
+  (async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const data = await getOrdersByUser(user._id);
+      if (Array.isArray(data)) {
+        const sortedData = data.sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        setOrderList(sortedData);
       }
-    })();
-  }, []);
+    } catch (err: any) {
+      setError(err.message || "Đã xảy ra lỗi khi tải dữ liệu.");
+    } finally {
+      setLoading(false);
+    }
+  })();
+}, []);
+
 
   const getStatusText = (status: string) => {
     switch (status) {
