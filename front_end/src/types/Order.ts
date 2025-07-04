@@ -44,7 +44,7 @@ export interface Order {
   fullName: string;
   phone: string;
   address: Address;
-  status: 'pending' | 'processed' | 'shipping' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'processing' | 'delivered' | 'success' | 'cancel';
   totalAmount: number;
   paymentMethod: 'cod' | 'vnpay';
   paymentStatus: 'paid' | 'unpaid';

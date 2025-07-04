@@ -10,7 +10,7 @@ interface Order {
 }
 
 const OrderManager = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -20,6 +20,8 @@ const OrderManager = () => {
         const res = await fetch("http://localhost:3000/orders");
         if (!res.ok) throw new Error("Lỗi khi lấy danh sách đơn hàng");
         const data = await res.json();
+        console.log(data);
+        
         setOrders(data);
       } catch (err: any) {
         setError(err.message || "Đã xảy ra lỗi");
@@ -30,6 +32,7 @@ const OrderManager = () => {
 
     fetchOrders();
   }, []);
+
 
   return (
     <div className="p-4">
@@ -65,7 +68,7 @@ const OrderManager = () => {
               orders.map((order) => (
                 <tr key={order._id} className="border-t">
                   <td className="px-4 py-2">{order._id}</td>
-                  <td className="px-4 py-2">{order.userId}</td>
+                  <td className="px-4 py-2">{order.fullName}</td>
                   <td
                     className={`px-4 py-2 font-semibold ${
                       order.status === "success"
@@ -100,18 +103,22 @@ const OrderManager = () => {
 };
 
 const getStatusText = (status: string) => {
-  switch (status) {
-    case "pending":
-      return "Chờ xử lý";
-    case "processing":
-      return "Đang giao hàng";
-    case "success":
-      return "Giao thành công";
-    case "cancel":
-      return "Đã huỷ";
-    default:
-      return status;
-  }
-};
+    switch (status) {
+      case "pending":
+        return "Chờ xác nhận";
+      case "confirmed":
+        return "Đã xác nhận";
+      case "processing":
+        return "Đang giao hàng";
+      case "delivered":
+        return "Đã giao hàng";
+      case "success":
+        return "Giao hàng thành công";
+      case "cancel":
+        return "Đã huỷ đơn hàng";
+      default:
+        return status;
+    }
+  };
 
 export default OrderManager;

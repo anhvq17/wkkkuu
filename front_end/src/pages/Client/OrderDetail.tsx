@@ -56,13 +56,20 @@ const OrderDetail = () => {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'pending': return 'Chờ xử lý';
-      case 'processed': return 'Đã xử lý';
-      case 'shipping': return 'Đang giao hàng';
-      case 'shipped': return 'Đã giao hàng';
-      case 'delivered': return 'Đã nhận hàng';
-      case 'cancelled': return 'Đã huỷ đơn hàng';
-      default: return status;
+      case "pending":
+        return "Chờ xác nhận";
+      case "confirmed":
+        return "Đã xác nhận";
+      case "processing":
+        return "Đang giao hàng";
+      case "delivered":
+        return "Đã giao hàng";
+      case "success":
+        return "Giao hàng thành công";
+      case "cancel":
+        return "Đã huỷ đơn hàng";
+      default:
+        return status;
     }
   };
 
@@ -108,11 +115,19 @@ const OrderDetail = () => {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Chi tiết đơn hàng #{order._id}</h1>
           <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-            order.status === 'paid' ? 'bg-green-100 text-green-800' :
-            order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-            order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
-            order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-            'bg-red-100 text-red-800'
+            order.status === "pending"
+            ? "bg-yellow-100 text-yellow-800"
+            : order.status === "confirmed"
+            ? "bg-indigo-100 text-indigo-800"
+            : order.status === "processing"
+            ? "bg-blue-100 text-blue-800"
+            : order.status === "delivered"
+            ? "bg-green-100 text-green-800"
+            : order.status === "success"
+            ? "bg-emerald-100 text-emerald-800"
+            : order.status === "cancel"
+            ? "bg-red-100 text-red-800"
+            : "bg-gray-100 text-gray-800"
           }`}>
             {getStatusText(order.status)}
           </span>

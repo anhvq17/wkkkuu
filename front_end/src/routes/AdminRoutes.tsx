@@ -61,7 +61,7 @@ const AdminRoutes = {
     { path: 'categories/edit/:id', element: <EditCategory /> },
 
     { path: 'orders', element: <OrderManager /> },
-    { path: 'orderDetails', element: <DetailOrder /> },
+    { path: 'orderDetails/:orderId', element: <DetailOrder /> },
 
     { path: 'products', element: <ProductManager /> },
     { path: 'products/trash', element: <TrashProduct /> },

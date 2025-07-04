@@ -2,35 +2,54 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 interface OrderItem {
-  name: string;
+  variantId: {
+    productId: {
+      name: string;
+    };
+    attributes: {
+      valueId: {
+        value: string;
+      };
+    }[];
+  };
   price: number;
   quantity: number;
-  volume: string;
-  fragrance?: string;
+}
+
+interface Address {
+  province: string;
+  district: string;
+  ward: string;
+  detail: string;
+}
+
+interface User {
+  _id: string;
 }
 
 interface OrderDetail {
   _id: string;
-  userId: string;
+  userId: User;
   fullName: string;
   phone: string;
   totalAmount: number;
   paymentMethod: string;
   status: string;
-  address: {
-    province: string;
-    district: string;
-    ward: string;
-    detail: string;
-  };
-  items: OrderItem[];
+  address: Address;
   createdAt?: string;
 }
 
+interface OrderResponse {
+  order: OrderDetail;
+  items: OrderItem[];
+}
+
+
+
 const DetailOrder = () => {
   const { orderId } = useParams();
-  const [order, setOrder] = useState<OrderDetail | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // console.log(orderId);
+  const [order, setOrder] = useState<OrderResponse | null>(null);
   const [status, setStatus] = useState("");
 
   useEffect(() => {
@@ -38,8 +57,9 @@ const DetailOrder = () => {
       try {
         const res = await fetch(`http://localhost:3000/orders/${orderId}`);
         const data = await res.json();
+        console.log(data);
         setOrder(data);
-        setStatus(data.status || "pending");
+        setStatus(data.order.status || "pending");
       } catch (err) {
         console.error("Lỗi khi lấy đơn hàng:", err);
       }
@@ -51,15 +71,17 @@ const DetailOrder = () => {
   const handleSaveStatus = async () => {
     try {
       const res = await fetch(`http://localhost:3000/orders/${orderId}`, {
-        method: "PATCH",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ status }),
       });
+
+      console.log(res);
+
       if (res.ok) {
         setOrder((prev) => (prev ? { ...prev, status } : prev));
-        setIsModalOpen(false);
       } else {
         alert("Không thể cập nhật trạng thái");
       }
@@ -67,35 +89,36 @@ const DetailOrder = () => {
       console.error("Lỗi khi cập nhật trạng thái:", err);
     }
   };
+  // handleSaveStatus();
 
   if (!order) return <div className="p-4">Đang tải đơn hàng...</div>;
 
-  const fullAddress = order.address
-    ? `${order.address.detail}, ${order.address.ward}, ${order.address.district}, ${order.address.province}`
+  const fullAddress = order.order.address
+    ? `${order.order.address.detail}, ${order.order.address.ward}, ${order.order.address.district}, ${order.order.address.province}`
     : "Không rõ";
 
   return (
     <div className="p-4">
       <h2 className="text-2xl font-semibold mb-6">
-        Chi tiết đơn hàng - {order._id}
+        Chi tiết đơn hàng - {order.order._id}
       </h2>
       <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
         <div>
-          <strong>Khách hàng:</strong> {order.fullName}
+          <strong>Khách hàng:</strong> {order.order.fullName}
         </div>
         <div>
           <strong>Ngày đặt hàng:</strong>{" "}
-          {new Date(order.createdAt || "").toLocaleDateString()}
+          {new Date(order.order.createdAt || "").toLocaleDateString()}
         </div>
         <div>
-          <strong>Mã khách hàng:</strong> {order.userId}
+          <strong>Mã khách hàng:</strong> {order.order.userId._id}
         </div>
         <div>
-          <strong>Trạng thái:</strong> {getStatusText(order.status)}
+          <strong>Trạng thái:</strong> {getStatusText(order.order.status)}
         </div>
         <div>
           <strong>Phương thức thanh toán:</strong>{" "}
-          {order.paymentMethod === "cod" ? "COD" : "VNPAY"}
+          {order.order.paymentMethod === "cod" ? "COD" : "VNPAY"}
         </div>
         <div className="col-span-2">
           <strong>Địa chỉ giao hàng:</strong> {fullAddress}
@@ -115,21 +138,36 @@ const DetailOrder = () => {
         </thead>
         <tbody>
           {order.items?.length ? (
-            order.items.map((item, index) => (
+            order.items?.map((item, index) => (
               <tr key={index} className="border">
-                <td className="px-4 py-2">{item.name}</td>
-                <td className="px-4 py-2">{item.volume}</td>
+                <td className="px-4 py-2">{item.variantId.productId.name}</td>
+                <td className="px-4 py-2">
+                  {item.variantId.attributes[0].valueId.value}
+                </td>
                 <td className="px-4 py-2">{item.quantity}</td>
                 <td className="px-4 py-2">{item.price.toLocaleString()}₫</td>
                 <td className="px-4 py-2">
                   {(item.price * item.quantity).toLocaleString()}₫
                 </td>
                 <td className="px-4 py-2">
-                  <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="border bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs"
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    className="w-fit h-8 px-2 rounded-md bg-white text-gray-700 outline-none focus:ring-2 focus:ring-gray-500"
                   >
-                    Sửa
+                    <option value="pending">Chờ xác nhận</option>
+                    <option value="confirmed">Đã xác nhận</option>
+                    <option value="processing">Đang giao hàng</option>
+                    <option value="delivered">Đã giao hàng</option>
+                    <option value="success">Giao hàng thành công</option>
+                    <option value="cancel">Đã hủy</option>
+                  </select>
+
+                  <button
+                    onClick={handleSaveStatus}
+                    className="ml-2 px-3 py-1 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
+                  >
+                    Lưu
                   </button>
                 </td>
               </tr>
@@ -151,41 +189,6 @@ const DetailOrder = () => {
           </button>
         </Link>
       </div>
-
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-[400px] shadow-lg">
-            <h3 className="text-lg font-semibold mb-4">
-              Thay đổi trạng thái đơn hàng
-            </h3>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="w-full border px-4 py-2 mb-4 rounded"
-            >
-              <option value="pending">Đang xử lý</option>
-              <option value="processing">Đang giao hàng</option>
-              <option value="success">Giao thành công</option>
-              <option value="refund">Đã hoàn hàng</option>
-              <option value="cancel">Đã hủy</option>
-            </select>
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="bg-gray-600 text-white px-3 py-1 rounded text-xs"
-              >
-                Hủy
-              </button>
-              <button
-                onClick={handleSaveStatus}
-                className="bg-blue-600 text-white px-3 py-1 rounded text-xs"
-              >
-                Lưu
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

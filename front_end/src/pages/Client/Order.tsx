@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { getOrdersByUser } from '../../services/Order';
-import type { Order } from '../../types/Order';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { getOrdersByUser } from "../../services/Order";
+import type { Order } from "../../types/Order";
 
 const OrderList = () => {
   const [orderList, setOrderList] = useState<Order[]>([]);
@@ -17,7 +17,7 @@ const OrderList = () => {
           setOrderList(data);
         }
       } catch (err: any) {
-        setError(err.message || 'Đã xảy ra lỗi khi tải dữ liệu.');
+        setError(err.message || "Đã xảy ra lỗi khi tải dữ liệu.");
       } finally {
         setLoading(false);
       }
@@ -26,28 +26,40 @@ const OrderList = () => {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'pending': return 'Chờ xử lý';
-      case 'processed': return 'Đã xử lý';
-      case 'shipping': return 'Đang giao hàng';
-      case 'shipped': return 'Đã giao hàng';
-      case 'delivered': return 'Đã nhận hàng';
-      case 'cancelled': return 'Đã huỷ đơn hàng';
-      default: return status;
+      case "pending":
+        return "Chờ xác nhận";
+      case "confirmed":
+        return "Đã xác nhận";
+      case "processing":
+        return "Đang giao hàng";
+      case "delivered":
+        return "Đã giao hàng";
+      case "success":
+        return "Giao hàng thành công";
+      case "cancel":
+        return "Đã huỷ đơn hàng";
+      default:
+        return status;
     }
   };
 
   const getPaymentMethodText = (method: string) => {
     switch (method) {
-      case 'cod': return 'Thanh toán khi nhận hàng';
-      case 'vnpay': return 'Thanh toán qua VNPay';
-      default: return method;
+      case "cod":
+        return "Thanh toán khi nhận hàng";
+      case "vnpay":
+        return "Thanh toán qua VNPay";
+      default:
+        return method;
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center text-sm">
-        <Link to="/" className="text-gray-500 hover:text-gray-900">Trang chủ</Link>
+        <Link to="/" className="text-gray-500 hover:text-gray-900">
+          Trang chủ
+        </Link>
         <span className="mx-2 text-gray-400">/</span>
         <span className="font-medium text-black">Danh sách đơn hàng</span>
       </div>
@@ -85,28 +97,53 @@ const OrderList = () => {
               orderList.map((item) => (
                 <tr key={item._id}>
                   <td className="px-4 py-2 border">{item._id}</td>
-                  <td className="px-4 py-2 border">{item.totalAmount.toLocaleString()}₫</td>
-                  <td className="px-4 py-2 border">{getPaymentMethodText(item.paymentMethod)}</td>
-                  <td className="px-4 py-2 border">{new Date(item.createdAt).toLocaleString("vi-VN")}</td>
                   <td className="px-4 py-2 border">
-                    <span className={`px-2 py-1 rounded text-xs ${
-                      item.status === 'paid' ? 'bg-green-100 text-green-800' :
-                      item.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                      item.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
-                      item.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
+                    {item.totalAmount.toLocaleString()}₫
+                  </td>
+                  <td className="px-4 py-2 border">
+                    {getPaymentMethodText(item.paymentMethod)}
+                  </td>
+                  <td className="px-4 py-2 border">
+                    {new Date(item.createdAt).toLocaleString("vi-VN")}
+                  </td>
+                  <td className="px-4 py-2 border">
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-medium
+                      ${
+                        item.status === "pending"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : item.status === "confirmed"
+                          ? "bg-indigo-100 text-indigo-800"
+                          : item.status === "processing"
+                          ? "bg-blue-100 text-blue-800"
+                          : item.status === "delivered"
+                          ? "bg-green-100 text-green-800"
+                          : item.status === "success"
+                          ? "bg-emerald-100 text-emerald-800"
+                          : item.status === "cancel"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-gray-100 text-gray-800"
+                      }
+                    `}
+                    >
                       {getStatusText(item.status)}
                     </span>
                   </td>
                   <td className="px-4 py-2 border">
-                    <Link to={`/orders/${item._id}`} className="text-blue-500 underline">Xem</Link>
+                    <Link
+                      to={`/orders/${item._id}`}
+                      className="text-blue-500 underline"
+                    >
+                      Xem
+                    </Link>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="text-center py-4 text-gray-500">Danh sách trống</td>
+                <td colSpan={6} className="text-center py-4 text-gray-500">
+                  Danh sách trống
+                </td>
               </tr>
             )}
           </tbody>
