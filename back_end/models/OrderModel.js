@@ -10,10 +10,10 @@ const orderSchema = new mongoose.Schema({
     ward: { type: String, required: true },
     detail: { type: String, required: true },
   },
-  paymentStatus: {
-    type: String,
-    enum: ['paid', 'unpaid'],
-    default: 'unpaid'
+    paymentStatus: { 
+    type: String, 
+    enum: ['Đã thanh toán', 'Chưa thanh toán', 'Đã hoàn tiền'],
+    default: 'Chưa thanh toán' 
   },
 
   paymentMethod: {
@@ -21,12 +21,24 @@ const orderSchema = new mongoose.Schema({
     enum: ['cod', 'vnpay'],
     default: 'cod',
   },
-  status: {
+  orderStatus: {
     type: String,
-    enum: ['pending', 'processed', 'shipping', 'shipped', 'delivered', 'cancelled'],
-    default: 'pending',
+    enum: [
+      'Chờ xử lý',
+      'Đã xử lý',
+      'Đang giao hàng',
+      'Đã giao hàng',
+      'Đã nhận hàng',
+      'Đã huỷ đơn hàng',
+      'Yêu cầu hoàn hàng',
+      'Đã hoàn hàng',
+      'Từ chối hoàn hàng'
+    ],
+    default: 'Chờ xử lý',
   },
   totalAmount: { type: Number, required: true },
+  cancelReason: { type: String }, // Lý do hủy đơn hàng
+  returnReason: { type: String }, // Lý do hoàn hàng
 }, { timestamps: true });
 
 export default mongoose.model('orders', orderSchema);
