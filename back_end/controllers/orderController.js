@@ -100,7 +100,53 @@ export const getOrdersByUserWithItems = async (req, res) => {
 
 export const updateOrder = async (req, res) => {
   try {
-    const updated = await Order.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updateData = { ...req.body };
+    
+    // Kiểm tra quy tắc cập nhật trạng thái tuần tự
+    if (req.body.orderStatus) {
+      const order = await Order.findById(req.params.id);
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      const statusOrder = [
+        'Chờ xử lý',
+        'Đã xử lý', 
+        'Đang giao hàng',
+        'Đã giao hàng',
+        'Đã nhận hàng'
+      ];
+
+      const currentIndex = statusOrder.indexOf(order.orderStatus);
+      const newIndex = statusOrder.indexOf(req.body.orderStatus);
+
+      // Kiểm tra quy tắc chuyển đổi
+      const isValidTransition = 
+        currentIndex === newIndex || // Cùng trạng thái
+        newIndex === currentIndex + 1 || // Lên trạng thái tiếp theo
+        newIndex === currentIndex - 1 || // Xuống trạng thái trước đó (để sửa lỗi)
+        (req.body.orderStatus === 'Đã huỷ đơn hàng' && (order.orderStatus === 'Chờ xử lý' || order.orderStatus === 'Đã xử lý')); // Hủy đơn hàng chỉ khi ở trạng thái Chờ xử lý hoặc Đã xử lý
+
+      if (!isValidTransition) {
+        if (req.body.orderStatus === 'Đã huỷ đơn hàng') {
+          return res.status(400).json({ 
+            error: 'Chỉ có thể hủy đơn hàng khi đang ở trạng thái "Chờ xử lý" hoặc "Đã xử lý"' 
+          });
+        } else {
+          return res.status(400).json({ 
+            error: 'Không thể chuyển từ trạng thái hiện tại sang trạng thái này. Vui lòng cập nhật theo thứ tự: Chờ xử lý → Đã xử lý → Đang giao hàng → Đã giao hàng → Đã nhận hàng' 
+          });
+        }
+      }
+    }
+    
+    // Nếu trạng thái đơn hàng được cập nhật thành "Đã nhận hàng" 
+    // thì tự động cập nhật trạng thái thanh toán thành "Đã thanh toán"
+    if (req.body.orderStatus === 'Đã nhận hàng') {
+      updateData.paymentStatus = 'Đã thanh toán';
+    }
+    
+    const updated = await Order.findByIdAndUpdate(req.params.id, updateData, { new: true });
     return res.status(200).json(updated);
   } catch (err) {
     return res.status(400).json({ error: err.message });

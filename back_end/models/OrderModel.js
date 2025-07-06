@@ -34,6 +34,7 @@ const orderSchema = new mongoose.Schema({
     default: 'Chờ xử lý',
   },
   totalAmount: { type: Number, required: true },
+  cancelReason: { type: String }, // Lý do hủy đơn hàng
 }, { timestamps: true });
 
 export default mongoose.model('orders', orderSchema);

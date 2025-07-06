@@ -48,6 +48,7 @@ export interface Order {
   totalAmount: number;
   paymentMethod: 'cod' | 'vnpay';
   paymentStatus: 'Đã thanh toán' | 'Chưa thanh toán';
+  cancelReason?: string; // Lý do hủy đơn hàng
   createdAt: string;
   updatedAt: string;
 }

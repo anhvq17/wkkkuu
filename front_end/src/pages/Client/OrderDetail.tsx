@@ -167,6 +167,18 @@ const OrderDetail = () => {
                 <p><strong>Tổng tiền:</strong> <span className="text-red-500 font-bold text-2xl">{order.totalAmount.toLocaleString()}₫</span></p>
               </div>
             </div>
+            
+            {/* Hiển thị lý do hủy đơn hàng nếu có */}
+            {order.orderStatus === 'Đã huỷ đơn hàng' && order.cancelReason && (
+              <div className="bg-red-50 rounded-lg p-6 border border-red-200">
+                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-red-800">
+                  <span role="img" aria-label="cancel">❌</span>Lý do hủy đơn hàng
+                </h2>
+                <div className="text-red-700 text-sm">
+                  <p>{order.cancelReason}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

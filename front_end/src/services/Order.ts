@@ -28,6 +28,11 @@ export const getOrdersByUserWithItems = async (userId: string) => {
   return res.data;
 };
 
+export const updateOrder = async (orderId: string, updateData: Partial<Order>) => {
+  const res = await axios.put(`${API_URL}/orders/${orderId}`, updateData);
+  return res.data;
+};
+
 export const createVNPayUrl = async (amount: number, orderId?: string) => {
   const params: any = { amount };
   if (orderId) {
