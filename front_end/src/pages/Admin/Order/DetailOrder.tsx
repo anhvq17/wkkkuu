@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getOrderById, updateOrder } from "../../../services/Order";
 import type { Order } from "../../../types/Order";
+import OrderProgressBar from "../../../components/OrderProgressBar";
 
 interface OrderItem {
   _id: string;
@@ -375,6 +376,14 @@ const DetailOrder = () => {
         </div>
       </div>
 
+      {/* Progress Bar */}
+      <div className="bg-white p-6 rounded-lg border shadow-sm mb-6">
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <span role="img" aria-label="progress">📊</span>Tiến trình đơn hàng
+        </h3>
+        <OrderProgressBar currentStatus={order.orderStatus} />
+      </div>
+
       {/* Thông tin đơn hàng */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="bg-white p-6 rounded-lg border shadow-sm">
@@ -534,17 +543,6 @@ const DetailOrder = () => {
               <div className="mb-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700">
                 <span role="img" aria-label="info">ℹ️</span> Quy tắc: Chờ xử lý → Đã xử lý → Đang giao hàng → Đã giao hàng → Đã nhận hàng
               </div>
-              <div className="mb-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700">
-                <span role="img" aria-label="info">ℹ️</span> Khi chọn "Đã nhận hàng", trạng thái thanh toán sẽ tự động chuyển thành "Đã thanh toán" (áp dụng cho cả COD và VNPAY)
-              </div>
-              <div className="mb-2 p-2 bg-orange-50 border border-orange-200 rounded text-xs text-orange-700">
-                <span role="img" aria-label="warning">⚠️</span> Lưu ý: Khi cập nhật trạng thái mới, trạng thái cũ sẽ bị ghi đè và không thể khôi phục
-              </div>
-              {orderData?.order.paymentMethod === 'cod' && (
-                <div className="mb-2 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-700">
-                  <span role="img" aria-label="cod">💵</span> COD: Khi khách hàng nhận hàng, trạng thái thanh toán sẽ tự động chuyển thành "Đã thanh toán"
-                </div>
-              )}
               {orderData?.order.paymentMethod === 'vnpay' && (
                 <div className="mb-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700">
                   <span role="img" aria-label="vnpay">💳</span> VNPAY: Khi khách hàng nhận hàng, trạng thái thanh toán sẽ tự động chuyển thành "Đã thanh toán"

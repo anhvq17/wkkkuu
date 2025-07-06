@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getAllOrders, updateOrder } from "../../../services/Order";
 import type { Order } from "../../../types/Order";
+import OrderProgressBar from "../../../components/OrderProgressBar";
+import OrderProgressBarCompact from "../../../components/OrderProgressBarCompact";
 
 interface OrderWithUser extends Omit<Order, 'userId'> {
   userId: {
@@ -96,7 +98,6 @@ const OrderManager = () => {
     }
   };
 
-  // Lọc đơn hàng theo tìm kiếm và trạng thái
   const filteredOrders = orders.filter(order => {
     const matchesSearch = 
       order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -290,6 +291,7 @@ const OrderManager = () => {
               <th className="px-4 py-2">Mã đơn hàng</th>
               <th className="px-4 py-2">Khách hàng</th>
               <th className="px-4 py-2">Trạng thái đơn hàng</th>
+              <th className="px-4 py-2">Tiến trình</th>
               <th className="px-4 py-2">Trạng thái thanh toán</th>
               <th className="px-4 py-2">Tổng tiền</th>
               <th className="px-4 py-2">Phương thức thanh toán</th>
@@ -310,6 +312,11 @@ const OrderManager = () => {
                     </div>
                   </td>
                   <td className="px-4 py-2">{getStatusBadge(order.orderStatus)}</td>
+                  <td className="px-4 py-2">
+                    <div className="w-24">
+                      <OrderProgressBarCompact currentStatus={order.orderStatus} />
+                    </div>
+                  </td>
                   <td className="px-4 py-2">{getPaymentBadge(order.paymentStatus)}</td>
                   <td className="px-4 py-2 text-red-600 font-semibold">
                     {order.totalAmount.toLocaleString()}₫
@@ -364,7 +371,7 @@ const OrderManager = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={10} className="px-4 py-8 text-center text-gray-500">
                   {searchTerm || statusFilter !== 'all' ? 'Không tìm thấy đơn hàng phù hợp' : 'Chưa có đơn hàng nào'}
                 </td>
               </tr>

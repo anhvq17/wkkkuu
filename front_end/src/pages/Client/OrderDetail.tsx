@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getOrderById, updateOrder } from '../../services/Order';
 import type { Order } from '../../types/Order';
+import OrderProgressBar from '../../components/OrderProgressBar';
 
 interface OrderItem {
   _id: string;
@@ -177,6 +178,13 @@ const OrderDetail = () => {
 
       {/* Card Thông tin đơn hàng */}
       <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8 mb-8">
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <span role="img" aria-label="progress">📊</span>Tiến trình đơn hàng
+          </h2>
+          <OrderProgressBar currentStatus={order.orderStatus} />
+        </div>
         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
