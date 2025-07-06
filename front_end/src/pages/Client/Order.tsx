@@ -126,10 +126,22 @@ const OrderList = () => {
 
     try {
       setCancellingOrderId(selectedOrderId);
-      await updateOrder(selectedOrderId, { 
+      
+      // Tìm đơn hàng để kiểm tra phương thức thanh toán
+      const order = orderList.find(o => o._id === selectedOrderId);
+      
+      // Chuẩn bị dữ liệu cập nhật
+      const updateData: any = { 
         orderStatus: 'Đã huỷ đơn hàng',
         cancelReason: cancelReason.trim()
-      });
+      };
+      
+      // Nếu phương thức thanh toán là VNPAY thì tự động cập nhật trạng thái thanh toán thành "Đã hoàn tiền"
+      if (order && order.paymentMethod === 'vnpay') {
+        updateData.paymentStatus = 'Đã hoàn tiền';
+      }
+      
+      await updateOrder(selectedOrderId, updateData);
       
       // Cập nhật lại danh sách đơn hàng
       const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -141,6 +153,18 @@ const OrderList = () => {
       setShowCancelModal(false);
       setSelectedOrderId(null);
       setCancelReason(''); // Reset lý do
+      
+      // Hiển thị thông báo phù hợp
+      if (order && order.paymentMethod === 'vnpay') {
+        setSuccessMessage('Hủy đơn hàng thành công! Trạng thái thanh toán đã được cập nhật thành "Đã hoàn tiền".');
+      } else {
+        setSuccessMessage('Hủy đơn hàng thành công!');
+      }
+      
+      // Tự động ẩn thông báo sau 3 giây
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
     } catch (err: any) {
       setError(err.message || 'Đã xảy ra lỗi khi hủy đơn hàng.');
     } finally {

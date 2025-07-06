@@ -98,6 +98,11 @@ const DetailOrder = () => {
         updateData.paymentStatus = 'Đã thanh toán';
       }
       
+      // Nếu trạng thái mới là "Đã huỷ đơn hàng" và phương thức thanh toán là VNPAY thì tự động cập nhật trạng thái thanh toán thành "Đã hoàn tiền"
+      if (newStatus === 'Đã huỷ đơn hàng' && orderData.order.paymentMethod === 'vnpay') {
+        updateData.paymentStatus = 'Đã hoàn tiền';
+      }
+      
       await updateOrder(id, updateData);
       // Cập nhật lại dữ liệu
       await fetchOrderDetails();
@@ -106,6 +111,8 @@ const DetailOrder = () => {
       // Hiển thị thông báo thành công với thông tin phù hợp
       if (newStatus === 'Đã nhận hàng') {
         setSuccessMessage('Cập nhật trạng thái đơn hàng và thanh toán thành công!');
+      } else if (newStatus === 'Đã huỷ đơn hàng' && orderData.order.paymentMethod === 'vnpay') {
+        setSuccessMessage('Hủy đơn hàng thành công! Trạng thái thanh toán đã được cập nhật thành "Đã hoàn tiền".');
       } else {
         setSuccessMessage('Cập nhật trạng thái đơn hàng thành công!');
       }
@@ -128,17 +135,32 @@ const DetailOrder = () => {
 
     try {
       setUpdating(true);
-      await updateOrder(id, { 
+      
+      // Chuẩn bị dữ liệu cập nhật
+      const updateData: Partial<Order> = { 
         orderStatus: 'Đã huỷ đơn hàng',
         cancelReason: cancelReason.trim()
-      });
+      };
+      
+      // Nếu phương thức thanh toán là VNPAY thì tự động cập nhật trạng thái thanh toán thành "Đã hoàn tiền"
+      if (orderData.order.paymentMethod === 'vnpay') {
+        updateData.paymentStatus = 'Đã hoàn tiền';
+      }
+      
+      await updateOrder(id, updateData);
       
       // Cập nhật lại dữ liệu
       await fetchOrderDetails();
       setShowCancelModal(false);
       setCancelReason(''); // Reset lý do
       
-      setSuccessMessage('Hủy đơn hàng thành công!');
+      // Hiển thị thông báo phù hợp
+      if (orderData.order.paymentMethod === 'vnpay') {
+        setSuccessMessage('Hủy đơn hàng thành công! Trạng thái thanh toán đã được cập nhật thành "Đã hoàn tiền".');
+      } else {
+        setSuccessMessage('Hủy đơn hàng thành công!');
+      }
+      
       setShowSuccess(true);
       setTimeout(() => {
         setShowSuccess(false);

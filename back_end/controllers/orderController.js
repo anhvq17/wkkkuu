@@ -178,14 +178,23 @@ export const updateOrder = async (req, res) => {
       updateData.paymentStatus = 'Đã thanh toán';
     }
     
-    // Nếu trạng thái đơn hàng được cập nhật thành "Đã hoàn hàng" 
-    // và phương thức thanh toán là VNPAY thì tự động cập nhật trạng thái thanh toán thành "Đã hoàn tiền"
-    if (req.body.orderStatus === 'Đã hoàn hàng') {
-      const order = await Order.findById(req.params.id);
-      if (order && order.paymentMethod === 'vnpay') {
-        updateData.paymentStatus = 'Đã hoàn tiền';
+          // Nếu trạng thái đơn hàng được cập nhật thành "Đã hoàn hàng" 
+      // và phương thức thanh toán là VNPAY thì tự động cập nhật trạng thái thanh toán thành "Đã hoàn tiền"
+      if (req.body.orderStatus === 'Đã hoàn hàng') {
+        const order = await Order.findById(req.params.id);
+        if (order && order.paymentMethod === 'vnpay') {
+          updateData.paymentStatus = 'Đã hoàn tiền';
+        }
       }
-    }
+
+      // Nếu trạng thái đơn hàng được cập nhật thành "Đã huỷ đơn hàng" 
+      // và phương thức thanh toán là VNPAY thì tự động cập nhật trạng thái thanh toán thành "Đã hoàn tiền"
+      if (req.body.orderStatus === 'Đã huỷ đơn hàng') {
+        const order = await Order.findById(req.params.id);
+        if (order && order.paymentMethod === 'vnpay') {
+          updateData.paymentStatus = 'Đã hoàn tiền';
+        }
+      }
     
     const updated = await Order.findByIdAndUpdate(req.params.id, updateData, { new: true });
     return res.status(200).json(updated);
