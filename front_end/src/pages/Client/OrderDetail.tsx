@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getOrderById } from '../../services/Order';
+import { getOrderById, updateOrder } from '../../services/Order';
 import type { Order } from '../../types/Order';
 
 interface OrderItem {
@@ -34,6 +34,8 @@ const OrderDetail = () => {
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [confirmingReceived, setConfirmingReceived] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const fetchOrderData = async () => {
     if (!orderId) return;
@@ -53,6 +55,40 @@ const OrderDetail = () => {
   useEffect(() => {
     fetchOrderData();
   }, [orderId]);
+
+  // Kiểm tra xem đơn hàng có thể xác nhận đã nhận hàng không (chỉ khi ở trạng thái Đã giao hàng)
+  const canConfirmReceived = (orderStatus: string) => {
+    return orderStatus === 'Đã giao hàng';
+  };
+
+  // Xử lý xác nhận đã nhận hàng
+  const handleConfirmReceived = async () => {
+    if (!orderId) return;
+
+    try {
+      setConfirmingReceived(true);
+      setError(null);
+      setSuccessMessage(null);
+      
+      await updateOrder(orderId, { 
+        orderStatus: 'Đã nhận hàng'
+      });
+      
+      // Cập nhật lại dữ liệu đơn hàng
+      await fetchOrderData();
+      
+      setSuccessMessage('Đã xác nhận nhận hàng thành công! Trạng thái thanh toán đã được cập nhật.');
+      
+      // Tự động ẩn thông báo sau 3 giây
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
+    } catch (err: any) {
+      setError(err.message || 'Đã xảy ra lỗi khi xác nhận nhận hàng.');
+    } finally {
+      setConfirmingReceived(false);
+    }
+  };
 
   const getStatusText = (orderStatus: string) => {
     switch (orderStatus) {
@@ -111,6 +147,26 @@ const OrderDetail = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Thông báo lỗi */}
+      {error && (
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="flex items-center gap-2">
+            <span role="img" aria-label="error">❌</span>
+            {error}
+          </div>
+        </div>
+      )}
+
+      {/* Thông báo thành công */}
+      {successMessage && (
+        <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+          <div className="flex items-center gap-2">
+            <span role="img" aria-label="success">✅</span>
+            {successMessage}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center text-sm mb-6">
         <Link to="/" className="text-gray-500 hover:text-gray-900">Trang chủ</Link>
         <span className="mx-2 text-gray-400">/</span>
@@ -246,7 +302,17 @@ const OrderDetail = () => {
         </div>
       </div>
 
-      <div className="mt-8 flex justify-end">
+      <div className="mt-8 flex justify-end gap-4">
+        {canConfirmReceived(order.orderStatus) && (
+          <button
+            onClick={handleConfirmReceived}
+            disabled={confirmingReceived}
+            className="inline-flex items-center gap-2 bg-green-600 text-white px-8 py-3 rounded-lg font-semibold shadow hover:bg-green-700 transition disabled:opacity-50"
+          >
+            <span role="img" aria-label="received">✅</span> 
+            {confirmingReceived ? 'Đang xác nhận...' : 'Đã nhận hàng'}
+          </button>
+        )}
         <Link
           to="/orders"
           className="bg-[#5f518e] text-white px-8 py-3 rounded-lg font-semibold shadow hover:opacity-90 transition"

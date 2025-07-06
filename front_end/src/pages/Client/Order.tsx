@@ -51,6 +51,8 @@ const OrderList = () => {
   const [showReturnModal, setShowReturnModal] = useState(false);
   const [returnReason, setReturnReason] = useState('');
   const [requestingReturnId, setRequestingReturnId] = useState<string | null>(null);
+  const [confirmingReceivedId, setConfirmingReceivedId] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -113,6 +115,11 @@ const OrderList = () => {
     return orderStatus === 'Đã nhận hàng';
   };
 
+  // Kiểm tra xem đơn hàng có thể xác nhận đã nhận hàng không (chỉ khi ở trạng thái Đã giao hàng)
+  const canConfirmReceived = (orderStatus: string) => {
+    return orderStatus === 'Đã giao hàng';
+  };
+
   // Xử lý hủy đơn hàng
   const handleCancelOrder = async () => {
     if (!selectedOrderId || !cancelReason.trim()) return;
@@ -169,6 +176,37 @@ const OrderList = () => {
     }
   };
 
+  // Xử lý xác nhận đã nhận hàng
+  const handleConfirmReceived = async (orderId: string) => {
+    try {
+      setConfirmingReceivedId(orderId);
+      setError(null);
+      setSuccessMessage(null);
+      
+      await updateOrder(orderId, { 
+        orderStatus: 'Đã nhận hàng'
+      });
+      
+      // Cập nhật lại danh sách đơn hàng
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const data = await getOrdersByUserWithItems(user._id);
+      if (Array.isArray(data)) {
+        setOrderList(data);
+      }
+      
+      setSuccessMessage('Đã xác nhận nhận hàng thành công! Trạng thái thanh toán đã được cập nhật.');
+      
+      // Tự động ẩn thông báo sau 3 giây
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
+    } catch (err: any) {
+      setError(err.message || 'Đã xảy ra lỗi khi xác nhận nhận hàng.');
+    } finally {
+      setConfirmingReceivedId(null);
+    }
+  };
+
   // Mở modal hủy đơn hàng
   const openCancelModal = (orderId: string) => {
     setSelectedOrderId(orderId);
@@ -190,6 +228,26 @@ const OrderList = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Thông báo lỗi */}
+      {error && (
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="flex items-center gap-2">
+            <span role="img" aria-label="error">❌</span>
+            {error}
+          </div>
+        </div>
+      )}
+
+      {/* Thông báo thành công */}
+      {successMessage && (
+        <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+          <div className="flex items-center gap-2">
+            <span role="img" aria-label="success">✅</span>
+            {successMessage}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center text-sm mb-6">
         <Link to="/" className="text-gray-500 hover:text-gray-900">Trang chủ</Link>
         <span className="mx-2 text-gray-400">/</span>
@@ -258,7 +316,7 @@ const OrderList = () => {
                   </div>
                   <div className="flex flex-col md:flex-row md:items-center md:gap-6 gap-2 mt-4">
                     <p className="text-lg text-gray-500 flex items-center gap-1">
-                      <span role="img" aria-label="money">💵</span> Tổng tiền: <span className="text-red-500 font-bold">{item.totalAmount.toLocaleString()}₫</span>
+                      <span role="img" aria-label="money">💵</span> Tổng tiền thanh toán: <span className="text-red-500 font-bold">{item.totalAmount.toLocaleString()}₫</span>
                     </p>
                     <p className="text-lg text-gray-500 flex items-center gap-1">
                       <span role="img" aria-label="paymethod">💳</span> {getPaymentMethodText(item.paymentMethod)}
@@ -276,6 +334,16 @@ const OrderList = () => {
                       className="inline-flex items-center gap-2 bg-red-600 text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-red-700 transition text-sm"
                     >
                       <span role="img" aria-label="cancel">❌</span> Hủy đơn hàng
+                    </button>
+                  )}
+                  {canConfirmReceived(item.orderStatus) && (
+                    <button
+                      onClick={() => handleConfirmReceived(item._id)}
+                      disabled={confirmingReceivedId === item._id}
+                      className="inline-flex items-center gap-2 bg-green-600 text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-green-700 transition text-sm disabled:opacity-50"
+                    >
+                      <span role="img" aria-label="received">✅</span> 
+                      {confirmingReceivedId === item._id ? 'Đang xác nhận...' : 'Đã nhận hàng'}
                     </button>
                   )}
                   {canRequestReturn(item.orderStatus) && (

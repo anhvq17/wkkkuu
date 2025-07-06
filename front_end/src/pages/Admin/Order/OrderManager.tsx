@@ -477,6 +477,9 @@ const OrderManager = () => {
                   : 'Từ chối hoàn hàng sẽ chuyển trạng thái đơn hàng thành "Từ chối hoàn hàng"'
                 }
               </div>
+              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-700">
+                <span role="img" aria-label="info">ℹ️</span> Lưu ý: Khi đơn hàng chuyển sang trạng thái "Đã nhận hàng", trạng thái thanh toán sẽ tự động chuyển thành "Đã thanh toán" (áp dụng cho cả COD và VNPAY)
+              </div>
             </div>
             <div className="flex justify-end space-x-3">
               <button 

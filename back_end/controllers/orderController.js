@@ -141,6 +141,11 @@ export const updateOrder = async (req, res) => {
         isValidTransition = order.orderStatus === 'Yêu cầu hoàn hàng';
       }
 
+      // Kiểm tra xác nhận đã nhận hàng (người dùng có thể xác nhận từ "Đã giao hàng")
+      if (req.body.orderStatus === 'Đã nhận hàng') {
+        isValidTransition = order.orderStatus === 'Đã giao hàng';
+      }
+
       if (!isValidTransition) {
         if (req.body.orderStatus === 'Đã huỷ đơn hàng') {
           return res.status(400).json({ 
@@ -154,6 +159,10 @@ export const updateOrder = async (req, res) => {
           return res.status(400).json({ 
             error: 'Chỉ có thể xử lý hoàn hàng khi đơn hàng đang ở trạng thái "Yêu cầu hoàn hàng"' 
           });
+        } else if (req.body.orderStatus === 'Đã nhận hàng') {
+          return res.status(400).json({ 
+            error: 'Chỉ có thể xác nhận đã nhận hàng khi đơn hàng đang ở trạng thái "Đã giao hàng"' 
+          });
         } else {
           return res.status(400).json({ 
             error: 'Không thể chuyển từ trạng thái hiện tại sang trạng thái này. Vui lòng cập nhật theo thứ tự: Chờ xử lý → Đã xử lý → Đang giao hàng → Đã giao hàng → Đã nhận hàng' 
@@ -164,6 +173,7 @@ export const updateOrder = async (req, res) => {
     
     // Nếu trạng thái đơn hàng được cập nhật thành "Đã nhận hàng" 
     // thì tự động cập nhật trạng thái thanh toán thành "Đã thanh toán"
+    // (Áp dụng cho cả COD và VNPAY - khi khách hàng đã nhận hàng thì coi như đã thanh toán)
     if (req.body.orderStatus === 'Đã nhận hàng') {
       updateData.paymentStatus = 'Đã thanh toán';
     }

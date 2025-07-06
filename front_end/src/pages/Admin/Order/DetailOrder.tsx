@@ -535,11 +535,21 @@ const DetailOrder = () => {
                 <span role="img" aria-label="info">ℹ️</span> Quy tắc: Chờ xử lý → Đã xử lý → Đang giao hàng → Đã giao hàng → Đã nhận hàng
               </div>
               <div className="mb-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700">
-                <span role="img" aria-label="info">ℹ️</span> Khi chọn "Đã nhận hàng", trạng thái thanh toán sẽ tự động chuyển thành "Đã thanh toán"
+                <span role="img" aria-label="info">ℹ️</span> Khi chọn "Đã nhận hàng", trạng thái thanh toán sẽ tự động chuyển thành "Đã thanh toán" (áp dụng cho cả COD và VNPAY)
               </div>
               <div className="mb-2 p-2 bg-orange-50 border border-orange-200 rounded text-xs text-orange-700">
                 <span role="img" aria-label="warning">⚠️</span> Lưu ý: Khi cập nhật trạng thái mới, trạng thái cũ sẽ bị ghi đè và không thể khôi phục
               </div>
+              {orderData?.order.paymentMethod === 'cod' && (
+                <div className="mb-2 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-700">
+                  <span role="img" aria-label="cod">💵</span> COD: Khi khách hàng nhận hàng, trạng thái thanh toán sẽ tự động chuyển thành "Đã thanh toán"
+                </div>
+              )}
+              {orderData?.order.paymentMethod === 'vnpay' && (
+                <div className="mb-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700">
+                  <span role="img" aria-label="vnpay">💳</span> VNPAY: Khi khách hàng nhận hàng, trạng thái thanh toán sẽ tự động chuyển thành "Đã thanh toán"
+                </div>
+              )}
               <select 
                 value={newStatus}
                 onChange={(e) => {
@@ -684,6 +694,9 @@ const DetailOrder = () => {
                   ? 'Đồng ý hoàn hàng sẽ chuyển trạng thái đơn hàng thành "Đã hoàn hàng". Nếu thanh toán qua VNPAY, trạng thái thanh toán sẽ tự động chuyển thành "Đã hoàn tiền".'
                   : 'Từ chối hoàn hàng sẽ chuyển trạng thái đơn hàng thành "Từ chối hoàn hàng"'
                 }
+              </div>
+              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-700">
+                <span role="img" aria-label="info">ℹ️</span> Lưu ý: Khi đơn hàng chuyển sang trạng thái "Đã nhận hàng", trạng thái thanh toán sẽ tự động chuyển thành "Đã thanh toán" (áp dụng cho cả COD và VNPAY)
               </div>
             </div>
             <div className="flex justify-end space-x-3">
