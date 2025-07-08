@@ -76,3 +76,13 @@ server.listen(PORT, () => {
 
 // 👇 Nếu bạn dùng vite-node cho testing
 export const viteNodeApp = app;
+
+app.use((req, res, next) => {
+  res.status(404).json({ message: "Đường dẫn không tồn tại" });
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Internal server error" });
+});
+
