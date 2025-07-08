@@ -69,7 +69,8 @@ const OrderList = () => {
       }
     })();
   }, []);
-
+  console.log(orderList);
+ 
   const getStatusText = (orderStatus: string) => {
     switch (orderStatus) {
       case 'Chờ xử lý': return 'Chờ xử lý';
@@ -250,6 +251,7 @@ const OrderList = () => {
   // Sắp xếp đơn hàng mới nhất lên đầu
   const sortedOrders = [...filteredOrders].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
+  
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Thông báo lỗi */}

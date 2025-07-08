@@ -11,6 +11,7 @@ import brandRouter from "./routes/brandRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import orderRouter from "./routes/orderRoutes.js";
 import paymentRouter from "./routes/paymentRoutes.js";
+import cartRoutes from './routes/cartRoutes.js';
 
 import userRoutes from './routes/authRoutes.js';
 import attributeRouter from "./routes/attributeRoutes.js";
@@ -56,6 +57,7 @@ app.use(cors({ origin: 'http://localhost:5173' }));
 
 // Routes
 app.get('/', (req, res) => res.send('Hello from Home'));
+app.use('/cart', cartRoutes);
 app.use('/products', productRouter);
 app.use('/brands', brandRouter);
 app.use('/categories', categoryRouter);

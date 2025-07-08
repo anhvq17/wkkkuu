@@ -33,9 +33,8 @@ const Cart = () => {
 
         const items: CartItem[] = cartData
           .filter((item: any) => {
-            if (!buyNow) return true;
-            return !(
-              item.productId === buyNow.productId &&
+            return !buyNow || !(
+              (item.productId || item._id) === buyNow.productId &&
               item.selectedScent === buyNow.selectedScent &&
               item.selectedVolume === buyNow.selectedVolume
             );
@@ -169,7 +168,7 @@ const Cart = () => {
                         const checked = e.target.checked;
                         setSelectedItems((prev) =>
                           checked
-                            ? [...prev, item.id]
+                            ? prev.includes(item.id) ? prev : [...prev, item.id]
                             : prev.filter((id) => id !== item.id)
                         );
                       }}
@@ -240,7 +239,7 @@ const Cart = () => {
               <div className="border-t pt-4 flex justify-between font-semibold">
                 <span className="font-bold text-red-600">Thành tiền</span>
                 <span className="font-bold text-red-600">
-                  {selectedItems.length > 0 ? total.toLocaleString() + "" : "0"}
+                  {selectedItems.length > 0 ? total.toLocaleString() : "0"}
                 </span>
               </div>
             </div>
