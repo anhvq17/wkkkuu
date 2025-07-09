@@ -3,7 +3,17 @@ import Cart from '../models/CartModel.js';
 // 🛒 Thêm sản phẩm vào giỏ
 export const addToCart = async (req, res) => {
   try {
-    const { userId, variantId, quantity } = req.body;
+    const {
+      userId,
+      variantId,
+      productId,
+      name,
+      image,
+      price,
+      selectedScent,
+      selectedVolume,
+      quantity,
+    } = req.body;
 
     const existingItem = await Cart.findOne({ userId, variantId });
 
@@ -13,7 +23,18 @@ export const addToCart = async (req, res) => {
       return res.status(200).json({ message: 'Quantity updated', cartItem: existingItem });
     }
 
-    const newItem = await Cart.create({ userId, variantId, quantity });
+    const newItem = await Cart.create({
+      userId,
+      variantId,
+      productId,
+      name,
+      image,
+      price,
+      selectedScent,
+      selectedVolume,
+      quantity,
+    });
+
     res.status(201).json({ message: 'Item added to cart', cartItem: newItem });
   } catch (err) {
     res.status(500).json({ message: 'Error adding to cart', error: err.message });
@@ -24,6 +45,7 @@ export const addToCart = async (req, res) => {
 export const removeFromCart = async (req, res) => {
   try {
     const { userId, variantId } = req.body;
+
     const deleted = await Cart.findOneAndDelete({ userId, variantId });
 
     if (!deleted) {
@@ -42,7 +64,7 @@ export const getCart = async (req, res) => {
     const { userId } = req.params;
 
     const items = await Cart.find({ userId })
-      .populate('variantId')
+      .populate('variantId') // Chỉ cần nếu variantId là ref đến một model
       .sort({ updatedAt: -1 });
 
     res.status(200).json({ cart: items });
