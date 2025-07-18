@@ -445,28 +445,29 @@ const Checkout = () => {
                           {vouchers.length === 0 ? (
                             <div className="text-gray-500 text-center">Không có mã giảm giá khả dụng</div>
                           ) : (
-                            vouchers.map((voucher) => (
-                              <div
-                                key={voucher._id}
-                                className="border rounded p-3 flex flex-col gap-1 hover:bg-gray-50 cursor-pointer"
-                                onClick={() => {
-                                  setSelectedVoucher(voucher);
-                                  setShowVoucherModal(false);
-                                }}
-                              >
-                                <div className="flex justify-between items-center">
-                                  <span className="font-semibold text-[#5f518e]">{voucher.code}</span>
-                                  <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
-                                    {voucher.status === "activated" ? "Kích hoạt" : "Tạm dừng"}
-                                  </span>
+                            vouchers.map((voucher) => {
+                              const isOutOfUsage = voucher.usageLimit && voucher.usedCount >= voucher.usageLimit;
+                              return (
+                                <div
+                                  key={voucher._id}
+                                  className={`border rounded p-3 flex flex-col gap-1 ${isOutOfUsage ? 'bg-gray-100 cursor-not-allowed opacity-60' : 'hover:bg-gray-50 cursor-pointer'}`}
+                                  onClick={() => {
+                                    if (!isOutOfUsage) {
+                                      setSelectedVoucher(voucher);
+                                      setShowVoucherModal(false);
+                                    }
+                                  }}
+                                >
+                                  <div className="flex justify-between items-center">
+                                    <span className="font-semibold text-[#5f518e]">{voucher.code}</span>
+                                    <span className={`text-xs px-2 py-1 rounded-full ${isOutOfUsage ? 'bg-gray-200 text-gray-500' : 'bg-green-100 text-green-700'}`}>
+                                      {isOutOfUsage ? 'Hết lượt' : 'Kích hoạt'}
+                                    </span>
+                                  </div>
+                                  <div className="text-xs text-gray-600">HSD: {new Date(voucher.startDate).toLocaleDateString()} - {new Date(voucher.endDate).toLocaleDateString()}</div>
                                 </div>
-                                <div className="text-xs text-gray-600">{voucher.description}</div>
-                                <div className="text-xs text-gray-500">
-                                  HSD: {new Date(voucher.startDate).toLocaleDateString()} -{" "}
-                                  {new Date(voucher.endDate).toLocaleDateString()}
-                                </div>
-                              </div>
-                            ))
+                              );
+                            })
                           )}
                         </div>
                       </div>
