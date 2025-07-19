@@ -73,7 +73,7 @@ const DetailVoucher = () => {
                         <p className="text-[16px] text-gray-500 font-medium">
                             {voucher.discountType === "percent"
                                 ? `${voucher.discountValue}%`
-                                : `${voucher.discountValue.toLocaleString("vi-VN")}đ`}
+                                : `${voucher.discountValue.toLocaleString("vi-VN")}`}
                         </p>
                     </div>
 
@@ -89,7 +89,7 @@ const DetailVoucher = () => {
                     <div className="space-y-2">
                         <p className="text-lg font-semibold text-black">Giá trị đơn hàng tối thiểu:</p>
                         <p className="text-[16px] text-gray-500 font-medium">
-                            {voucher.minOrderValue.toLocaleString("vi-VN")}đ
+                            {voucher.minOrderValue.toLocaleString("vi-VN")}
                         </p>
                     </div>
 
