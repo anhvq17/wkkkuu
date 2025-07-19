@@ -65,37 +65,36 @@ const Cart = () => {
   };
 
   const syncCartAfterLogin = async (userId: string) => {
-  try {
-    // Lấy local cart nếu cần debug, nhưng không dùng trong merge
-    // const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    try {
+      // Lấy local cart nếu cần debug, nhưng không dùng trong merge
+      // const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-    const res = await axios.get(`http://localhost:3000/cart/user/${userId}`);
-    const serverCart = res.data.cart;
+      const res = await axios.get(`http://localhost:3000/cart/user/${userId}`);
+      const serverCart = res.data.cart;
 
-    // Xoá localStorage cart (không dùng nữa)
-    localStorage.setItem("cart", JSON.stringify(serverCart));
+      // Xoá localStorage cart (không dùng nữa)
+      localStorage.setItem("cart", JSON.stringify(serverCart));
 
-    setCartItems(
-      serverCart.map((item: any) => ({
-        ...item,
-        id: item.variantId,
-        volume: item.selectedVolume || item.volume,
-        fragrance: item.selectedScent || item.fragrance,
-        image:
-          typeof item.image === "string"
-            ? { src: item.image, width: 100, height: 100 }
-            : {
-                src: item.image?.src || "/img/default.jpg",
-                width: 100,
-                height: 100,
-              },
-      }))
-    );
-  } catch (err) {
-    console.error("❌ Lỗi khi đồng bộ giỏ hàng:", err);
-  }
-};
-
+      setCartItems(
+        serverCart.map((item: any) => ({
+          ...item,
+          id: item.variantId,
+          volume: item.selectedVolume || item.volume,
+          fragrance: item.selectedScent || item.fragrance,
+          image:
+            typeof item.image === "string"
+              ? { src: item.image, width: 100, height: 100 }
+              : {
+                  src: item.image?.src || "/img/default.jpg",
+                  width: 100,
+                  height: 100,
+                },
+        }))
+      );
+    } catch (err) {
+      console.error("❌ Lỗi khi đồng bộ giỏ hàng:", err);
+    }
+  };
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");

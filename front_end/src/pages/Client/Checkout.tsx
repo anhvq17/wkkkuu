@@ -33,15 +33,18 @@ const Checkout = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const parseCartItem = (item: any): CartItem => ({
-    id: `${item._id || item.variantId}-${item.selectedScent}-${item.selectedVolume}`,
+    id: `${item._id || item.variantId}-${item.selectedScent}-${
+      item.selectedVolume
+    }`,
     name: item.name,
     price: item.price,
     quantity: item.quantity,
     volume: item.selectedVolume || item.volume || "",
     fragrance: item.selectedScent || item.fragrance || "",
-    image: typeof item.image === "string"
-      ? { src: item.image, width: 100, height: 100 }
-      : item.image,
+    image:
+      typeof item.image === "string"
+        ? { src: item.image, width: 100, height: 100 }
+        : item.image,
     variantId: item.variantId || item._id,
   });
 
@@ -79,13 +82,28 @@ const Checkout = () => {
     }
   }, []);
 
-  const { province: selectedProvince, district: selectedDistrict, ward: selectedWard } = address;
+  const {
+    province: selectedProvince,
+    district: selectedDistrict,
+    ward: selectedWard,
+  } = address;
 
   const isFormValid = () => {
-    return fullName && phone && selectedProvince && selectedDistrict && selectedWard && detailAddress && cartItems.length > 0;
+    return (
+      fullName &&
+      phone &&
+      selectedProvince &&
+      selectedDistrict &&
+      selectedWard &&
+      detailAddress &&
+      cartItems.length > 0
+    );
   };
 
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const subtotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
   const shippingFee = 0;
   const discount = 0;
   const total = subtotal + shippingFee - discount;
@@ -139,13 +157,22 @@ const Checkout = () => {
       const orderResult = await response.json();
       const orderId = orderResult.orderId;
 
+      // ✅ Gửi yêu cầu xoá giỏ hàng server
+      await fetch(`http://localhost:3000/cart/user/${userInfo._id}`, {
+        method: "DELETE",
+      });
+
+      // ✅ Xoá local cart
+      localStorage.removeItem("cart");
+      localStorage.removeItem("buyNowItem");
+
       if (paymentMethod === "vnpay") {
-        const paymentRes = await fetch(`http://localhost:3000/payment/create_payment?amount=${total}&orderId=${orderId}`);
+        const paymentRes = await fetch(
+          `http://localhost:3000/payment/create_payment?amount=${total}&orderId=${orderId}`
+        );
         const paymentData = await paymentRes.json();
         window.location.href = paymentData.paymentUrl;
       } else {
-        localStorage.removeItem("cart");
-        localStorage.removeItem("buyNowItem");
         window.location.href = `ordersuccessfully?orderId=${orderId}`;
       }
     } catch (error) {
@@ -159,9 +186,13 @@ const Checkout = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center text-sm mb-6">
-        <Link to="/" className="text-gray-500 hover:text-gray-900">Trang chủ</Link>
+        <Link to="/" className="text-gray-500 hover:text-gray-900">
+          Trang chủ
+        </Link>
         <span className="mx-2 text-gray-400">/</span>
-        <Link to="/cart" className="text-gray-500 hover:text-gray-900">Giỏ hàng</Link>
+        <Link to="/cart" className="text-gray-500 hover:text-gray-900">
+          Giỏ hàng
+        </Link>
         <span className="mx-2 text-gray-400">/</span>
         <span className="font-medium text-black">Thanh toán</span>
       </div>
@@ -170,12 +201,16 @@ const Checkout = () => {
         <div className="lg:w-2/3">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-800">Thông tin giao hàng</h2>
+              <h2 className="text-lg font-semibold text-gray-800">
+                Thông tin giao hàng
+              </h2>
             </div>
 
             <div className="p-6 space-y-6">
               <div className="space-y-4">
-                <h3 className="text-md font-medium text-gray-700">Thông tin người nhận</h3>
+                <h3 className="text-md font-medium text-gray-700">
+                  Thông tin người nhận
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -206,11 +241,14 @@ const Checkout = () => {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-md font-medium text-gray-700">Địa chỉ giao hàng</h3>
+                <h3 className="text-md font-medium text-gray-700">
+                  Địa chỉ giao hàng
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Tỉnh/Thành phố, Quận/Huyện, Phường/Xã <span className="text-red-500">*</span>
+                      Tỉnh/Thành phố, Quận/Huyện, Phường/Xã{" "}
+                      <span className="text-red-500">*</span>
                     </label>
                     <AddressSelector value={address} onChange={setAddress} />
                   </div>
@@ -228,18 +266,26 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                {detailAddress && selectedWard && selectedDistrict && selectedProvince && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-md">
-                    <p className="text-sm text-gray-600"><strong>Địa chỉ giao hàng:</strong></p>
-                    <p className="text-sm text-gray-800 mt-1">
-                      {detailAddress}, {selectedWard.name}, {selectedDistrict.name}, {selectedProvince.name}
-                    </p>
-                  </div>
-                )}
+                {detailAddress &&
+                  selectedWard &&
+                  selectedDistrict &&
+                  selectedProvince && (
+                    <div className="mt-4 p-4 bg-gray-50 rounded-md">
+                      <p className="text-sm text-gray-600">
+                        <strong>Địa chỉ giao hàng:</strong>
+                      </p>
+                      <p className="text-sm text-gray-800 mt-1">
+                        {detailAddress}, {selectedWard.name},{" "}
+                        {selectedDistrict.name}, {selectedProvince.name}
+                      </p>
+                    </div>
+                  )}
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-md font-medium text-gray-700">Phương thức thanh toán</h3>
+                <h3 className="text-md font-medium text-gray-700">
+                  Phương thức thanh toán
+                </h3>
                 <div className="space-y-3">
                   <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
                     <input
@@ -250,7 +296,9 @@ const Checkout = () => {
                       className="w-4 h-4"
                     />
                     <div className="ml-3">
-                      <span className="text-gray-700 font-medium">Thanh toán khi nhận hàng (COD)</span>
+                      <span className="text-gray-700 font-medium">
+                        Thanh toán khi nhận hàng (COD)
+                      </span>
                     </div>
                   </label>
 
@@ -263,7 +311,9 @@ const Checkout = () => {
                       className="w-4 h-4"
                     />
                     <div className="ml-3">
-                      <span className="text-gray-700 font-medium">Thanh toán online (VNPAY)</span>
+                      <span className="text-gray-700 font-medium">
+                        Thanh toán online (VNPAY)
+                      </span>
                     </div>
                   </label>
                 </div>
@@ -276,13 +326,18 @@ const Checkout = () => {
         <div className="lg:w-1/3">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 sticky top-6">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-800">Đơn hàng của bạn</h2>
+              <h2 className="text-lg font-semibold text-gray-800">
+                Đơn hàng của bạn
+              </h2>
             </div>
             <div className="p-6 space-y-4">
               {cartItems.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-gray-500 mb-7">Giỏ hàng trống</p>
-                  <Link to="/" className="inline-block px-4 py-2 bg-[#5f518e] text-white rounded-md">
+                  <Link
+                    to="/"
+                    className="inline-block px-4 py-2 bg-[#5f518e] text-white rounded-md"
+                  >
                     Tiếp tục mua sắm
                   </Link>
                 </div>
@@ -296,15 +351,24 @@ const Checkout = () => {
                         className="w-16 h-16 object-cover rounded-md"
                       />
                       <div className="flex-1 text-sm">
-                        <h4 className="font-medium text-gray-800">{item.name}</h4>
-                        <p className="text-sm text-gray-500">Hương vị: {item.fragrance}</p>
-                        <p className="text-sm text-gray-500">Dung tích: {item.volume}</p>
+                        <h4 className="font-medium text-gray-800">
+                          {item.name}
+                        </h4>
+                        <p className="text-sm text-gray-500">
+                          Hương vị: {item.fragrance}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Dung tích: {item.volume}
+                        </p>
                       </div>
                       <div className="text-right text-sm">
                         <p className="font-semibold text-gray-800">
-                          {(item.price * item.quantity).toLocaleString("vi-VN")}₫
+                          {(item.price * item.quantity).toLocaleString("vi-VN")}
+                          ₫
                         </p>
-                        <p className="text-sm text-gray-500">x{item.quantity}</p>
+                        <p className="text-sm text-gray-500">
+                          x{item.quantity}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -312,22 +376,32 @@ const Checkout = () => {
                   <div className="border-t border-gray-200 pt-4 space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Tạm tính</span>
-                      <span className="text-gray-800 font-medium">{subtotal.toLocaleString("vi-VN")}₫</span>
+                      <span className="text-gray-800 font-medium">
+                        {subtotal.toLocaleString("vi-VN")}₫
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Phí vận chuyển</span>
-                      <span className="text-gray-800 font-medium">Miễn phí</span>
+                      <span className="text-gray-800 font-medium">
+                        Miễn phí
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Giảm giá</span>
-                      <span className="text-gray-800 font-medium">{discount.toLocaleString("vi-VN")}₫</span>
+                      <span className="text-gray-800 font-medium">
+                        {discount.toLocaleString("vi-VN")}₫
+                      </span>
                     </div>
                   </div>
 
                   <div className="border-t border-gray-200 pt-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-lg font-bold text-red-500">Tổng tiền</span>
-                      <span className="text-lg font-bold text-red-500">{total.toLocaleString("vi-VN")}₫</span>
+                      <span className="text-lg font-bold text-red-500">
+                        Tổng tiền
+                      </span>
+                      <span className="text-lg font-bold text-red-500">
+                        {total.toLocaleString("vi-VN")}₫
+                      </span>
                     </div>
                   </div>
 
@@ -340,9 +414,15 @@ const Checkout = () => {
                   </button>
 
                   <p className="text-xs text-gray-500 text-center mt-2">
-                    Bằng việc nhấn nút đặt hàng, bạn đồng ý với{" "} <br />
-                    <Link to="#" className="text-[#5f518e] underline">Điều khoản</Link> và{" "}
-                    <Link to="#" className="text-[#5f518e] underline">Chính sách</Link>{" "}của chúng tôi.
+                    Bằng việc nhấn nút đặt hàng, bạn đồng ý với <br />
+                    <Link to="#" className="text-[#5f518e] underline">
+                      Điều khoản
+                    </Link>{" "}
+                    và{" "}
+                    <Link to="#" className="text-[#5f518e] underline">
+                      Chính sách
+                    </Link>{" "}
+                    của chúng tôi.
                   </p>
                 </>
               )}
