@@ -378,7 +378,7 @@ const ProductDetails = () => {
     );
 
     const cartItem = {
-      userId: user._id, // ✅ Sử dụng user._id thay vì biến userId không xác định
+      userId: user._id,
       variantId: selectedVariant._id,
       productId: product._id,
       name: product.name,
@@ -395,16 +395,14 @@ const ProductDetails = () => {
       cart.push(cartItem);
     }
 
-    // Lưu vào localStorage
     localStorage.setItem("cart", JSON.stringify(cart));
 
-    // Gửi dữ liệu lên server
     try {
-      console.log("🛒 Gửi cartItem:", cartItem); // Debug
+      console.log("Gửi cartItem:", cartItem);
       await axios.post("http://localhost:3000/cart", cartItem);
-      console.log("✅ Sản phẩm đã được gửi lên server.");
+      console.log("Sản phẩm đã được gửi lên server.");
     } catch (error) {
-      console.error("❌ Lỗi khi gửi sản phẩm lên server:", error);
+      console.error("Lỗi khi gửi sản phẩm lên server:", error);
     }
   };
 
