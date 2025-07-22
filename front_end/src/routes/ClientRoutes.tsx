@@ -13,6 +13,8 @@ import OrderSuccessfully from "../pages/Client/OrderSuccessfully"
 import SearchResults from "../pages/Client/SearchResults"
 import Profile from "../pages/Client/Profile"
 import CheckPayment from "../pages/Client/CheckPayment"
+import Voucher from "../pages/Client/vourcher/Voucher"
+
 
 const ClientRoutes = {
   path: '/',
@@ -24,6 +26,7 @@ const ClientRoutes = {
     { path: 'cart', element: <Cart /> },
     { path: 'productdetails/:id', element: <ProductDetails /> },
     { path: 'products', element: <ProductList /> },
+    { path: 'vouchers', element: <Voucher /> },
     { path: 'orders', element: <OrderList/>},
     { path: 'orders/:orderId', element: <OrderDetail/>},
     { path: 'checkout', element: <Checkout/>},
