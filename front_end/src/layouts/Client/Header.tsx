@@ -37,6 +37,46 @@ const ClientHeader = () => {
   }, []);
 
   useEffect(() => {
+  const checkUserStatus = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await fetch("http://localhost:3000/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+        const data = await response.json();
+        if (data?.message?.includes("bị khóa")) {
+          alert("Tài khoản của bạn đã bị khóa. Bạn sẽ được đăng xuất.");
+
+          localStorage.removeItem("token");
+          localStorage.removeItem("role");
+          localStorage.removeItem("user");
+          localStorage.removeItem("cart");
+
+          window.dispatchEvent(new Event("loginChanged"));
+          window.dispatchEvent(new Event("cartChanged"));
+
+          navigate("/login");
+        }
+      
+    } catch (err) {
+      console.error("Lỗi kiểm tra trạng thái người dùng:", err);
+    }
+  };
+
+  checkUserStatus(); 
+
+  const intervalId = setInterval(checkUserStatus, 30000); 
+
+  return () => clearInterval(intervalId); 
+}, [navigate]);
+
+  useEffect(() => {
     const updateCart = () => {
       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
       setCartItemTypes(cart.length);
@@ -45,7 +85,7 @@ const ClientHeader = () => {
     updateCart();
 
     window.addEventListener("cartChanged", updateCart);
-    
+
     const handleStorage = (e: StorageEvent) => {
       if (e.key === "cart" || e.key === "token") {
         updateCart();
@@ -53,7 +93,7 @@ const ClientHeader = () => {
     };
     window.addEventListener("storage", handleStorage);
 
-    const interval = setInterval(updateCart);
+    const interval = setInterval(updateCart, 1000);
 
     return () => {
       window.removeEventListener("cartChanged", updateCart);
@@ -116,9 +156,10 @@ const ClientHeader = () => {
         </Link>
 
         <nav className="flex items-center space-x-10 text-sm font-bold uppercase">
-          <Link to="/products" className="hover:text-gray-700">Nước hoa nam</Link>
-          <Link to="/products" className="hover:text-gray-700">Nước hoa nữ</Link>
+          <Link to="/products" className="hover:text-gray-700">Bộ sưu tập</Link>
+          <Link to="/newlist" className="hover:text-gray-700">Bài viết</Link>
           <Link to="/products" className="hover:text-gray-700">Thương hiệu</Link>
+          <Link to="/vouchers" className="hover:text-gray-700">Mã giảm giá</Link>
         </nav>
 
         <div className="flex items-center space-x-6 text-xl text-black">
@@ -163,6 +204,13 @@ const ClientHeader = () => {
                     className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
                   >
                     <i className="fas fa-box w-4 h-4 mr-2 mt-1" /> Đơn hàng
+                  </Link>
+                  <Link
+                    to="/myvoucher"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    <i className="fas fa-tags w-4 h-4 mr-2 mt-1" /> Mã của tôi
                   </Link>
                   <button
                     onClick={handleLogout}

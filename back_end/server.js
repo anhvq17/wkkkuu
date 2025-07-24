@@ -21,9 +21,10 @@ import variantRouter from "./routes/variantRoutes.js";
 import http from "http";
 import { Server } from "socket.io";
 import voucherRouter from "./routes/voucherRoutes.js";
+import voucherUserRouter from "./routes/voucherUserRouter.js";
 
 dotenv.config();
-connectMongoDB(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/DATN");
+connectMongoDB(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/datn");
 
 const app = express();
 const server = http.createServer(app); // Tạo HTTP server từ Express
@@ -67,7 +68,8 @@ app.use('/attribute', attributeRouter);
 app.use('/attribute-value', attributeValueRouter);
 app.use('/variant', variantRouter);
 app.use('/users', userRoutes);
-app.use('/voucher',voucherRouter)
+app.use('/voucher',voucherRouter) ; 
+app.use("/voucher-user", voucherUserRouter);
 app.use('/', authRouter);
 
 const PORT = process.env.PORT || 3000;
