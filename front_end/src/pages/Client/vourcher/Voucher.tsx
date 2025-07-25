@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 type Voucher = {
   _id: string;
@@ -23,7 +23,6 @@ const Voucher = () => {
   const [filterType, setFilterType] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
 
-  const navigate = useNavigate(); // ở đầu component
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const userId = user?._id;
 
@@ -87,9 +86,6 @@ const Voucher = () => {
         )
       );
 
-      // 👉 Chuyển sang trang MyVoucher
-      navigate("/myvoucher");
-
     } catch (err: any) {
       console.error(err);
       alert(
@@ -113,7 +109,6 @@ const Voucher = () => {
 
       const endDate = new Date(voucher.endDate);
 
-      // Trạng thái
       if (filterStatus === "valid") {
         return endDate >= now;
       }
@@ -124,14 +119,20 @@ const Voucher = () => {
         return endDate < now;
       }
 
-      return true; // Không lọc gì cả
+      return true;
     });
   };
 
 
   return (
-    <div className="min-h-screen">
-      <section className="max-w-7xl mx-auto px-6 lg:px-12 pt-11 pb-2">
+    <div className="container mx-auto px-4 py-8 min-h-screen">
+      <div className="flex items-center text-sm mb-5">
+        <Link to="/" className="text-gray-500 hover:text-gray-900">Trang chủ</Link>
+        <span className="mx-2 text-gray-400">/</span>
+        <span className="font-medium text-black">Mã giảm giá</span>
+      </div>
+
+      <section className="max-w-7xl mx-auto px-6 lg:px-12 pb-2">
         <div className="flex flex-wrap justify-center gap-4">
           <div className="relative">
             <select
@@ -142,7 +143,6 @@ const Voucher = () => {
               <option value="all">Loại mã</option>
               <option value="percent">Giảm phần trăm</option>
               <option value="fixed">Giảm tiền mặt</option>
-              <option value="freeship">Freeship</option>
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -247,7 +247,7 @@ const Voucher = () => {
 
               <div className="mt-auto flex flex-col gap-4">
                 <div>
-                  <div className="flex justify-between text-sm text-gray-600 mt-9 mb-1">
+                  <div className="flex justify-between text-sm text-gray-600 mt-7 mb-1">
                     <span>Lượt dùng</span>
                     <span>
                       {voucher.usedCount} / {voucher.usageLimit}
