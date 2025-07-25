@@ -3,8 +3,9 @@ import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
 import connectMongoDB from "./config/db.js";
+import path from "path";
 
-import commentsRoute from "./routes/comment.js";
+import commentRouter from "./routes/comment.js";
 import productRouter from "./routes/productRoutes.js";
 import categoryRouter from "./routes/categoryRoutes.js";
 import brandRouter from "./routes/brandRoutes.js";
@@ -23,6 +24,7 @@ import { Server } from "socket.io";
 import voucherRouter from "./routes/voucherRoutes.js";
 
 dotenv.config();
+console.log("JWT_SECRET:", process.env.JWT_SECRET);
 connectMongoDB(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/datn");
 
 const app = express();
@@ -60,7 +62,7 @@ app.use('/cart', cartRoutes);
 app.use('/products', productRouter);
 app.use('/brands', brandRouter);
 app.use('/categories', categoryRouter);
-app.use('/comments', commentsRoute);
+app.use('/comments', commentRouter);
 app.use('/orders', orderRouter);
 app.use('/payment', paymentRouter);
 app.use('/attribute', attributeRouter);
@@ -69,6 +71,7 @@ app.use('/variant', variantRouter);
 app.use('/users', userRoutes);
 app.use('/voucher',voucherRouter)
 app.use('/', authRouter);
+app.use('/uploads', express.static(path.join(path.resolve(), 'uploads')));
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

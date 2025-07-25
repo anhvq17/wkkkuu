@@ -21,6 +21,7 @@ const commentSchema = new mongoose.Schema({
     min: 1,
     max: 5,
   },
+  image: { type: String }, // thêm trường ảnh
 }, { timestamps: true });
 
 export default mongoose.model("Comment", commentSchema);
