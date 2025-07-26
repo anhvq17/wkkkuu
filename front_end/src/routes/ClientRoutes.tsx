@@ -17,6 +17,7 @@ import Voucher from "../pages/Client/vourcher/Voucher";
 import ProductFemale from "../components/home/productFemale";
 import ProductMale from "../components/home/productMale";
 import MyVoucher from "../pages/Client/vourcher/myVoucher";
+import ReviewPage from "../pages/Client/ReviewPage";
 
 
 const ClientRoutes = {
@@ -40,6 +41,7 @@ const ClientRoutes = {
     { path: 'payment-result', element: <CheckPayment /> },
     { path: 'product-female', element: <ProductFemale /> },
     { path: 'product-male', element: <ProductMale /> },
+    { path: 'review/:productId', element: <ReviewPage /> },
 
     // Khi đường dẫn sai hoặc không tồn tại, dẫn đến trang NotFound
     { path: '*', element: <NotFound homePath="/"/> },
