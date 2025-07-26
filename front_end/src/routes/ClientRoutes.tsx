@@ -14,11 +14,9 @@ import SearchResults from "../pages/Client/SearchResults";
 import Profile from "../pages/Client/Profile";
 import CheckPayment from "../pages/Client/CheckPayment";
 import Voucher from "../pages/Client/vourcher/Voucher";
-import ProductFemale from "../components/home/productFemale";
-import ProductMale from "../components/home/productMale";
 import MyVoucher from "../pages/Client/vourcher/myVoucher";
 import ReviewPage from "../pages/Client/ReviewPage";
-
+import NewsList from "../pages/Client/NewsList";
 
 const ClientRoutes = {
   path: '/',
@@ -39,8 +37,7 @@ const ClientRoutes = {
     { path: 'search', element: <SearchResults /> },
     { path: 'profile', element: <Profile /> },
     { path: 'payment-result', element: <CheckPayment /> },
-    { path: 'product-female', element: <ProductFemale /> },
-    { path: 'product-male', element: <ProductMale /> },
+    { path: 'newlist', element: <NewsList /> },
     { path: 'review/:productId', element: <ReviewPage /> },
 
     // Khi đường dẫn sai hoặc không tồn tại, dẫn đến trang NotFound

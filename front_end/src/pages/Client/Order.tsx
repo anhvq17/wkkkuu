@@ -264,7 +264,7 @@ const OrderList = () => {
 
       <div className="mx-auto mt-10 text-center">
         <h1 className="text-3xl font-bold flex items-center gap-2 justify-center">
-          <span role="img" aria-label="order-list"></span> DANH SÁCH ĐƠN HÀNG
+          DANH SÁCH ĐƠN HÀNG
         </h1>
       </div>
 
