@@ -2,6 +2,7 @@
 // [POST] Tạo bình luận mới
 import Comment from "../models/Comment.js";
 import Product from "../models/ProductModel.js";
+import OrderItem from "../models/OrderItemModel.js";
 import Joi from "joi";
 
 // Validate dữ liệu
@@ -14,13 +15,21 @@ const commentValidationSchema = Joi.object({
 // [POST] Tạo bình luận mới
 export const createComment = async (req, res) => {
   try {
-    const { productId, content, rating } = req.body;
+    const { productId, orderItemId, content, rating } = req.body;
 
-    if (!productId || !content || !rating) {
+    if (!productId || !content || !rating || !orderItemId) {
       return res.status(400).json({ message: 'Vui lòng điền đầy đủ thông tin' });
     }
 
-    // Xử lý nhiều ảnh (multer upload.array)
+    // ✅ Kiểm tra đơn hàng sản phẩm đã đánh giá chưa
+    const orderItem = await OrderItem.findById(orderItemId);
+    if (!orderItem) {
+      return res.status(404).json({ message: 'Không tìm thấy đơn hàng sản phẩm' });
+    }
+    if (orderItem.isReviewed) {
+      return res.status(400).json({ message: 'Sản phẩm này đã được đánh giá' });
+    }
+
     const imagePaths = req.files?.map((file) => `/uploads/${file.filename}`) || [];
 
     const newComment = new Comment({
@@ -28,11 +37,14 @@ export const createComment = async (req, res) => {
       userId: req.user._id,
       content,
       rating,
-      image: imagePaths, // lưu mảng ảnh
+      image: imagePaths,
     });
 
     const savedComment = await newComment.save();
     const populated = await savedComment.populate('userId', 'name');
+
+    // ✅ Đánh dấu đã đánh giá
+    await OrderItem.findByIdAndUpdate(orderItemId, { isReviewed: true });
 
     res.status(201).json(populated);
   } catch (error) {
@@ -40,6 +52,7 @@ export const createComment = async (req, res) => {
     res.status(500).json({ message: 'Đã xảy ra lỗi khi tạo bình luận' });
   }
 };
+
 
 
 
