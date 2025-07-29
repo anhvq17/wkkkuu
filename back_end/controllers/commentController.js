@@ -61,7 +61,7 @@ export const getCommentsByProduct = async (req, res) => {
   try {
     const { productId } = req.params;
 
-    const comments = await Comment.find({ productId })
+    const comments = await Comment.find({ productId, hidden: false }) // ✅ Lọc ẩn
       .populate("userId", "username")
       .sort({ createdAt: -1 });
 
@@ -109,5 +109,20 @@ export const deleteComment = async (req, res) => {
       message: "Lỗi khi xoá bình luận.",
       error: error.message,
     });
+  }
+};
+
+export const toggleCommentHidden = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const comment = await Comment.findById(id);
+    if (!comment) return res.status(404).json({ message: 'Không tìm thấy bình luận' });
+
+    comment.hidden = !comment.hidden;
+    await comment.save();
+
+    res.status(200).json({ message: 'Cập nhật trạng thái thành công', hidden: comment.hidden });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi cập nhật trạng thái', error: error.message });
   }
 };

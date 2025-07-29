@@ -15,20 +15,20 @@ interface Review {
   rating: number;
   image?: string[] | string;
   createdAt: string;
+  hidden?: boolean;
 }
 
 const ReviewManager = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
   const [reviewsMap, setReviewsMap] = useState<Record<string, Review[]>>({});
-  const [hiddenReviews, setHiddenReviews] = useState<Set<string>>(new Set());
 
   // Load danh sách sản phẩm
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await axios.get('http://localhost:3000/products');
-        setProducts(res.data.data); // Tùy thuộc vào API trả về
+        setProducts(res.data.data);
       } catch (err) {
         console.error('Lỗi khi lấy danh sách sản phẩm:', err);
       }
@@ -53,12 +53,20 @@ const ReviewManager = () => {
     }
   };
 
-  const toggleHideReview = (reviewId: string) => {
-    setHiddenReviews((prev) => {
-      const updated = new Set(prev);
-      updated.has(reviewId) ? updated.delete(reviewId) : updated.add(reviewId);
-      return updated;
-    });
+  const toggleHideReview = async (reviewId: string, productId: string) => {
+    try {
+      const res = await axios.put(`http://localhost:3000/comments/${reviewId}/hide`);
+      const updatedHidden = res.data.hidden;
+
+      setReviewsMap((prev) => {
+        const updated = prev[productId]?.map((r) =>
+          r._id === reviewId ? { ...r, hidden: updatedHidden } : r
+        );
+        return { ...prev, [productId]: updated };
+      });
+    } catch (err) {
+      console.error("Lỗi khi cập nhật ẩn/hiện:", err);
+    }
   };
 
   return (
@@ -82,7 +90,7 @@ const ReviewManager = () => {
                   <td className="px-3 py-2 border-b">
                     <button
                       onClick={() => toggleExpand(product._id)}
-                      className="border bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs"
+                      className="px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs"
                     >
                       {expandedRowKeys.includes(product._id) ? 'Ẩn đánh giá' : 'Xem đánh giá'}
                     </button>
@@ -106,14 +114,14 @@ const ReviewManager = () => {
                           {reviewsMap[product._id]?.map((r) => (
                             <tr key={r._id} className="border-t">
                               <td className="px-2 py-1">
-                                {hiddenReviews.has(r._id) ? 'Đã ẩn' : r.userId.username}
+                                {r.hidden ? 'Đã ẩn' : r.userId.username}
                               </td>
                               <td className="px-2 py-1">{r.rating} ⭐</td>
                               <td className="px-2 py-1">
-                                {hiddenReviews.has(r._id) ? 'Đã bị ẩn' : r.content}
+                                {r.hidden ? 'Đã bị ẩn' : r.content}
                               </td>
                               <td className="px-2 py-1">
-                                {hiddenReviews.has(r._id)
+                                {r.hidden
                                   ? 'Đã ẩn'
                                   : Array.isArray(r.image)
                                   ? r.image.map((img, idx) => (
@@ -136,14 +144,14 @@ const ReviewManager = () => {
                               </td>
                               <td className="px-2 py-1">
                                 <button
-                                  onClick={() => toggleHideReview(r._id)}
+                                  onClick={() => toggleHideReview(r._id, product._id)}
                                   className={`px-3 py-1 rounded-md text-xs text-white ${
-                                    hiddenReviews.has(r._id)
+                                    r.hidden
                                       ? 'bg-green-600 hover:bg-green-700'
                                       : 'bg-red-600 hover:bg-red-700'
                                   }`}
                                 >
-                                  {hiddenReviews.has(r._id) ? 'Hiện' : 'Ẩn'}
+                                  {r.hidden ? 'Hiện' : 'Ẩn'}
                                 </button>
                               </td>
                             </tr>
