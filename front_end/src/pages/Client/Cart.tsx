@@ -27,21 +27,7 @@ interface UserInfoType {
   username: string;
 }
 
-const mergeCarts = (localCart: any[], serverCart: any[]): any[] => {
-  const merged: { [key: string]: any } = {};
-  for (const item of serverCart) {
-    if (item.variantId) merged[item.variantId] = { ...item };
-  }
-  for (const item of localCart) {
-    if (!item.variantId) continue;
-    if (merged[item.variantId]) {
-      merged[item.variantId].quantity += item.quantity;
-    } else {
-      merged[item.variantId] = { ...item };
-    }
-  }
-  return Object.values(merged);
-};
+
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);

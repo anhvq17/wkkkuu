@@ -222,6 +222,26 @@ const Checkout = () => {
     }
   };
 
+  // Function để xóa sản phẩm khỏi cart server một cách an toàn
+  const removeFromServerCart = async (userId: string, variantId: string, itemName: string) => {
+    try {
+      await axios.delete("http://localhost:3000/cart", {
+        data: {
+          userId,
+          variantId,
+        },
+      });
+      console.log(`✅ Đã xóa ${itemName} khỏi giỏ hàng server`);
+    } catch (error: any) {
+      // Nếu lỗi 404, có thể sản phẩm đã được xóa trước đó
+      if (error.response?.status === 404) {
+        console.log(`ℹ️ ${itemName} không tồn tại trong giỏ hàng server`);
+      } else {
+        console.warn(`⚠️ Không thể xóa ${itemName} khỏi giỏ hàng server:`, error.message);
+      }
+    }
+  };
+
   const handleSubmit = async () => {
     if (!isFormValid()) {
       alert("Vui lòng điền đầy đủ thông tin!");
@@ -310,12 +330,7 @@ const Checkout = () => {
         if (userInfo && userInfo._id) {
           for (const item of cartItems) {
             if (item.variantId) {
-              await axios.delete("http://localhost:3000/cart", {
-                data: {
-                  userId: userInfo._id,
-                  variantId: item.variantId,
-                },
-              });
+              await removeFromServerCart(userInfo._id, item.variantId, item.name);
             }
           }
         }
