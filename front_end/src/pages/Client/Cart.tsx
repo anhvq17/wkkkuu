@@ -27,6 +27,8 @@ interface UserInfoType {
   username: string;
 }
 
+
+
 const Cart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -79,7 +81,7 @@ const Cart = () => {
         })
       );
     } catch (err) {
-      console.error("❌ Lỗi khi đồng bộ giỏ hàng:", err);
+      console.error("Lỗi khi đồng bộ giỏ hàng:", err);
     }
   };
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 const ClientHeader = () => {
@@ -9,6 +9,7 @@ const ClientHeader = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>("");
 
   const navigate = useNavigate();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -36,19 +37,91 @@ const ClientHeader = () => {
   }, []);
 
   useEffect(() => {
+  const checkUserStatus = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await fetch("http://localhost:3000/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+        const data = await response.json();
+        if (data?.message?.includes("bị khóa")) {
+          alert("Tài khoản của bạn đã bị khóa. Bạn sẽ được đăng xuất.");
+
+          localStorage.removeItem("token");
+          localStorage.removeItem("role");
+          localStorage.removeItem("user");
+          localStorage.removeItem("cart");
+
+          window.dispatchEvent(new Event("loginChanged"));
+          window.dispatchEvent(new Event("cartChanged"));
+
+          navigate("/login");
+        }
+      
+    } catch (err) {
+      console.error("Lỗi kiểm tra trạng thái người dùng:", err);
+    }
+  };
+
+  checkUserStatus(); 
+
+  const intervalId = setInterval(checkUserStatus, 30000); 
+
+  return () => clearInterval(intervalId); 
+}, [navigate]);
+
+  useEffect(() => {
     const updateCart = () => {
       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
       setCartItemTypes(cart.length);
     };
 
     updateCart();
+
     window.addEventListener("cartChanged", updateCart);
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "cart" || e.key === "token") {
+        updateCart();
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+
     const interval = setInterval(updateCart, 1000);
+
     return () => {
       window.removeEventListener("cartChanged", updateCart);
+      window.removeEventListener("storage", handleStorage);
       clearInterval(interval);
     };
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -83,9 +156,10 @@ const ClientHeader = () => {
         </Link>
 
         <nav className="flex items-center space-x-10 text-sm font-bold uppercase">
-          <Link to="/products" className="hover:text-gray-700">Nước hoa nam</Link>
-          <Link to="/products" className="hover:text-gray-700">Nước hoa nữ</Link>
+          <Link to="/products" className="hover:text-gray-700">Bộ sưu tập</Link>
+          <Link to="/newlist" className="hover:text-gray-700">Bài viết</Link>
           <Link to="/products" className="hover:text-gray-700">Thương hiệu</Link>
+          <Link to="/vouchers" className="hover:text-gray-700">Mã giảm giá</Link>
         </nav>
 
         <div className="flex items-center space-x-6 text-xl text-black">
@@ -113,26 +187,43 @@ const ClientHeader = () => {
                 className="w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer object-cover"
               />
               {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-50">
+                <div
+                  ref={dropdownRef}
+                  className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-50"
+                >
                   <Link
                     to="/profile"
                     onClick={() => setIsMenuOpen(false)}
                     className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
                   >
-                    <i className="fas fa-user w-4 h-4 mr-2" /> Tài khoản
+                    <i className="fas fa-user w-4 h-4 mr-2 mt-1" /> Tài khoản
+                  </Link>
+                  <Link
+                    to="/wallet"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    <i className="fas fa-wallet w-4 h-4 mr-2 mt-1" /> Ví của tôi
                   </Link>
                   <Link
                     to="/orders"
                     onClick={() => setIsMenuOpen(false)}
                     className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
                   >
-                    <i className="fas fa-shopping-cart w-4 h-4 mr-2" /> Đơn hàng
+                    <i className="fas fa-box w-4 h-4 mr-2 mt-1" /> Đơn hàng
+                  </Link>
+                  <Link
+                    to="/myvoucher"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    <i className="fas fa-tags w-4 h-4 mr-2 mt-1" /> Mã của tôi
                   </Link>
                   <button
                     onClick={handleLogout}
                     className="flex items-center px-4 py-2 w-full text-sm hover:bg-gray-100"
                   >
-                    <i className="fas fa-sign-out-alt w-4 h-4 mr-2" /> Đăng xuất
+                    <i className="fas fa-sign-out-alt w-4 h-4 mr-2 mt-1" /> Đăng xuất
                   </button>
                 </div>
               )}
