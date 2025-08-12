@@ -8,7 +8,6 @@ import {
 import { getAllOrders } from "../../services/Order";
 import type { Order } from "../../types/Order";
 
-// Import các component của Recharts
 import {
   BarChart as ReBarChart,
   Bar,
@@ -89,7 +88,6 @@ export default function Dashboard() {
       .length,
   };
 
-  // === Tạo dữ liệu cho biểu đồ Bar ===
   const revenueByDate = orders.reduce((acc: Record<string, number>, order) => {
     const dateKey = new Date(order.createdAt).toLocaleDateString("vi-VN");
     acc[dateKey] =
@@ -102,10 +100,9 @@ export default function Dashboard() {
     revenue,
   }));
 
-  // === Top 5 khách hàng ===
 const topCustomers = Object.values(
   orders.reduce((acc, order) => {
-    if (!order.userId) return acc; // Bỏ qua đơn hàng không có thông tin user
+    if (!order.userId) return acc;
 
     const id = order.userId._id;
     const name = order.userId.username;
@@ -122,31 +119,24 @@ const topCustomers = Object.values(
   .sort((a, b) => b.total - a.total)
   .slice(0, 5);
 
+  const getRank = (total: number) => {
+    if (total > 50000000) return "Vàng";
+    if (total > 25000000) return "Bạc";
+    return "Đồng";
+  };
 
-  // === Top 5 sản phẩm ===
-  const topProducts = Object.values(
-    orders.reduce((acc, order) => {
-      order.orderItems?.forEach(
-        (item: {
-          productId: {
-            _id: string;
-            name: string;
-          };
-          quantity: number;
-        }) => {
-          const pid: string = item.productId._id;
-          const pname: string = item.productId.name;
-          if (!acc[pid]) {
-            acc[pid] = { id: pid, name: pname, quantity: 0 };
-          }
-          acc[pid].quantity += item.quantity;
-        }
-      );
-      return acc;
-    }, {} as Record<string, { id: string; name: string; quantity: number }>)
-  )
-    .sort((a, b) => b.quantity - a.quantity)
-    .slice(0, 5);
+  const getRankColorClass = (rank: string) => {
+    switch (rank) {
+      case "Vàng":
+        return "text-yellow-500 font-semibold";
+      case "Bạc":
+        return "text-gray-500 font-semibold";
+      case "Đồng":
+        return "text-orange-500 font-semibold";
+      default:
+        return "";
+    }
+  };
 
   if (loading) {
     return (
@@ -177,7 +167,7 @@ const topCustomers = Object.values(
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold">Bảng điều khiển</h1>
+      <h1 className="text-2xl font-bold">BẢNG ĐIỀU KHIỂN</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="rounded-xl border bg-white shadow p-4 flex items-center justify-between">
           <div>
@@ -224,29 +214,26 @@ const topCustomers = Object.values(
         </div>
       </div>
 
-      {/* Biểu đồ doanh thu (Bar) */}
       <div className="rounded-xl border bg-white shadow p-4">
-        <p className="text-lg font-semibold mb-2">Biểu đồ doanh thu (Bar)</p>
+        <p className="text-lg font-semibold mb-2">Biểu đồ doanh thu</p>
         <div className="h-[420px]">
           <ResponsiveContainer width="100%" height="100%">
             <ReBarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis
-                tickFormatter={(value) => value.toLocaleString("vi-VN") + "đ"}
+                tickFormatter={(value) => value.toLocaleString("vi-VN")}
                 width={110}
               />
               <Tooltip
-                formatter={(value) => value.toLocaleString("vi-VN") + " ₫"}
+                formatter={(value) => value.toLocaleString("vi-VN")}
               />
-              <Legend />
-              <Bar dataKey="revenue" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="revenue" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={69}/>
             </ReBarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Biểu đồ tròn */}
       <div className="rounded-xl border bg-white shadow p-4 mt-6">
         <p className="text-lg font-semibold mb-2">
           Tỷ lệ đơn hàng theo trạng thái
@@ -263,19 +250,18 @@ const topCustomers = Object.values(
                 cy="50%"
                 outerRadius={100}
                 dataKey="value"
-                label={({ name, value }) => `${name} (${value})`}
               >
                 {Object.keys(statusStats).map((_, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={
                       [
+                        "#f59e0b",
                         "#3b82f6",
                         "#10b981",
-                        "#f59e0b",
                         "#8b5cf6",
-                        "#ef4444",
                         "#6b7280",
+                        "#ef4444",
                       ][index % 6]
                     }
                   />
@@ -284,31 +270,18 @@ const topCustomers = Object.values(
               <Tooltip
                 formatter={(value: any, name: any) => [`${value} đơn`, name]}
               />
-              <Legend />
+              <Legend
+                formatter={(value) => (
+                  <span style={{ marginRight: 20, marginTop: 30, display: "inline-block" }}>{value}</span>
+                )}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Trạng thái đơn hàng */}
       <div className="rounded-xl border bg-white shadow p-4">
-        <p className="text-lg font-semibold mb-4">Tình trạng đơn hàng</p>
-        <ul className="space-y-3">
-          {Object.entries(statusStats).map(([status, count]) => (
-            <li
-              key={status}
-              className="flex items-center justify-between bg-gray-50 border px-4 py-2 rounded-md"
-            >
-              <span className="font-medium">{status}</span>
-              <span className="font-semibold">{count}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Đơn hàng gần đây */}
-      <div className="rounded-xl border bg-white shadow p-4">
-        <p className="text-lg font-semibold mb-4">Đơn hàng gần đây</p>
+        <p className="text-lg font-semibold mb-2">Đơn hàng gần đây</p>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>
@@ -324,8 +297,8 @@ const topCustomers = Object.values(
             <tbody>
               {orders.slice(0, 5).map((order) => (
                 <tr key={order._id} className="border-b hover:bg-gray-50">
-                  <td className="py-2 font-medium">{order._id}</td>
-                  <td className="py-2">{order.userId.username}</td>
+                  <td className="py-2">{order._id}</td>
+                  <td className="py-2">{order.userId?.username}</td>
                   <td className="py-2 text-red-600 font-semibold">
                     {(
                       order.originalAmount ?? order.totalAmount
@@ -347,32 +320,35 @@ const topCustomers = Object.values(
         </div>
       </div>
 
-      {/* Top 5 khách hàng & sản phẩm */}
       <div className="gap-6">
         <div className="rounded-xl border bg-white shadow p-4">
-          <p className="text-lg font-semibold mb-4">
-            Top 5 khách hàng mua nhiều nhất
+          <p className="text-lg font-semibold mb-2">
+            Top khách hàng mua nhiều nhất
           </p>
           <table className="min-w-full text-sm">
             <thead>
               <tr className="border-b">
                 <th className="text-left py-2">Khách hàng</th>
                 <th className="text-left py-2">Tổng chi tiêu</th>
+                <th className="text-left py-2">Thứ hạng</th>
               </tr>
             </thead>
             <tbody>
-              {topCustomers.map((c) => (
-                <tr key={c.id} className="border-b">
-                  <td className="py-2">{c.name}</td>
-                  <td className="py-2 text-red-600 font-semibold">
-                    {c.total.toLocaleString()} ₫
-                  </td>
-                </tr>
-              ))}
+              {topCustomers.map((c) => {
+                const rank = getRank(c.total);
+                return (
+                  <tr key={c.id} className="border-b">
+                    <td className="py-2">{c.name}</td>
+                    <td className="py-2 text-red-600 font-bold">
+                      {c.total.toLocaleString()}
+                    </td>
+                    <td className={`py-2 ${getRankColorClass(rank)}`}>{rank}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
-
       </div>
     </div>
   );
