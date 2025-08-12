@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 type Faq = {
   _id: string;
@@ -28,24 +29,30 @@ const FaqList: React.FC = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow mt-10">
-      <h1 className="text-3xl font-semibold mb-6 text-center">Câu hỏi thường gặp</h1>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex items-center text-sm mb-6">
+        <Link to="/" className="text-gray-500 hover:text-gray-900">Trang chủ</Link>
+        <span className="mx-2 text-gray-400">/</span>
+        <span className="font-medium text-black">FAQ</span>
+      </div>
+      
+      <h1 className="text-3xl font-bold mb-6 text-center">NHỮNG CÂU HỎI THƯỜNG GẶP</h1>
 
       {faqs.length === 0 && (
         <p className="text-center text-gray-500">Chưa có câu hỏi nào.</p>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-2">
         {faqs.map((faq) => (
           <div
             key={faq._id}
-            className="border border-gray-300 rounded-lg shadow-sm"
+            className="border border-gray-300 max-w-3xl mx-auto"
           >
             <button
-              className="w-full px-4 py-3 text-left font-medium text-lg text-purple-700 hover:bg-purple-50 rounded-lg flex justify-between items-center"
+              className="w-full max-w-3xl mx-auto px-4 py-3 text-lg hover:bg-[#5f518e] hover:text-white flex justify-between items-center"
               onClick={() => toggleExpand(faq._id)}
             >
-              <span>{faq.question}</span>
+              <span className="flex-1">{faq.question}</span>
               <svg
                 className={`w-5 h-5 transform transition-transform duration-300 ${
                   expandedId === faq._id ? "rotate-180" : "rotate-0"

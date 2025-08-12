@@ -10,7 +10,7 @@ export interface CartItem {
 }
 
 export interface Address {
-  fullAddress?: string; // Địa chỉ đầy đủ từ user
+  fullAddress?: string;
   province?: string;
   district?: string;
   ward?: string;
@@ -50,8 +50,8 @@ export interface Order {
   originalAmount: number;
   paymentMethod: 'cod' | 'vnpay';
   paymentStatus: 'Đã thanh toán' | 'Chưa thanh toán' | 'Đã hoàn tiền';
-  cancelReason?: string; // Lý do hủy đơn hàng
-  returnReason?: string; // Lý do hoàn hàng
+  cancelReason?: string;
+  returnReason?: string;
   createdAt: string;
   updatedAt: string;
   voucherCode?: string;
@@ -59,4 +59,3 @@ export interface Order {
   discountType?: 'percent' | 'fixed';
   discountValue?: number;
 }
-
