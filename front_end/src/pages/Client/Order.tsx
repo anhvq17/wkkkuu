@@ -101,6 +101,7 @@ const OrderList = () => {
     switch (method) {
       case 'cod': return 'Thanh toán khi nhận hàng (COD)';
       case 'vnpay': return 'Thanh toán online (VNPay)';
+      case 'wallet': return 'Thanh toán bằng Ví điện tử';
       default: return method;
     }
   };
