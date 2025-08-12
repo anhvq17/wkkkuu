@@ -8,7 +8,6 @@ import {
 import { getAllOrders } from "../../services/Order";
 import type { Order } from "../../types/Order";
 
-// Import các component của Recharts
 import {
   BarChart as ReBarChart,
   Bar,
@@ -89,7 +88,6 @@ export default function Dashboard() {
       .length,
   };
 
-  // === Tạo dữ liệu cho biểu đồ Bar ===
   const revenueByDate = orders.reduce((acc: Record<string, number>, order) => {
     const dateKey = new Date(order.createdAt).toLocaleDateString("vi-VN");
     acc[dateKey] =
@@ -102,10 +100,9 @@ export default function Dashboard() {
     revenue,
   }));
 
-  // === Top 5 khách hàng ===
 const topCustomers = Object.values(
   orders.reduce((acc, order) => {
-    if (!order.userId) return acc; // Bỏ qua đơn hàng không có thông tin user
+    if (!order.userId) return acc;
 
     const id = order.userId._id;
     const name = order.userId.username;
@@ -121,32 +118,6 @@ const topCustomers = Object.values(
 )
   .sort((a, b) => b.total - a.total)
   .slice(0, 5);
-
-
-  // === Top 5 sản phẩm ===
-  const topProducts = Object.values(
-    orders.reduce((acc, order) => {
-      order.orderItems?.forEach(
-        (item: {
-          productId: {
-            _id: string;
-            name: string;
-          };
-          quantity: number;
-        }) => {
-          const pid: string = item.productId._id;
-          const pname: string = item.productId.name;
-          if (!acc[pid]) {
-            acc[pid] = { id: pid, name: pname, quantity: 0 };
-          }
-          acc[pid].quantity += item.quantity;
-        }
-      );
-      return acc;
-    }, {} as Record<string, { id: string; name: string; quantity: number }>)
-  )
-    .sort((a, b) => b.quantity - a.quantity)
-    .slice(0, 5);
 
   if (loading) {
     return (
@@ -224,7 +195,6 @@ const topCustomers = Object.values(
         </div>
       </div>
 
-      {/* Biểu đồ doanh thu (Bar) */}
       <div className="rounded-xl border bg-white shadow p-4">
         <p className="text-lg font-semibold mb-2">Biểu đồ doanh thu (Bar)</p>
         <div className="h-[420px]">
@@ -233,11 +203,11 @@ const topCustomers = Object.values(
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis
-                tickFormatter={(value) => value.toLocaleString("vi-VN") + "đ"}
+                tickFormatter={(value) => value.toLocaleString("vi-VN")}
                 width={110}
               />
               <Tooltip
-                formatter={(value) => value.toLocaleString("vi-VN") + " ₫"}
+                formatter={(value) => value.toLocaleString("vi-VN")}
               />
               <Legend />
               <Bar dataKey="revenue" fill="#3b82f6" radius={[4, 4, 0, 0]} />
@@ -246,7 +216,6 @@ const topCustomers = Object.values(
         </div>
       </div>
 
-      {/* Biểu đồ tròn */}
       <div className="rounded-xl border bg-white shadow p-4 mt-6">
         <p className="text-lg font-semibold mb-2">
           Tỷ lệ đơn hàng theo trạng thái
@@ -290,7 +259,6 @@ const topCustomers = Object.values(
         </div>
       </div>
 
-      {/* Trạng thái đơn hàng */}
       <div className="rounded-xl border bg-white shadow p-4">
         <p className="text-lg font-semibold mb-4">Tình trạng đơn hàng</p>
         <ul className="space-y-3">
@@ -306,7 +274,6 @@ const topCustomers = Object.values(
         </ul>
       </div>
 
-      {/* Đơn hàng gần đây */}
       <div className="rounded-xl border bg-white shadow p-4">
         <p className="text-lg font-semibold mb-4">Đơn hàng gần đây</p>
         <div className="overflow-x-auto">
@@ -347,7 +314,6 @@ const topCustomers = Object.values(
         </div>
       </div>
 
-      {/* Top 5 khách hàng & sản phẩm */}
       <div className="gap-6">
         <div className="rounded-xl border bg-white shadow p-4">
           <p className="text-lg font-semibold mb-4">
@@ -365,7 +331,7 @@ const topCustomers = Object.values(
                 <tr key={c.id} className="border-b">
                   <td className="py-2">{c.name}</td>
                   <td className="py-2 text-red-600 font-semibold">
-                    {c.total.toLocaleString()} ₫
+                    {c.total.toLocaleString()}
                   </td>
                 </tr>
               ))}
