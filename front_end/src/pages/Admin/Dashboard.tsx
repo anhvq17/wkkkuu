@@ -256,12 +256,12 @@ const topCustomers = Object.values(
                     key={`cell-${index}`}
                     fill={
                       [
-                        "#f59e0b",
-                        "#3b82f6",
-                        "#10b981",
-                        "#8b5cf6",
-                        "#6b7280",
-                        "#ef4444",
+                        "#FFC107",
+                        "#17A2B8",
+                        "#9C27B0",
+                        "#4CAF50",
+                        "#2196F3",
+                        "#F44336",
                       ][index % 6]
                     }
                   />
