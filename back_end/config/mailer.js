@@ -1,4 +1,3 @@
-// config/mailer.js
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
@@ -15,13 +14,13 @@ const transporter = nodemailer.createTransport({
 export const sendMail = async (to, subject, html) => {
   try {
     await transporter.sendMail({
-      from: `"Shop" <${process.env.EMAIL_USER}>`,
+      from: `Sevend <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
     });
-    console.log(`📧 Email sent to ${to}`);
+    console.log(`Email sent to ${to}`);
   } catch (error) {
-    console.error("❌ Error sending email:", error);
+    console.error("Error sending email:", error);
   }
 };
