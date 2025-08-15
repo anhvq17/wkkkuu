@@ -35,6 +35,8 @@ const TrashAttribute = () => {
   };
 
   const handleRestore = async (id: string) => {
+    const confirm = window.confirm("Bạn có chắc chắn muốn khôi phục thuộc tính này?");
+    if (!confirm) return;
     try {
       await axios.patch(`http://localhost:3000/attribute/restore/${id}`);
       fetchTrashedAttributes();
@@ -55,11 +57,13 @@ const TrashAttribute = () => {
 
   const handleRestoreMany = async () => {
     if (selectedIds.length === 0) return;
+    const confirm = window.confirm("Bạn có chắc chắn muốn khôi phục các thuộc tính đã chọn?");
+    if (!confirm) return;
     try {
       await axios.patch("http://localhost:3000/attribute/restore-many", {
         ids: selectedIds,
       });
-      alert("Khôi phục các thuộc tính thành công")
+      alert("Khôi phục các thuộc tính thành công");
       fetchTrashedAttributes();
     } catch (error) {
       alert("Khôi phục nhiều thất bại");
@@ -91,8 +95,8 @@ const TrashAttribute = () => {
             onClick={handleRestoreMany}
             disabled={selectedIds.length === 0}
             className={`px-3 h-8 rounded text-sm text-white transition ${selectedIds.length === 0
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
               }`}
           >
             Khôi phục đã chọn ({selectedIds.length})
@@ -101,8 +105,8 @@ const TrashAttribute = () => {
             onClick={handleHardDeleteMany}
             disabled={selectedIds.length === 0}
             className={`px-3 h-8 rounded text-sm text-white transition ${selectedIds.length === 0
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-red-600 hover:bg-red-700"
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-red-600 hover:bg-red-700"
               }`}
           >
             Xóa vĩnh viễn đã chọn ({selectedIds.length})

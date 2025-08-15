@@ -44,18 +44,22 @@ export const createProduct = async (req, res) => {
   try {
     const { error } = productSchema.validate(req.body, { abortEarly: false });
     if (error) {
-      const errors = error.details.map((err) => err.message);
-      return res.status(400).json({ message: "Validation failed", errors });
+      return res.status(400).json({ message: "Dữ liệu sản phẩm không hợp lệ" });
+    }
+
+    const existingProduct = await ProductModel.findOne({ name: req.body.name });
+    if (existingProduct) {
+      return res.status(400).json({ message: "Tên sản phẩm đã tồn tại" });
     }
 
     const product = await ProductModel.create(req.body);
 
     return res.status(200).json({
-      message: "Create Product",
+      message: "Tạo sản phẩm thành công",
       data: product,
     });
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message || "Lỗi máy chủ" });
   }
 };
 
@@ -95,7 +99,7 @@ export const softDeleteProduct = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Not Found" });
     }
-     await CartModel.deleteMany({ productId: req.params.id });
+    await CartModel.deleteMany({ productId: req.params.id });
 
     // Soft delete tất cả biến thể của sản phẩm
     await VariantModel.updateMany(

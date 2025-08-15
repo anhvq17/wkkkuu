@@ -38,6 +38,8 @@ const TrashAttributeValue = () => {
   };
 
   const handleRestore = async (id: string) => {
+    const confirmRestore = window.confirm("Bạn có chắc chắn muốn khôi phục giá trị này?");
+    if (!confirmRestore) return;
     try {
       await axios.patch(`http://localhost:3000/attribute-value/restore/${id}`);
       alert("Khôi phục thành công");
@@ -59,6 +61,11 @@ const TrashAttributeValue = () => {
   };
 
   const handleRestoreMany = async () => {
+    if (selectedIds.length === 0) return;
+
+    const confirmRestore = window.confirm(`Bạn có chắc chắn muốn khôi phục ${selectedIds.length} giá trị đã chọn?`);
+    if (!confirmRestore) return;
+
     try {
       await axios.patch("http://localhost:3000/attribute-value/restore-many", {
         ids: selectedIds,
@@ -92,22 +99,20 @@ const TrashAttributeValue = () => {
           <button
             onClick={handleRestoreMany}
             disabled={selectedIds.length === 0}
-            className={`px-3 h-8 rounded text-sm text-white ${
-              selectedIds.length === 0
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
-            }`}
+            className={`px-3 h-8 rounded text-sm text-white ${selectedIds.length === 0
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+              }`}
           >
             Khôi phục đã chọn ({selectedIds.length})
           </button>
           <button
             onClick={handleHardDeleteMany}
             disabled={selectedIds.length === 0}
-            className={`px-3 h-8 rounded text-sm text-white ${
-              selectedIds.length === 0
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-red-600 hover:bg-red-700"
-            }`}
+            className={`px-3 h-8 rounded text-sm text-white ${selectedIds.length === 0
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-red-600 hover:bg-red-700"
+              }`}
           >
             Xóa vĩnh viễn ({selectedIds.length})
           </button>
