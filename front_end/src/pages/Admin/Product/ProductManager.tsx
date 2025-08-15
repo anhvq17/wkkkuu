@@ -1,103 +1,177 @@
-import { useEffect, useState } from "react"
-import { Edit, Trash, Plus, Eye } from "lucide-react"
-import { Link } from "react-router-dom"
-import axios from "axios"
+import { useEffect, useState } from "react";
+import { Edit, Trash, Plus, Eye } from "lucide-react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+
+type Category = {
+  _id: string;
+  name: string;
+};
+
+type Brand = {
+  _id: string;
+  name: string;
+};
 
 type Product = {
-  _id: string
-  name: string
-  description: string
-  priceDefault: number
-  image: string
-  categoryId: {
-    _id: string
-    name: string
-  }
-  brandId: {
-    _id: string
-    name: string
-  }
-}
+  _id: string;
+  name: string;
+  description: string;
+  priceDefault: number;
+  image: string;
+  categoryId: Category;
+  brandId: Brand;
+};
 
 const ProductManager = () => {
-  const [products, setProducts] = useState<Product[]>([])
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const productsPerPage = 5
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const productsPerPage = 5;
 
   useEffect(() => {
-    fetchProducts()
-  }, [])
+    fetchProducts();
+    fetchCategories();
+    fetchBrands();
+  }, []);
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/products")
-      setProducts(res.data.data)
-      setSelectedIds([])
-      setCurrentPage(1)
+      const res = await axios.get("http://localhost:3000/products");
+      setProducts(res.data.data);
+      setSelectedIds([]);
+      setCurrentPage(1);
     } catch (error) {
-      console.error("Lỗi khi lấy danh sách sản phẩm:", error)
+      console.error("Lỗi khi lấy danh sách sản phẩm:", error);
     }
-  }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/categories");
+      setCategories(res.data.data);
+    } catch (error) {
+      console.error("Lỗi lấy danh mục:", error);
+    }
+  };
+
+  const fetchBrands = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/brands");
+      setBrands(res.data.data);
+    } catch (error) {
+      console.error("Lỗi lấy thương hiệu:", error);
+    }
+  };
 
   const handleSoftDelete = async (id: string) => {
-    const confirm = window.confirm("Bạn có chắc muốn xóa sản phẩm này?")
-    if (!confirm) return
+    const confirmDelete = window.confirm("Bạn có chắc muốn xóa sản phẩm này?");
+    if (!confirmDelete) return;
 
     try {
-      await axios.delete(`http://localhost:3000/products/soft/${id}`)
-      alert("Đã chuyển các sản phẩm và biến thể vào thùng rác")
-      fetchProducts()
+      await axios.delete(`http://localhost:3000/products/soft/${id}`);
+      alert("Đã chuyển sản phẩm và biến thể vào thùng rác");
+      fetchProducts();
     } catch (error) {
-      console.error("Lỗi xóa mềm:", error)
-      alert("Xóa thất bại")
+      console.error("Lỗi xóa mềm:", error);
+      alert("Xóa thất bại");
     }
-  }
+  };
 
   const handleSelect = (id: string) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    )
-  }
+    );
+  };
 
   const handleSoftDeleteMany = async () => {
-    if (selectedIds.length === 0) return
+    if (selectedIds.length === 0) return;
 
-    const confirm = window.confirm(`Xóa ${selectedIds.length} sản phẩm đã chọn?`)
-    if (!confirm) return
+    const confirmDelete = window.confirm(`Xóa ${selectedIds.length} sản phẩm đã chọn?`);
+    if (!confirmDelete) return;
 
     try {
       await axios.delete("http://localhost:3000/products/soft-delete-many", {
         data: { ids: selectedIds },
-      })
-      alert("Đã chuyển các sản phẩm và biến thể vào thùng rác")
-      fetchProducts()
+      });
+      alert("Đã chuyển các sản phẩm và biến thể vào thùng rác");
+      fetchProducts();
     } catch (error) {
-      alert("Xóa thất bại")
+      alert("Xóa thất bại");
     }
-  }
+  };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
       currency: "VND",
-    }).format(price)
-  }
+    }).format(price);
+  };
 
-  const indexOfLastProduct = currentPage * productsPerPage
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct)
-  const totalPages = Math.ceil(products.length / productsPerPage)
+  // Lọc sản phẩm theo tên + danh mục + thương hiệu
+  const filteredProducts = products.filter((item) => {
+    const matchName = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchCategory = selectedCategory ? item.categoryId._id === selectedCategory : true;
+    const matchBrand = selectedBrand ? item.brandId._id === selectedBrand : true;
+    return matchName && matchCategory && matchBrand;
+  });
+
+  // Pagination dựa trên filteredProducts
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   const handlePageChange = (page: number) => {
-    if (page < 1 || page > totalPages) return
-    setCurrentPage(page)
-  }
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
 
   return (
     <div className="p-4">
+      {/* Tiêu đề + Tìm kiếm + Filter + Thao tác */}
       <div className="flex justify-between items-center mb-2">
         <h1 className="text-2xl font-semibold">Danh sách sản phẩm</h1>
         <div className="flex items-center gap-2">
+          {/* tìm kiếm  */}
+          <input
+            type="text"
+            placeholder="Tìm theo tên sản phẩm..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="px-3 py-1 border rounded"
+          />
+          {/* lọc danh mục  */}
+          <select
+            value={selectedCategory}
+            onChange={(e) => { setSelectedCategory(e.target.value); setCurrentPage(1); }}
+            className="px-3 py-1 border rounded"
+          >
+            <option value="">--Tất cả danh mục--</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>{cat.name}</option>
+            ))}
+          </select>
+          {/* lọc thương hiệu  */}
+          <select
+            value={selectedBrand}
+            onChange={(e) => { setSelectedBrand(e.target.value); setCurrentPage(1); }}
+            className="px-3 py-1 border rounded"
+          >
+            <option value="">--Tất cả thương hiệu--</option>
+            {brands.map((brand) => (
+              <option key={brand._id} value={brand._id}>{brand.name}</option>
+            ))}
+          </select>
+          {/* nút xóa nhiều  */}
           <button
             onClick={handleSoftDeleteMany}
             disabled={selectedIds.length === 0}
@@ -117,6 +191,7 @@ const ProductManager = () => {
         </div>
       </div>
 
+      {/* Menu tab */}
       <div className="flex gap-6 border-b my-4 text-base font-medium text-gray-500">
         <Link
           to="/admin/products"
@@ -132,6 +207,7 @@ const ProductManager = () => {
         </Link>
       </div>
 
+      {/* Bảng danh sách */}
       <table className="min-w-full bg-white border text-sm">
         <thead>
           <tr className="bg-black text-white text-left">
@@ -146,65 +222,73 @@ const ProductManager = () => {
           </tr>
         </thead>
         <tbody>
-          {currentProducts.map((item, index) => (
-            <tr key={item._id} className="hover:bg-gray-50 border-b">
-              <td className="px-4 py-2">
-                <input
-                  type="checkbox"
-                  checked={selectedIds.includes(item._id)}
-                  onChange={() => handleSelect(item._id)}
-                  className="w-5 h-5 accent-blue-600"
-                />
-              </td>
-              <td className="px-4 py-2">{indexOfFirstProduct + index + 1}</td>
-              <td className="px-4 py-2">
-                <img
-                  src={item.image || "/placeholder.svg?height=60&width=60"}
-                  alt={item.name}
-                  className="w-12 h-12 object-cover rounded border"
-                />
-              </td>
-              <td className="px-4 py-2 max-w-[220px]">
-                <div className="font-medium truncate">{item.name}</div>
-                <div className="text-xs text-gray-500 truncate max-w-xs">
-                  {item.description}
-                </div>
-              </td>
-              <td className="px-4 py-2 font-medium text-red-600">
-                {formatPrice(item.priceDefault)}
-              </td>
-              <td className="px-4 py-2">
-                <span className="px-2 py-1 font-semibold bg-orange-100 text-orange-700 rounded-full text-xs">
-                  {item.categoryId?.name || "Không xác định"}
-                </span>
-              </td>
-              <td className="px-4 py-2">
-                <span className="px-2 py-1 font-semibold bg-green-100 text-green-700 rounded-full text-xs">
-                  {item.brandId?.name || "Không xác định"}
-                </span>
-              </td>
-              <td className="px-4 py-2">
-                <div className="flex gap-1">
-                  <Link to={`/admin/products/${item._id}`}>
-                    <button className="w-8 h-8 bg-gray-600 text-white rounded hover:bg-gray-700 flex items-center justify-center">
-                      <Eye size={14} />
-                    </button>
-                  </Link>
-                  <Link to={`/admin/products/edit/${item._id}`}>
-                    <button className="w-8 h-8 bg-green-600 text-white rounded hover:bg-green-700 flex items-center justify-center">
-                      <Edit size={14} />
-                    </button>
-                  </Link>
-                  <button
-                    onClick={() => handleSoftDelete(item._id)}
-                    className="w-8 h-8 bg-red-600 text-white rounded hover:bg-red-700 flex items-center justify-center"
-                  >
-                    <Trash size={14} />
-                  </button>
-                </div>
+          {currentProducts.length === 0 ? (
+            <tr>
+              <td colSpan={8} className="text-center py-4">
+                Không có sản phẩm
               </td>
             </tr>
-          ))}
+          ) : (
+            currentProducts.map((item, index) => (
+              <tr key={item._id} className="hover:bg-gray-50 border-b">
+                <td className="px-4 py-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(item._id)}
+                    onChange={() => handleSelect(item._id)}
+                    className="w-5 h-5 accent-blue-600"
+                  />
+                </td>
+                <td className="px-4 py-2">{indexOfFirstProduct + index + 1}</td>
+                <td className="px-4 py-2">
+                  <img
+                    src={item.image || "/placeholder.svg?height=60&width=60"}
+                    alt={item.name}
+                    className="w-12 h-12 object-cover rounded border"
+                  />
+                </td>
+                <td className="px-4 py-2 max-w-[220px]">
+                  <div className="font-medium truncate">{item.name}</div>
+                  <div className="text-xs text-gray-500 truncate max-w-xs">
+                    {item.description}
+                  </div>
+                </td>
+                <td className="px-4 py-2 font-medium text-red-600">
+                  {formatPrice(item.priceDefault)}
+                </td>
+                <td className="px-4 py-2">
+                  <span className="px-2 py-1 font-semibold bg-orange-100 text-orange-700 rounded-full text-xs">
+                    {item.categoryId?.name || "Không xác định"}
+                  </span>
+                </td>
+                <td className="px-4 py-2">
+                  <span className="px-2 py-1 font-semibold bg-green-100 text-green-700 rounded-full text-xs">
+                    {item.brandId?.name || "Không xác định"}
+                  </span>
+                </td>
+                <td className="px-4 py-2">
+                  <div className="flex gap-1">
+                    <Link to={`/admin/products/${item._id}`}>
+                      <button className="w-8 h-8 bg-gray-600 text-white rounded hover:bg-gray-700 flex items-center justify-center">
+                        <Eye size={14} />
+                      </button>
+                    </Link>
+                    <Link to={`/admin/products/edit/${item._id}`}>
+                      <button className="w-8 h-8 bg-green-600 text-white rounded hover:bg-green-700 flex items-center justify-center">
+                        <Edit size={14} />
+                      </button>
+                    </Link>
+                    <button
+                      onClick={() => handleSoftDelete(item._id)}
+                      className="w-8 h-8 bg-red-600 text-white rounded hover:bg-red-700 flex items-center justify-center"
+                    >
+                      <Trash size={14} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
@@ -239,7 +323,7 @@ const ProductManager = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProductManager
+export default ProductManager;

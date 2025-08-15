@@ -6,8 +6,10 @@ import { Trash2, Upload } from "lucide-react"
 import type { AttributeValue, GroupedAttribute, ProductInput, VariantErrors, VariantInput } from "../../../types/Product"
 import { validateVariantField, validateAllVariants } from "./validate"
 import { areAttributesEqual } from "../../../utils/compareAttributes"
+import { useNavigate } from "react-router-dom"
 
 const AddProduct = () => {
+  const navigate = useNavigate();
   const [attributes, setAttributes] = useState<GroupedAttribute[]>([])
   const [selectedValues, setSelectedValues] = useState<{ [key: string]: AttributeValue[] }>({})
   const [variants, setVariants] = useState<VariantInput[]>([])
@@ -22,6 +24,7 @@ const AddProduct = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
     watch,
     reset, // Thêm reset method
@@ -171,117 +174,117 @@ const AddProduct = () => {
   }
 
   const onSubmit = async (data: ProductInput) => {
-    setHasSubmitted(true)
-    setIsUploading(true)
+    setHasSubmitted(true);
+    setIsUploading(true);
 
-    //  Kiểm tra có biến thể không
+    // Kiểm tra có biến thể không
     if (variants.length === 0) {
-      alert("Bạn phải tạo ít nhất một biến thể.")
-      setIsUploading(false)
-      return
+      alert("Bạn phải tạo ít nhất một biến thể.");
+      setIsUploading(false);
+      return;
     }
 
-    //  Kiểm tra biến thể có hợp lệ không
-    const isVariantValid = validateAllVariants(variants, setVariantErrors)
+    // Kiểm tra biến thể có hợp lệ không
+    const isVariantValid = validateAllVariants(variants, setVariantErrors);
     if (!isVariantValid) {
-      alert("Vui lòng kiểm tra và sửa các lỗi trong biến thể.")
-      setIsUploading(false)
-      return
+      alert("Vui lòng kiểm tra và sửa các lỗi trong biến thể.");
+      setIsUploading(false);
+      return;
     }
 
     try {
-      //  Upload ảnh sản phẩm chính nếu có
-      let productImageUrl = ""
+      // Upload ảnh sản phẩm chính nếu có
+      let productImageUrl = "";
       if (data.image && data.image.length > 0) {
-        console.log("Uploading product image to Cloudinary...")
-        productImageUrl = await uploadToCloudinary(data.image[0])
-        console.log("Product image uploaded:", productImageUrl)
+        console.log("Uploading product image to Cloudinary...");
+        productImageUrl = await uploadToCloudinary(data.image[0]);
+        console.log("Product image uploaded:", productImageUrl);
       }
 
-      //  Tạo sản phẩm trước
+      // Tạo sản phẩm trước
       const productData = {
         name: data.name,
         description: data.description,
-        priceDefault: Number.parseFloat(data.priceDefault),
+        priceDefault: Number.parseFloat(data.priceDefault.replace(/\./g, "")),
         categoryId: data.categoryId,
         brandId: data.brandId,
         image: productImageUrl,
-      }
+      };
 
-      console.log("Creating product with data:", productData)
+      console.log("Creating product with data:", productData);
 
       const productRes = await axios.post("http://localhost:3000/products", productData, {
         headers: {
           "Content-Type": "application/json",
         },
-      })
+      });
 
-      const productId = productRes.data.data._id
-      console.log("Product created with ID:", productId)
+      const productId = productRes.data.data._id;
+      console.log("Product created with ID:", productId);
 
-      //  Tạo từng biến thể
+      // Tạo từng biến thể
       for (let i = 0; i < variants.length; i++) {
-        const variant = variants[i]
+        const variant = variants[i];
 
         // Upload ảnh nếu có
-        let variantImageUrl = ""
+        let variantImageUrl = "";
         if (variant.image) {
-          console.log(`Uploading variant ${i + 1} image to Cloudinary...`)
-          variantImageUrl = await uploadToCloudinary(variant.image)
-          console.log(`Variant ${i + 1} image uploaded:`, variantImageUrl)
+          console.log(`Uploading variant ${i + 1} image to Cloudinary...`);
+          variantImageUrl = await uploadToCloudinary(variant.image);
+          console.log(`Variant ${i + 1} image uploaded:`, variantImageUrl);
         }
 
         const variantData = {
           productId,
-          price: Number.parseFloat(variant.price),
+          price: Number.parseFloat(variant.price.replace(/\./g, "")),
           stock_quantity: Number.parseInt(variant.stock),
           image: variantImageUrl,
           attributes: variant.attributes,
-        }
+        };
 
-        console.log(`Creating variant ${i + 1}:`, variantData)
+        console.log(`Creating variant ${i + 1}:`, variantData);
 
         try {
           await axios.post("http://localhost:3000/variant", variantData, {
             headers: {
               "Content-Type": "application/json",
             },
-          })
-          console.log(`Variant ${i + 1} created successfully`)
+          });
+          console.log(`Variant ${i + 1} created successfully`);
         } catch (variantError: any) {
-          console.error(`Error creating variant ${i + 1}:`, variantError)
+          console.error(`Error creating variant ${i + 1}:`, variantError);
           if (variantError?.response?.data) {
-            console.error("Variant error response:", variantError.response.data)
+            console.error("Variant error response:", variantError.response.data);
           }
-          throw variantError
+          throw variantError;
         }
       }
 
-      //  Thành công
-      alert("Tạo sản phẩm thành công!")
+      // Thành công
+      alert("Tạo sản phẩm thành công!");
 
-      //  Reset lại form
-      setVariants([])
-      setVariantErrors([])
-      setSelectedValues({})
-      setProductImagePreview("")
-      setHasSubmitted(false)
-      reset()
+      // Reset lại form
+      setVariants([]);
+      setVariantErrors([]);
+      setSelectedValues({});
+      setProductImagePreview("");
+      setHasSubmitted(false);
+      reset();
 
     } catch (error: any) {
-      console.error("Error creating product:", error)
-      if (error?.response?.data) {
-        const errorMessage = error.response.data.message || error.response.data.error || "Lỗi không xác định"
-        alert(`Tạo sản phẩm thất bại: ${errorMessage}`)
-      } else if (error?.message) {
-        alert(`Tạo sản phẩm thất bại: ${error.message}`)
-      } else {
-        alert("Tạo sản phẩm thất bại: Lỗi kết nối")
-      }
+      console.error("Error creating product:", error);
+
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        "Lỗi không xác định";
+
+      alert(`Tạo sản phẩm thất bại: ${errorMessage}`);
     } finally {
-      setIsUploading(false)
+      setIsUploading(false);
     }
-  }
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white space-y-6">
@@ -306,9 +309,14 @@ const AddProduct = () => {
                 required: "Giá mặc định là bắt buộc",
                 min: { value: 1, message: "Giá phải lớn hơn 0" },
               })}
+              value={watch("priceDefault")?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") || ""}
+              onChange={(e) => {
+                const rawValue = e.target.value.replace(/\./g, ""); // bỏ dấu chấm
+                setValue("priceDefault", rawValue); // lưu giá trị dạng số
+              }}
               className="border rounded px-3 py-2 w-full"
-              placeholder="VD: 1000000"
-              type="number"
+              placeholder="VD: 1.000.000"
+              type="text"
             />
             {errors.priceDefault && <p className="text-red-500 text-sm mt-1">{errors.priceDefault.message}</p>}
           </div>
@@ -449,18 +457,23 @@ const AddProduct = () => {
                           </td>
                         )
                       })}
+                      {/* giá biến thể  */}
                       <td className="border px-2 py-1">
                         <div className="space-y-1">
                           <input
-                            type="number"
-                            value={v.price}
-                            onChange={(e) => handleVariantChange(i, "price", e.target.value)}
+                            type="text"
+                            value={v.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") || ""}
+                            onChange={(e) => {
+                              const rawValue = e.target.value.replace(/\./g, "");
+                              handleVariantChange(i, "price", rawValue);
+                            }}
                             className={`w-24 border px-1 py-1 rounded ${variantErrors[i]?.price ? "border-red-500" : "border-gray-300"}`}
                             placeholder="0"
                           />
                           {variantErrors[i]?.price && <p className="text-red-500 text-xs">{variantErrors[i].price}</p>}
                         </div>
                       </td>
+                      {/* quantity biến thể  */}
                       <td className="border px-2 py-1">
                         <div className="space-y-1">
                           <input
@@ -473,6 +486,7 @@ const AddProduct = () => {
                           {variantErrors[i]?.stock && <p className="text-red-500 text-xs">{variantErrors[i].stock}</p>}
                         </div>
                       </td>
+                      {/* ảnh biến thể  */}
                       <td className="border px-2 py-1">
                         <div className="space-y-1">
                           <input
@@ -516,7 +530,7 @@ const AddProduct = () => {
         <button
           type="submit"
           disabled={isUploading}
-          className={`px-4 py-2 rounded text-white transition-colors ${isUploading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+          className={`px-4 py-2  rounded text-white transition-colors ${isUploading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
             }`}
         >
           {isUploading ? (
@@ -527,6 +541,14 @@ const AddProduct = () => {
           ) : (
             "Lưu sản phẩm"
           )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate("/admin/products")}
+          className="px-6 py-2 ml-4 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+        >
+          Quay lại
         </button>
       </form>
     </div>
