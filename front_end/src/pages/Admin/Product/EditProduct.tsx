@@ -31,7 +31,6 @@ const EditProduct = () => {
   const [variantDuplicationError, setVariantDuplicationError] = useState<string>("")
   const [originalVariantIds, setOriginalVariantIds] = useState<string[]>([]) // xóa biến thể
 
-
   const {
     register,
     handleSubmit,
@@ -282,7 +281,6 @@ const EditProduct = () => {
     }
   }
 
-
   const handleVariantChange = (index: number, field: keyof VariantInput, value: any) => {
     setVariants((prev) => {
       const updated = [...prev]
@@ -309,9 +307,14 @@ const EditProduct = () => {
   }
 
   const removeVariant = (index: number) => {
-    setVariants((prev) => prev.filter((_, i) => i !== index))
-    setVariantErrors((prev) => prev.filter((_, i) => i !== index))
-  }
+    const confirmDelete = window.confirm(
+      `Bạn có chắc muốn xóa biến thể này?`
+    );
+    if (!confirmDelete) return;
+
+    setVariants((prev) => prev.filter((_, i) => i !== index));
+    setVariantErrors((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const canGenerateVariants = attributes.every((attr) => selectedValues[attr.attributeId]?.length > 0)
 
@@ -471,9 +474,14 @@ const EditProduct = () => {
                 required: "Giá mặc định là bắt buộc",
                 min: { value: 1, message: "Giá phải lớn hơn 0" },
               })}
+              value={watch("priceDefault")?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") || ""}
+              onChange={(e) => {
+                const rawValue = e.target.value.replace(/\./g, ""); // bỏ dấu chấm
+                setValue("priceDefault", rawValue, { shouldValidate: true }); // lưu số và validate lại
+              }}
               className="border rounded px-3 py-2 w-full"
-              placeholder="VD: 1000000"
-              type="number"
+              placeholder="VD: 1.000.000"
+              type="text"
             />
             {errors.priceDefault && <p className="text-red-500 text-sm mt-1">{errors.priceDefault.message}</p>}
           </div>
@@ -550,13 +558,13 @@ const EditProduct = () => {
             Chọn thuộc tính <span className="text-red-500">*</span>
           </h3>
           {attributes.map((attr) => (
-                          <AttributeSelector
-                key={attr.attributeId}
-                name={attr.name}
-                values={attr.values}
-                selected={(selectedValues[attr.attributeId] || []).map((v) => v._id)}
-                onChange={(ids) => handleSelectValues(attr.attributeId, ids)}
-              />
+            <AttributeSelector
+              key={attr.attributeId}
+              name={attr.name}
+              values={attr.values}
+              selected={(selectedValues[attr.attributeId] || []).map((v) => v._id)}
+              onChange={(ids) => handleSelectValues(attr.attributeId, ids)}
+            />
           ))}
           <button
             type="button"
@@ -618,18 +626,23 @@ const EditProduct = () => {
                           </td>
                         )
                       })}
+                      {/* giá biến thể  */}
                       <td className="border px-2 py-1">
                         <div className="space-y-1">
                           <input
-                            type="number"
-                            value={v.price}
-                            onChange={(e) => handleVariantChange(i, "price", e.target.value)}
+                            type="text"
+                            value={v.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") || ""}
+                            onChange={(e) => {
+                              const rawValue = e.target.value.replace(/\./g, ""); // bỏ dấu chấm
+                              handleVariantChange(i, "price", rawValue); // lưu giá trị số dạng chuỗi
+                            }}
                             className={`w-24 border px-1 py-1 rounded ${variantErrors[i]?.price ? "border-red-500" : "border-gray-300"}`}
                             placeholder="0"
                           />
                           {variantErrors[i]?.price && <p className="text-red-500 text-xs">{variantErrors[i].price}</p>}
                         </div>
                       </td>
+                      {/* quantity biến thể  */}
                       <td className="border px-2 py-1">
                         <div className="space-y-1">
                           <input
@@ -642,6 +655,7 @@ const EditProduct = () => {
                           {variantErrors[i]?.stock && <p className="text-red-500 text-xs">{variantErrors[i].stock}</p>}
                         </div>
                       </td>
+                      {/* ảnh biến thể  */}
                       <td className="border px-2 py-1">
                         <div className="space-y-1">
                           <input
