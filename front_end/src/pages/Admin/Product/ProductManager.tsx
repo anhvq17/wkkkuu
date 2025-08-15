@@ -107,13 +107,9 @@ const ProductManager = () => {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price);
+    return new Intl.NumberFormat("vi-VN").format(price);
   };
 
-  // Lọc sản phẩm theo tên + danh mục + thương hiệu
   const filteredProducts = products.filter((item) => {
     const matchName = item.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchCategory = selectedCategory ? item.categoryId._id === selectedCategory : true;
@@ -121,7 +117,6 @@ const ProductManager = () => {
     return matchName && matchCategory && matchBrand;
   });
 
-  // Pagination dựa trên filteredProducts
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
@@ -134,14 +129,12 @@ const ProductManager = () => {
 
   return (
     <div className="p-4">
-      {/* Tiêu đề + Tìm kiếm + Filter + Thao tác */}
       <div className="flex justify-between items-center mb-2">
         <h1 className="text-2xl font-semibold">Danh sách sản phẩm</h1>
         <div className="flex items-center gap-2">
-          {/* tìm kiếm  */}
           <input
             type="text"
-            placeholder="Tìm theo tên sản phẩm..."
+            placeholder="Tìm kiếm..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -149,29 +142,26 @@ const ProductManager = () => {
             }}
             className="px-3 py-1 border rounded"
           />
-          {/* lọc danh mục  */}
           <select
             value={selectedCategory}
             onChange={(e) => { setSelectedCategory(e.target.value); setCurrentPage(1); }}
             className="px-3 py-1 border rounded"
           >
-            <option value="">--Tất cả danh mục--</option>
+            <option value="">-- Danh mục --</option>
             {categories.map((cat) => (
               <option key={cat._id} value={cat._id}>{cat.name}</option>
             ))}
           </select>
-          {/* lọc thương hiệu  */}
           <select
             value={selectedBrand}
             onChange={(e) => { setSelectedBrand(e.target.value); setCurrentPage(1); }}
             className="px-3 py-1 border rounded"
           >
-            <option value="">--Tất cả thương hiệu--</option>
+            <option value="">-- Thương hiệu --</option>
             {brands.map((brand) => (
               <option key={brand._id} value={brand._id}>{brand.name}</option>
             ))}
           </select>
-          {/* nút xóa nhiều  */}
           <button
             onClick={handleSoftDeleteMany}
             disabled={selectedIds.length === 0}
@@ -191,7 +181,6 @@ const ProductManager = () => {
         </div>
       </div>
 
-      {/* Menu tab */}
       <div className="flex gap-6 border-b my-4 text-base font-medium text-gray-500">
         <Link
           to="/admin/products"
@@ -207,7 +196,6 @@ const ProductManager = () => {
         </Link>
       </div>
 
-      {/* Bảng danh sách */}
       <table className="min-w-full bg-white border text-sm">
         <thead>
           <tr className="bg-black text-white text-left">
@@ -292,7 +280,6 @@ const ProductManager = () => {
         </tbody>
       </table>
 
-      {/* Pagination */}
       <div className="flex justify-center mt-4 gap-2">
         <button
           onClick={() => handlePageChange(currentPage - 1)}
