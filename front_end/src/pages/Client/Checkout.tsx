@@ -295,6 +295,18 @@ const Checkout = () => {
         discount: discount,
       };
 
+      if (paymentMethod === "vnpay") {
+        // Lưu payload tạm để tạo đơn sau khi thanh toán thành công
+        localStorage.setItem("pendingOrderPayload", JSON.stringify(orderPayload));
+        localStorage.setItem("lastOrderedItems", JSON.stringify(cartItems));
+        // Lấy URL thanh toán VNPay (không kèm orderId)
+        const paymentRes = await fetch(`http://localhost:3000/payment/create_payment?amount=${total}`);
+        const paymentData = await paymentRes.json();
+        window.location.href = paymentData.paymentUrl;
+        return;
+      }
+
+      // Các phương thức khác sẽ tạo đơn trước
       const response = await fetch("http://localhost:3000/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -308,8 +320,6 @@ const Checkout = () => {
         setIsLoading(false);
         return;
       }
-
-
 
       const orderResult = await response.json();
       const orderId = orderResult.orderId;
@@ -339,11 +349,6 @@ const Checkout = () => {
         }
 
         window.location.href = `ordersuccessfully?orderId=${orderId}`;
-      } else if (paymentMethod === "vnpay") {
-        localStorage.setItem("lastOrderedItems", JSON.stringify(cartItems));
-        const paymentRes = await fetch(`http://localhost:3000/payment/create_payment?amount=${total}&orderId=${orderId}`);
-        const paymentData = await paymentRes.json();
-        window.location.href = paymentData.paymentUrl;
       } else {
         // Xử lý các phương thức thanh toán khác (ví dụ: COD)
         const cart = JSON.parse(localStorage.getItem("cart") || "[]");
