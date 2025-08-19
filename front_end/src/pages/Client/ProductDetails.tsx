@@ -384,13 +384,38 @@ const ProductDetails = () => {
     }
   }, [selectedVolume, selectedScent, variants]);
 
-  const addToCart = async (product: ProductDetailType) => {
-    if (!selectedVariant || !user) return;
+  const addToCart = async (
+  product: ProductDetailType,
+  selectedVariant: any,
+  quantity: number,
+  selectedScent: string,
+  selectedVolume: string,
+  user: any
+) => {
+  if (!selectedVariant || !user) return;
 
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]") as any[];
-    const existing = cart.find(
-      (item) => item.variantId === selectedVariant._id
-    );
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]") as any[];
+  const existing = cart.find((item) => item.variantId === selectedVariant._id);
+
+  if (existing) {
+    const newQuantity = existing.quantity + quantity;
+
+    // ✅ Kiểm tra tổng số lượng trong giỏ không vượt quá tồn kho
+    if (newQuantity > selectedVariant.stock_quantity) {
+      toast.error(
+        `Trong kho chỉ còn ${selectedVariant.stock_quantity}. 
+        Hiện bạn đã có ${existing.quantity} trong giỏ, 
+        chỉ có thể thêm tối đa ${selectedVariant.stock_quantity - existing.quantity} nữa.`
+      );
+      return;
+    }
+
+    existing.quantity = newQuantity;
+  } else {
+    if (quantity > selectedVariant.stock_quantity) {
+      toast.error(`Chỉ còn ${selectedVariant.stock_quantity} sản phẩm trong kho!`);
+      return;
+    }
 
     const cartItem = {
       userId: user._id,
@@ -404,13 +429,7 @@ const ProductDetails = () => {
       quantity,
     };
 
-    if (existing) {
-      existing.quantity += quantity;
-    } else {
-      cart.push(cartItem);
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
+    cart.push(cartItem);
 
     try {
       console.log("Gửi cartItem:", cartItem);
@@ -419,8 +438,11 @@ const ProductDetails = () => {
     } catch (error) {
       console.error("Lỗi khi gửi sản phẩm lên server:", error);
     }
-  };
+  }
 
+  localStorage.setItem("cart", JSON.stringify(cart));
+  toast.success("Đã thêm vào giỏ hàng 🛒");
+};
 
 const handleAddToCart = () => {
   if (!user) {
@@ -438,29 +460,18 @@ const handleAddToCart = () => {
     return;
   }
 
-  // ✅ Kiểm tra tồn kho
+  // ✅ Kiểm tra tồn kho cơ bản
   if (selectedVariant.stock_quantity <= 0) {
     toast.error("Sản phẩm này đã hết hàng!");
     return;
   }
 
-  if (quantity > selectedVariant.stock_quantity) {
-    toast.error(`Chỉ còn ${selectedVariant.stock_quantity} sản phẩm trong kho!`);
-    return;
-  }
-
   // Nếu còn hàng thì thêm vào giỏ
-  addToCart({
-    ...product,
-    variantId: selectedVariant._id,
-    selectedScent,
-    selectedVolume,
-    quantity,
-  });
+  addToCart(product, selectedVariant, quantity, selectedScent, selectedVolume, user);
 
   setQuantity(1);
-  toast.success("Đã thêm vào giỏ hàng 🛒");
 };
+
 
 const handleBuyNow = () => {
   if (!selectedScent || !selectedVolume) {
