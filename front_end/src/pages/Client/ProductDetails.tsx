@@ -385,70 +385,47 @@ const ProductDetails = () => {
   }, [selectedVolume, selectedScent, variants]);
 
   const addToCart = async (
-    product: ProductDetailType,
-    selectedVariant: VariantType,
-    quantity: number,
-    selectedScent: string,
-    selectedVolume: string,
-    user: UserType
-  ) => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]") as any[];
-    const existing = cart.find((item) => item.variantId === selectedVariant._id);
+  product: ProductDetailType,
+  selectedVariant: VariantType,
+  quantity: number,
+  selectedScent: string,
+  selectedVolume: string,
+  user: UserType
+) => {
+  try {
+    // ✅ Gửi request lên server để kiểm tra & thêm giỏ
+    const res = await axios.post("http://localhost:3000/cart", {
+      userId: user._id,
+      variantId: selectedVariant._id,
+      productId: product._id,
+      name: product.name,
+      image: selectedVariant.image,
+      price: selectedVariant.price,
+      selectedScent,
+      selectedVolume,
+      quantity,
+    });
+
+    // ✅ Nếu thêm thành công thì cập nhật localStorage
+    const updatedItem = res.data.cartItem;
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]") as any[];
+
+    const existing = cart.find((item) => item.variantId === updatedItem.variantId);
 
     if (existing) {
-      // 🚫 Nếu giỏ hàng đã đạt tối đa tồn kho thì không cho thêm nữa
-      if (existing.quantity >= selectedVariant.stock_quantity) {
-        toast.error(
-          `Bạn đã có tối đa ${selectedVariant.stock_quantity} sản phẩm này trong giỏ hàng. Không thể thêm nữa!`
-        );
-        return;
-      }
-
-      const newQuantity = existing.quantity + quantity;
-
-      // Nếu cộng vào vượt tồn thì cũng không cho thêm
-      if (newQuantity > selectedVariant.stock_quantity) {
-        toast.error(
-          `Trong kho chỉ còn ${selectedVariant.stock_quantity}. 
-          Hiện bạn đã có ${existing.quantity} trong giỏ, 
-          không thể thêm ${quantity} sản phẩm nữa.`
-        );
-        return;
-      }
-
-      existing.quantity = newQuantity;
+      existing.quantity = updatedItem.quantity; // update lại theo DB
     } else {
-      // Nếu thêm mới mà số lượng > tồn kho
-      if (quantity > selectedVariant.stock_quantity) {
-        toast.error(`Chỉ còn ${selectedVariant.stock_quantity} sản phẩm trong kho!`);
-        return;
-      }
-
-      const cartItem = {
-        userId: user._id,
-        variantId: selectedVariant._id,
-        productId: product._id,
-        name: product.name,
-        image: selectedVariant.image,
-        price: selectedVariant.price,
-        selectedScent,
-        selectedVolume,
-        quantity,
-      };
-
-      cart.push(cartItem);
-
-      try {
-        await axios.post("http://localhost:3000/cart", cartItem);
-        console.log("Sản phẩm đã được gửi lên server.");
-      } catch (error) {
-        console.error("Lỗi khi gửi sản phẩm lên server:", error);
-      }
+      cart.push(updatedItem);
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
     toast.success("Đã thêm vào giỏ hàng 🛒");
-  };
+  } catch (error: any) {
+    // ❌ Nếu server trả lỗi (vd vượt tồn kho) thì hiển thị
+    toast.error(error.response?.data?.message || "Không thể thêm vào giỏ hàng");
+  }
+};
+
 
 
 const handleAddToCart = () => {
