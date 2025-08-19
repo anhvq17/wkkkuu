@@ -5,6 +5,7 @@ import VoucherUserModel from '../models/VoucherUserModel.js';
 import VariantModel from '../models/VariantModel.js';
 import User from '../models/UserModel.js';
 import { sendMail } from "../config/mailer.js"; 
+import { notifyOrderStatus } from "../server.js";
 
 export const createOrder = async (req, res) => {
   try {
@@ -87,6 +88,11 @@ export const createOrder = async (req, res) => {
       discountType,
       discountValue,
     });
+
+    // Emit real-time event for newly created order
+    try {
+      notifyOrderStatus(order._id.toString(), order.orderStatus, userId.toString());
+    } catch (_) {}
 
     if (paymentMethod === 'wallet') {
       if (user.wallet < totalAmount) {
@@ -354,6 +360,11 @@ export const updateOrder = async (req, res) => {
       await sendMail(user.email, subject, html);
     }
 
+    // Emit real-time event for order update
+    try {
+      notifyOrderStatus(updated._id.toString(), updated.orderStatus, updated.userId?.toString?.());
+    } catch (_) {}
+
     return res.status(200).json(updated);
   } catch (err) {
     return res.status(400).json({ error: err.message });
@@ -419,6 +430,11 @@ export const payOrder = async (req, res) => {
     order.paymentStatus = "Đã thanh toán";
     order.paymentMethod = paymentMethod;
     await order.save();
+
+    // Emit real-time event for payment update
+    try {
+      notifyOrderStatus(order._id.toString(), order.orderStatus, order.userId?.toString?.());
+    } catch (_) {}
 
     res.json({ message: "Thanh toán thành công", order });
   } catch (error) {

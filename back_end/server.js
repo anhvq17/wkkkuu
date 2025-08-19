@@ -57,8 +57,8 @@ io.on("connection", (socket) => {
 });
 
 //  Hàm gọi từ controller khi cập nhật đơn hàng
-export const notifyOrderStatus = (orderId, status) => {
-  io.emit("orderStatusChanged", { orderId, status });
+export const notifyOrderStatus = (orderId, status, userId) => {
+  io.emit("orderStatusChanged", { orderId, status, userId });
 };
 
 // Middleware
