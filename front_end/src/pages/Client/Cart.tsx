@@ -20,14 +20,13 @@ interface CartItem {
     height?: number;
   };
   id: string;
+  deletedAt?: string | null; // thêm cờ soft delete
 }
 
 interface UserInfoType {
   _id: string;
   username: string;
 }
-
-
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -46,6 +45,7 @@ const Cart = () => {
       selectedScent: item.fragrance,
       variantId: item.variantId,
       image: item.image.src,
+      deletedAt: item.deletedAt || null,
     }));
     localStorage.setItem("cart", JSON.stringify(formatted));
   };
@@ -55,7 +55,6 @@ const Cart = () => {
       const res = await axios.get(`http://localhost:3000/cart/user/${userId}`);
       const serverCart = res.data.cart;
 
-      // Ghi đè giỏ hàng local bằng giỏ hàng từ server
       localStorage.setItem("cart", JSON.stringify(serverCart));
 
       setCartItems(
@@ -77,6 +76,7 @@ const Cart = () => {
               width: 100,
               height: 100,
             },
+            deletedAt: item.deletedAt || null,
           };
         })
       );
@@ -125,6 +125,7 @@ const Cart = () => {
                 width: 100,
                 height: 100,
               },
+              deletedAt: item.deletedAt || null,
             };
           });
           setCartItems(items);
@@ -137,7 +138,7 @@ const Cart = () => {
 
   const updateQuantity = async (id: string, newQuantity: number) => {
     const targetItem = cartItems.find((item) => item.id === id);
-    if (!targetItem) return;
+    if (!targetItem || targetItem.deletedAt) return; // không update nếu đã xóa mềm
 
     if (newQuantity < 1) {
       if (window.confirm("Bạn có muốn xoá sản phẩm này khỏi giỏ hàng?")) {
@@ -198,20 +199,28 @@ const Cart = () => {
       alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
       return;
     }
-    const selected = cartItems.filter((item) =>
-      selectedItems.includes(item.id)
+
+    const selected = cartItems.filter(
+      (item) => selectedItems.includes(item.id) && !item.deletedAt
     );
+
+    if (selected.length === 0) {
+      alert("Không thể thanh toán sản phẩm đã bị xóa!");
+      return;
+    }
+
     if (!selected.every((item) => item.variantId)) {
       alert("Một số sản phẩm trong giỏ hàng thiếu thông tin biến thể.");
       return;
     }
+
     localStorage.setItem("checkoutItems", JSON.stringify(selected));
     navigate("/checkout");
   };
 
   const subtotal = cartItems.reduce(
     (total, item) =>
-      selectedItems.includes(item.id)
+      selectedItems.includes(item.id) && !item.deletedAt
         ? total + item.price * item.quantity
         : total,
     0
@@ -219,7 +228,9 @@ const Cart = () => {
 
   const total = subtotal;
   const allSelected =
-    selectedItems.length === cartItems.length && cartItems.length > 0;
+    selectedItems.length ===
+      cartItems.filter((item) => !item.deletedAt).length &&
+    cartItems.length > 0;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -248,7 +259,9 @@ const Cart = () => {
                   checked={allSelected}
                   onChange={(e) => {
                     if (e.target.checked) {
-                      setSelectedItems(cartItems.map((item) => item.id));
+                      setSelectedItems(
+                        cartItems.filter((i) => !i.deletedAt).map((item) => item.id)
+                      );
                     } else {
                       setSelectedItems([]);
                     }
@@ -261,24 +274,27 @@ const Cart = () => {
               <div className="space-y-6">
                 {cartItems.map((item) => (
                   <div
-                    key={`${item.productId}-${item.variantId || ""}-${
-                      item.volume
-                    }-${item.fragrance || ""}`}
-                    className="flex border rounded-lg p-4 items-start"
+                    key={`${item.productId}-${item.variantId || ""}-${item.volume}-${item.fragrance || ""}`}
+                    className={`flex border rounded-lg p-4 items-start ${
+                      item.deletedAt ? "opacity-50" : ""
+                    }`}
                   >
                     <input
                       type="checkbox"
                       checked={selectedItems.includes(item.id)}
                       onChange={(e) => {
                         const checked = e.target.checked;
+                        if (item.deletedAt) return;
                         setSelectedItems((prev) =>
                           checked
                             ? [...prev, item.id]
                             : prev.filter((id) => id !== item.id)
                         );
                       }}
+                      disabled={!!item.deletedAt}
                       className="mr-4 mt-2"
                     />
+
                     <div className="w-24 h-24 bg-gray-100 rounded overflow-hidden">
                       <Link to={`/productdetails/${item.productId}`}>
                         <img
@@ -288,6 +304,7 @@ const Cart = () => {
                         />
                       </Link>
                     </div>
+
                     <div className="ml-4 flex-grow">
                       <div className="flex justify-between items-start">
                         <div>
@@ -296,13 +313,23 @@ const Cart = () => {
                               {item.name}
                             </h3>
                           </Link>
-                          <p className="text-sm text-gray-500 mt-1">
-                            Hương vị: {item.fragrance}
-                          </p>
-                          <p className="text-sm text-gray-500 mt-1">
-                            Dung tích: {item.volume}
-                          </p>
+
+                          {item.deletedAt ? (
+                            <p className="text-red-500 font-semibold mt-2">
+                              Sản phẩm không tồn tại
+                            </p>
+                          ) : (
+                            <>
+                              <p className="text-sm text-gray-500 mt-1">
+                                Hương vị: {item.fragrance}
+                              </p>
+                              <p className="text-sm text-gray-500 mt-1">
+                                Dung tích: {item.volume}
+                              </p>
+                            </>
+                          )}
                         </div>
+
                         <button
                           onClick={() => removeItem(item.id)}
                           className="text-gray-400 hover:text-red-500"
@@ -311,32 +338,34 @@ const Cart = () => {
                         </button>
                       </div>
 
-                      <div className="flex justify-between items-center mt-4">
-                        <div className="flex items-center border rounded overflow-hidden">
-                          <button
-                            onClick={() =>
-                              updateQuantity(item.id, item.quantity - 1)
-                            }
-                            className="px-3 py-1 text-black hover:bg-gray-200"
-                          >
-                            <Minus className="w-4 h-4" />
-                          </button>
-                          <div className="px-4 py-1 text-black text-sm border-l border-r">
-                            {item.quantity}
+                      {!item.deletedAt && (
+                        <div className="flex justify-between items-center mt-4">
+                          <div className="flex items-center border rounded overflow-hidden">
+                            <button
+                              onClick={() =>
+                                updateQuantity(item.id, item.quantity - 1)
+                              }
+                              className="px-3 py-1 text-black hover:bg-gray-200"
+                            >
+                              <Minus className="w-4 h-4" />
+                            </button>
+                            <div className="px-4 py-1 text-black text-sm border-l border-r">
+                              {item.quantity}
+                            </div>
+                            <button
+                              onClick={() =>
+                                updateQuantity(item.id, item.quantity + 1)
+                              }
+                              className="px-3 py-1 text-black hover:bg-gray-200"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </button>
                           </div>
-                          <button
-                            onClick={() =>
-                              updateQuantity(item.id, item.quantity + 1)
-                            }
-                            className="px-3 py-1 text-black hover:bg-gray-200"
-                          >
-                            <Plus className="w-4 h-4" />
-                          </button>
+                          <div className="font-bold text-red-600">
+                            {(item.price * item.quantity).toLocaleString()}
+                          </div>
                         </div>
-                        <div className="font-bold text-red-600">
-                          {(item.price * item.quantity).toLocaleString()}
-                        </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 ))}
