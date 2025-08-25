@@ -35,7 +35,9 @@ const Cart = () => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [user, setUserInfo] = useState<UserInfoType | null>(null);
   const navigate = useNavigate();
-  const MAX_QUANTITY = 50;
+  // Removed global 50-product checkout notification
+  const HIGH_VALUE_LIMIT = 50000000; // 50,000,000
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
 
 
   const saveToLocalStorage = (items: CartItem[]) => {
@@ -199,18 +201,17 @@ const Cart = () => {
       return;
     }
 
-    const totalQuantity = cartItems
-      .filter((item) => selectedItems.includes(item.id))
-      .reduce((sum, item) => sum + item.quantity, 0);
-
-    if (totalQuantity > MAX_QUANTITY) {
-      alert(`Đơn hàng vượt quá ${MAX_QUANTITY} sản phẩm.\n📞 Vui lòng liên hệ Admin qua Zalo: 0123 456 789`);
-      return;
-    }
+    // Bỏ giới hạn và thông báo 50 sản phẩm
 
     const selected = cartItems.filter((item) =>
       selectedItems.includes(item.id)
     );
+
+    const selectedTotal = selected.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    if (selectedTotal > HIGH_VALUE_LIMIT) {
+      setShowVerifyModal(true);
+      return;
+    }
 
     if (!selected.every((item) => item.variantId)) {
       alert("Một số sản phẩm trong giỏ hàng thiếu thông tin biến thể.");
@@ -405,6 +406,38 @@ const Cart = () => {
           </div>
         </div>
       </div>
+      {showVerifyModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg w-[480px] shadow-lg relative">
+            <h3 className="text-lg font-semibold mb-4 text-black">Xác minh đơn hàng giá trị cao</h3>
+            <div className="mb-4 text-sm text-gray-700">
+              Tổng giá trị các sản phẩm đã chọn vượt quá 50.000.000<br />
+              Vui lòng xác nhận để tiếp tục thanh toán.
+            </div>
+            <div className="flex justify-end space-x-1">
+              <button
+                type="button"
+                onClick={() => setShowVerifyModal(false)}
+                className="border bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm transition duration-200"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowVerifyModal(false);
+                  const selected = cartItems.filter((item) => selectedItems.includes(item.id));
+                  localStorage.setItem("checkoutItems", JSON.stringify(selected));
+                  navigate("/checkout");
+                }}
+                className="border bg-[#5f518e] hover:opacity-90 text-white px-4 py-2 rounded-md text-sm transition duration-200"
+              >
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
