@@ -79,7 +79,6 @@ export const createOrder = async (req, res) => {
       totalAmount,
       originalAmount,
       orderStatus: 'Chờ xử lý',
-      // Cho phép đánh dấu đã thanh toán ngay khi tạo nếu đã xác nhận thanh toán (VD: VNPay thành công)
       paymentStatus: paymentMethod === 'wallet'
         ? 'Đã thanh toán'
         : (req.body.isPaid === true ? 'Đã thanh toán' : 'Chưa thanh toán'),
@@ -89,7 +88,6 @@ export const createOrder = async (req, res) => {
       discountValue,
     });
 
-    // Emit real-time event for newly created order
     try {
       notifyOrderStatus(order._id.toString(), order.orderStatus, userId.toString());
     } catch (_) {}
@@ -127,6 +125,37 @@ export const createOrder = async (req, res) => {
         price: item.price
       });
     }));
+
+    if (user?.email) {
+      const subject = `Xác nhận đơn hàng #${order._id}`;
+      const html = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <p>Xin chào <b>${user.username}</b>,</p>
+          <p>
+            Đơn hàng của bạn đã được tạo thành công với mã <b>#${order._id}</b>
+          </p>
+          <h4>Thông tin đơn hàng:</h4>
+          <ul>
+            <li><b>Ngày đặt:</b> ${new Date(order.createdAt).toLocaleDateString('vi-VN')}</li>
+            <li><b>Tổng tiền:</b> ${order.totalAmount.toLocaleString()}</li>
+            <li><b>Phương thức thanh toán:</b> ${order.paymentMethod}</li>
+            <li><b>Trạng thái đơn hàng:</b> ${order.orderStatus}</li>
+          </ul>
+          <p>Bạn có thể theo dõi chi tiết đơn hàng tại: 
+            <a href="http://localhost:5173/orders" style="color: #1a73e8;">Xem đơn hàng</a>
+          </p>
+          <p>
+            Cảm ơn vì đã tin tưởng và lựa chọn <b>Sevend</b>. <br/>
+            Chúng tôi sẽ xử lý đơn hàng và thông báo đến bạn sớm nhất.
+          </p>
+          <div style="background-color: #f7f7f7; padding: 15px; font-size: 12px; color: #888; text-align: center;">
+            Đây là email tự động, vui lòng không trả lời trực tiếp.<br>
+            Liên hệ hỗ trợ: <a href="mailto:support@sevend.vn">support@sevend.vn</a>
+          </div>
+        </div>
+      `;
+      await sendMail(user.email, subject, html);
+    }
 
     return res.status(201).json({ message: 'Order created', orderId: order._id });
   } catch (err) {
@@ -194,7 +223,6 @@ export const getOrdersByUserWithItems = async (req, res) => {
   }
 };
 
-// ✅ updateOrder sửa lại cho chuẩn hoàn kho
 export const updateOrder = async (req, res) => {
   try {
     const updateData = { ...req.body };
@@ -203,7 +231,6 @@ export const updateOrder = async (req, res) => {
       return res.status(404).json({ error: 'Order not found' });
     }
 
-    // Kiểm tra chuyển trạng thái
     if (req.body.orderStatus) {
       const statusOrder = [
         'Chờ xử lý',
@@ -241,33 +268,83 @@ export const updateOrder = async (req, res) => {
       }
     }
 
-    // ✅ Khi khách xác nhận đã nhận hàng thì đánh dấu đã thanh toán
     if (req.body.orderStatus === 'Đã nhận hàng') {
       updateData.paymentStatus = 'Đã thanh toán';
       updateData.isPaid = true;
       updateData.paidAt = new Date();
     }
 
-    // ✅ Hoàn hàng -> cộng lại kho + hoàn tiền
-    if (req.body.orderStatus === 'Đã hoàn hàng') {
-      if (order.paymentStatus !== 'Đã hoàn tiền') {
-        updateData.paymentStatus = 'Đã hoàn tiền';
-        updateData.isPaid = false;
+    if (req.body.orderStatus === 'Yêu cầu hoàn hàng') {
+      let incomingReturnItems = req.body.returnItems;
+      if (typeof incomingReturnItems === 'string') {
+        try {
+          incomingReturnItems = JSON.parse(incomingReturnItems);
+        } catch (_) {
+          incomingReturnItems = [];
+        }
+      }
+      if (Array.isArray(incomingReturnItems) && incomingReturnItems.length > 0) {
+        updateData.returnItems = incomingReturnItems.map((ri) => ({
+          orderItemId: ri.orderItemId,
+          variantId: ri.variantId,
+          quantity: Math.max(1, Number(ri.quantity || 1)),
+        }));
+      }
 
+      if (Array.isArray(req.files) && req.files.length > 0) {
+        updateData.returnImages = req.files.map(f => `/uploads/${f.filename}`);
+      }
+    }
+
+    if (req.body.orderStatus === 'Đã hoàn hàng') {
+      let refundAmount = 0;
+      const orderItems = await OrderItem.find({ orderId: order._id });
+
+      if (Array.isArray(order.returnItems) && order.returnItems.length > 0) {
+        for (const ri of order.returnItems) {
+          const matched = orderItems.find((oi) => oi._id.toString() === ri.orderItemId?.toString());
+          if (!matched) continue;
+          const quantityToReturn = Math.min(ri.quantity || 0, matched.quantity);
+          if (quantityToReturn <= 0) continue;
+          refundAmount += quantityToReturn * matched.price;
+        }
+      } else {
+        for (const item of orderItems) {
+          refundAmount += item.quantity * item.price;
+        }
+      }
+
+      if (refundAmount > 0) {
         const user = await User.findById(order.userId);
         if (user) {
-          user.wallet += order.totalAmount;
+          user.wallet += refundAmount;
           user.walletHistory.push({
             type: 'refund',
-            amount: order.totalAmount,
+            amount: refundAmount,
             status: 'completed',
             note: `Hoàn tiền đơn hàng #${order._id}`,
           });
           await user.save();
         }
+        if (refundAmount >= order.totalAmount) {
+          updateData.paymentStatus = 'Đã hoàn tiền';
+          updateData.isPaid = false;
+        } else {
+          updateData.paymentStatus = order.paymentStatus;
+          updateData.isPaid = true;
+        }
+      }
 
-        // ✅ cộng lại kho
-        const orderItems = await OrderItem.find({ orderId: order._id });
+      if (Array.isArray(order.returnItems) && order.returnItems.length > 0) {
+        for (const ri of order.returnItems) {
+          if (!ri.variantId || !ri.quantity) continue;
+          await VariantModel.findByIdAndUpdate(
+            ri.variantId,
+            { $inc: { stock_quantity: ri.quantity } },
+            { new: true }
+          );
+        }
+      } else {
         for (const item of orderItems) {
           await VariantModel.findByIdAndUpdate(
             item.variantId,
@@ -278,7 +355,6 @@ export const updateOrder = async (req, res) => {
       }
     }
 
-    // ✅ Hủy đơn -> cộng lại kho + hoàn tiền (nếu đã trả trước)
     if (req.body.orderStatus === 'Đã huỷ đơn hàng') {
       if (order.paymentStatus !== 'Đã hoàn tiền' && ['vnpay', 'wallet'].includes(order.paymentMethod)) {
         updateData.paymentStatus = 'Đã hoàn tiền';
@@ -297,7 +373,6 @@ export const updateOrder = async (req, res) => {
         }
       }
 
-      // ✅ luôn cộng lại kho khi hủy đơn
       const orderItems = await OrderItem.find({ orderId: order._id });
       for (const item of orderItems) {
         await VariantModel.findByIdAndUpdate(
@@ -360,7 +435,6 @@ export const updateOrder = async (req, res) => {
       await sendMail(user.email, subject, html);
     }
 
-    // Emit real-time event for order update
     try {
       notifyOrderStatus(updated._id.toString(), updated.orderStatus, updated.userId?.toString?.());
     } catch (_) {}
@@ -370,8 +444,6 @@ export const updateOrder = async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 };
-
-
 
 export const payOrder = async (req, res) => {
   try {

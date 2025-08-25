@@ -11,6 +11,12 @@ interface OrderWithUser extends Omit<Order, 'userId'> {
   };
 }
 
+const API_URL = 'http://localhost:3000';
+const resolveImageUrl = (url?: string) => {
+  if (!url) return '';
+  return url.startsWith('http') ? url : `${API_URL}${url}`;
+};
+
 const getStatusBadge = (status: string) => {
   let color = '';
   switch (status) {
@@ -318,13 +324,14 @@ const OrderManager = () => {
         <table className="min-w-full bg-white border text-sm rounded-xl shadow-lg">
           <thead>
             <tr className="bg-black text-white text-left">
+              <th className="px-4 py-2">Mã đơn hàng</th>
               <th className="px-4 py-2">Khách hàng</th>
               <th className="px-4 py-2">Trạng thái đơn hàng</th>
 
               <th className="px-4 py-2">Trạng thái thanh toán</th>
               <th className="px-4 py-2">Tổng tiền</th>
               <th className="px-4 py-2">Phương thức thanh toán</th>
-              <th className="px-4 py-2">Ngày tạo</th>
+              
               <th className="px-4 py-2">Lý do hủy</th>
               <th className="px-4 py-2">Hành động</th>
             </tr>
@@ -333,6 +340,7 @@ const OrderManager = () => {
             {sortedOrders.length > 0 ? (
               sortedOrders.map((order) => (
                 <tr key={order._id} className="hover:bg-gray-50 transition">
+                  <td className="px-4 py-2">{order._id}</td>
                   <td className="px-4 py-2">
                     <div>
                       <div className="font-medium">{order.fullName}</div>
@@ -347,9 +355,7 @@ const OrderManager = () => {
                   <td className="px-4 py-2 text-xs">
                     {getPaymentMethodText(order.paymentMethod)}
                   </td>
-                  <td className="px-4 py-2 text-xs">
-                    {new Date(order.createdAt).toLocaleString("vi-VN")}
-                  </td>
+                  
                   <td className="px-4 py-2">
                     {order.orderStatus === 'Đã huỷ đơn hàng' && order.cancelReason ? (
                       <div className="max-w-xs">
@@ -465,6 +471,32 @@ const OrderManager = () => {
               <p className="text-gray-700 text-sm mb-4">
                 Bạn muốn xử lý yêu cầu hoàn hàng này như thế nào?
               </p>
+              {selectedOrderId && (
+                <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded">
+                  {orders.filter(o => o._id === selectedOrderId).map((o) => (
+                    <div key={o._id}>
+                      {o.returnReason && (
+                        <div className="mb-3">
+                          <p className="text-sm font-medium text-orange-800">Lý do khách hàng:</p>
+                          <p className="text-sm text-orange-700">{o.returnReason}</p>
+                        </div>
+                      )}
+                      {Array.isArray(o.returnImages) && o.returnImages.length > 0 && (
+                        <div>
+                          <p className="text-sm font-medium text-gray-800 mb-2">Ảnh minh chứng:</p>
+                          <div className="grid grid-cols-5 gap-2">
+                            {o.returnImages.map((img, idx) => (
+                              <a key={idx} href={resolveImageUrl(img)} target="_blank" rel="noreferrer" className="block w-16 h-16 border rounded overflow-hidden">
+                                <img src={resolveImageUrl(img)} alt="return" className="w-full h-full object-cover" />
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
               
               <div className="mb-4">
                 <div className="space-y-2">
@@ -498,7 +530,7 @@ const OrderManager = () => {
                 }
               </div>
               <div className="p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-700">
-                Lưu ý: Khi đơn hàng chuyển sang trạng thái "Đã nhận hàng", trạng thái thanh toán sẽ tự động chuyển thành "Đã thanh toán" (áp dụng cho cả COD và VNPAY)
+                Lưu ý: Khi đơn hàng chuyển sang trạng thái "Đã nhận hàng", trạng thái thanh toán sẽ tự động chuyển thành "Đã thanh toán".
               </div>
             </div>
             <div className="flex justify-end space-x-1">
