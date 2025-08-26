@@ -108,21 +108,33 @@ export const createOrder = async (req, res) => {
     }
 
     await Promise.all(items.map(async (item) => {
-      const variant = await VariantModel.findById(item.variantId).populate("productId");
+      const variant = await VariantModel.findById(item.variantId)
+              .populate('productId')
+        .populate('attributes.attributeId')
+        .populate('attributes.valueId');
       if (!variant) throw new Error("Biến thể không tồn tại");
 
       if (variant.stock < item.quantity) {
         throw new Error(`Sản phẩm ${variant.productId.name} không đủ hàng`);
       }
 
-     variant.stock_quantity -= item.quantity;
-    await variant.save();
+      variant.stock_quantity -= item.quantity;
+      await variant.save();
 
       await OrderItem.create({
         orderId: order._id,
         variantId: item.variantId,
         quantity: item.quantity,
-        price: item.price
+        price: item.price,
+        snapshot: {
+          productId: variant.productId?._id,
+          productName: variant.productId?.name || '',
+          productImage: variant.productId?.image || '',
+          variantId: variant._id,
+          variantName: variant.attributes?.map(a => a.valueId?.value).join(" / ") || '',
+          variantImage: variant.image || variant.productId?.image || '',
+          variantPrice: item.price
+        }
       });
     }));
 
@@ -177,16 +189,18 @@ export const getOrderById = async (req, res) => {
     const order = await Order.findById(req.params.id).populate('userId');
     if (!order) return res.status(404).json({ error: 'Order not found' });
 
-    const items = await OrderItem.find({ orderId: order._id }).populate({
-      path: 'variantId',
-      populate: [
-        { path: 'productId', model: 'products' },
-        { path: 'attributes.attributeId', model: 'attributes' },
-        { path: 'attributes.valueId', model: 'attribute_values' }
-      ]
-    });
+    const items = await OrderItem.find({ orderId: order._id }).lean();
 
-    return res.status(200).json({ order, items });
+    return res.status(200).json({
+      order,
+      items: items.map(i => ({
+        _id: i._id,
+        quantity: i.quantity,
+        price: i.price,
+        isReviewed: i.isReviewed,
+        snapshot: i.snapshot
+      }))
+    });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
@@ -206,15 +220,17 @@ export const getOrdersByUserWithItems = async (req, res) => {
     const orders = await Order.find({ userId: req.params.userId });
     const ordersWithItems = await Promise.all(
       orders.map(async (order) => {
-        const items = await OrderItem.find({ orderId: order._id }).populate({
-          path: 'variantId',
-          populate: [
-            { path: 'productId', model: 'products' },
-            { path: 'attributes.attributeId', model: 'attributes' },
-            { path: 'attributes.valueId', model: 'attribute_values' }
-          ]
-        });
-        return { ...order.toObject(), items };
+        const items = await OrderItem.find({ orderId: order._id }).lean();
+        return {
+          ...order.toObject(),
+          items: items.map(i => ({
+            _id: i._id,
+            quantity: i.quantity,
+            price: i.price,
+            isReviewed: i.isReviewed,
+            snapshot: i.snapshot
+          }))
+        };
       })
     );
     return res.status(200).json(ordersWithItems);
@@ -451,20 +467,17 @@ export const payOrder = async (req, res) => {
     const userId = req.user._id;
     const paymentMethod = req.body.paymentMethod || "wallet";
 
-    // Lấy đơn hàng
     const order = await Order.findById(orderId);
     if (!order) return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
     if (order.paymentStatus === "Đã thanh toán") {
       return res.status(400).json({ message: "Đơn hàng đã được thanh toán" });
     }
 
-    // Lấy các sản phẩm trong đơn
     const orderItems = await OrderItem.find({ orderId }).populate("variantId");
     if (!orderItems.length) {
       return res.status(400).json({ message: "Đơn hàng không có sản phẩm" });
     }
 
-    // ✅ Thanh toán bằng ví
     if (paymentMethod === "wallet") {
       const user = await User.findById(userId);
       if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng" });
@@ -483,7 +496,6 @@ export const payOrder = async (req, res) => {
       await user.save();
     }
 
-    // ✅ Trừ kho
     for (const item of orderItems) {
       const updated = await Variant.findOneAndUpdate(
         { _id: item.variantId, stock_quantity: { $gte: item.quantity } },
@@ -498,12 +510,10 @@ export const payOrder = async (req, res) => {
       }
     }
 
-    // ✅ Cập nhật trạng thái đơn hàng
     order.paymentStatus = "Đã thanh toán";
     order.paymentMethod = paymentMethod;
     await order.save();
 
-    // Emit real-time event for payment update
     try {
       notifyOrderStatus(order._id.toString(), order.orderStatus, order.userId?.toString?.());
     } catch (_) {}
@@ -514,8 +524,6 @@ export const payOrder = async (req, res) => {
     res.status(500).json({ message: "Lỗi server" });
   }
 };
-
-
 
 export const deleteOrder = async (req, res) => {
   try {

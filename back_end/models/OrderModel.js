@@ -15,12 +15,11 @@ const orderSchema = new mongoose.Schema(
       detail: { type: String },
     },
 
-    // ✅ Thêm items để chứa sản phẩm trong đơn hàng
     items: [
       {
         product: { type: mongoose.Schema.Types.ObjectId, ref: 'products', required: true }, // populate được
         quantity: { type: Number, required: true },
-        price: { type: Number, required: true }, // giá tại thời điểm đặt
+        price: { type: Number, required: true },
       },
     ],
 
