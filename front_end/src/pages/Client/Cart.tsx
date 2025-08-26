@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Plus, Minus, X } from "lucide-react";
+import { toast } from "sonner";
 import axios from "axios";
+
+interface Variant {
+  _id: string;
+  stock_quantity: number;
+  size: string;
+}
 
 interface CartItem {
   _id: string;
@@ -11,7 +18,7 @@ interface CartItem {
   quantity: number;
   volume: string;
   fragrance?: string;
-  variantId?: string;
+  variantId: string | Variant;
   selectedScent?: string;
   selectedVolume?: string;
   image: {
@@ -20,6 +27,7 @@ interface CartItem {
     height?: number;
   };
   id: string;
+  stock_quantity: number;
 }
 
 interface UserInfoType {
@@ -27,15 +35,13 @@ interface UserInfoType {
   username: string;
 }
 
-
-
 const Cart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [user, setUserInfo] = useState<UserInfoType | null>(null);
   const navigate = useNavigate();
-  const MAX_QUANTITY = 50;
-
+  const HIGH_VALUE_LIMIT = 50000000;
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
 
   const saveToLocalStorage = (items: CartItem[]) => {
     const formatted = items.map((item) => ({
@@ -57,7 +63,6 @@ const Cart = () => {
       const res = await axios.get(`http://localhost:3000/cart/user/${userId}`);
       const serverCart = res.data.cart;
 
-      // Ghi đè giỏ hàng local bằng giỏ hàng từ server
       localStorage.setItem("cart", JSON.stringify(serverCart));
 
       setCartItems(
@@ -104,28 +109,21 @@ const Cart = () => {
       if (raw) {
         try {
           const cartData = JSON.parse(raw);
+
           const items: CartItem[] = cartData.map((item: any) => {
-            const variantId =
-              item.variantId ||
-              `${item.productId}-${item.selectedScent}-${item.selectedVolume}`;
-            const imageSrc =
-              typeof item.image === "string"
-                ? item.image
-                : item.image?.src || "/img/default.jpg";
             return {
               _id: item._id || item.productId,
               productId: item.productId || item._id,
-              id: variantId,
+              id: item.variantId || `${item.productId}-${item.selectedScent}-${item.selectedVolume}`,
               name: item.name,
               price: item.price,
               quantity: item.quantity,
               volume: item.selectedVolume,
               fragrance: item.selectedScent,
-              variantId: variantId,
+              variantId: item.variantId,
+              stock_quantity: item.stock_quantity ?? 0,
               image: {
-                src: imageSrc,
-                width: 100,
-                height: 100,
+                src: typeof item.image === "string" ? item.image : item.image?.src || "/img/default.jpg",
               },
             };
           });
@@ -137,51 +135,46 @@ const Cart = () => {
     }
   }, []);
 
-const updateQuantity = async (id: string, newQuantity: number) => {
-  const targetItem = cartItems.find((item) => item.id === id);
-  if (!targetItem) return;
+  const updateQuantity = async (id: string, newQuantity: number) => {
+    const targetItem = cartItems.find((item) => item.id === id);
+    if (!targetItem) return;
 
-  const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const newTotal = totalQuantity - targetItem.quantity + newQuantity;
-
-  if (newTotal > MAX_QUANTITY) {
-    alert(`${MAX_QUANTITY} là số lượng lớn. Bạn chắc chắn muốn đặt hàng chứ?\nVui lòng liên hệ CSKH để được tư vấn trực tiếp: 0977907877`);
-    return;
-  }
-
-  if (newQuantity < 1) {
-    if (window.confirm("Bạn có muốn xoá sản phẩm này khỏi giỏ hàng?")) {
-      const updated = cartItems.filter((item) => item.id !== id);
-      setCartItems(updated);
-      saveToLocalStorage(updated);
-      setSelectedItems((prev) => prev.filter((itemId) => itemId !== id));
-
-      if (user?._id && targetItem.variantId) {
-        await axios.delete("http://localhost:3000/cart", {
-          data: {
-            userId: user._id,
-            variantId: targetItem.variantId,
-          },
-        });
-      }
+    if (newQuantity <= 0) {
+      await removeItem(id);
+      return;
     }
-  } else {
-    const updated = cartItems.map((item) =>
-      item.id === id ? { ...item, quantity: newQuantity } : item
-    );
-    setCartItems(updated);
-    saveToLocalStorage(updated);
 
-    if (user?._id && targetItem.variantId) {
+    const stock = typeof targetItem.variantId === "object"
+      ? targetItem.variantId.stock_quantity
+      : targetItem.stock_quantity;
+
+    if (newQuantity > stock) {
+      toast.error(`Chỉ còn ${stock} sản phẩm trong kho`);
+      return;
+    }
+
+    try {
+      const variantId =
+        typeof targetItem.variantId === "object"
+          ? targetItem.variantId._id
+          : targetItem.variantId;
+
       await axios.put("http://localhost:3000/cart", {
-        userId: user._id,
-        variantId: targetItem.variantId,
+        userId: (user as UserInfoType)._id,
+        variantId,
         quantity: newQuantity,
       });
-    }
-  }
-};
 
+      setCartItems((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, quantity: newQuantity } : item
+        )
+      );
+    } catch (err) {
+      console.error("❌ updateQuantity error:", err);
+      toast.error("Cập nhật số lượng thất bại");
+    }
+  };
 
   const removeItem = async (id: string) => {
     const target = cartItems.find((item) => item.id === id);
@@ -210,18 +203,15 @@ const updateQuantity = async (id: string, newQuantity: number) => {
       return;
     }
 
-    const totalQuantity = cartItems
-      .filter((item) => selectedItems.includes(item.id))
-      .reduce((sum, item) => sum + item.quantity, 0);
-
-    if (totalQuantity > MAX_QUANTITY) {
-      alert(`Đơn hàng vượt quá ${MAX_QUANTITY} sản phẩm.\n📞 Vui lòng liên hệ Admin qua Zalo: 0123 456 789`);
-      return;
-    }
-
     const selected = cartItems.filter((item) =>
       selectedItems.includes(item.id)
     );
+
+    const selectedTotal = selected.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    if (selectedTotal > HIGH_VALUE_LIMIT) {
+      setShowVerifyModal(true);
+      return;
+    }
 
     if (!selected.every((item) => item.variantId)) {
       alert("Một số sản phẩm trong giỏ hàng thiếu thông tin biến thể.");
@@ -231,7 +221,6 @@ const updateQuantity = async (id: string, newQuantity: number) => {
     localStorage.setItem("checkoutItems", JSON.stringify(selected));
     navigate("/checkout");
   };
-
 
   const subtotal = cartItems.reduce(
     (total, item) =>
@@ -344,13 +333,29 @@ const updateQuantity = async (id: string, newQuantity: number) => {
                           >
                             <Minus className="w-4 h-4" />
                           </button>
-                          <div className="px-4 py-1 text-black text-sm border-l border-r">
-                            {item.quantity}
-                          </div>
+                          <input
+                            type="text"
+                            min={1}
+                            max={25}
+                            value={item.quantity}
+                            onChange={(e) => {
+                              const newVal = Number(e.target.value);
+                              if (!isNaN(newVal) && newVal >= 1 && newVal <= 50) {
+                                updateQuantity(item.id, newVal);
+                              }
+                            }}
+                            className="w-12 h-6 text-center text-black text-sm border-l border-r outline-none"
+                          />
                           <button
-                            onClick={() =>
-                              updateQuantity(item.id, item.quantity + 1)
+                            onClick={() => {
+                              if (item.stock_quantity && item.quantity >= item.stock_quantity) {
+                              toast.error(`Chỉ còn ${item.stock_quantity} sản phẩm trong kho!`);
+                              return;
                             }
+                            updateQuantity(item.id, item.quantity + 1);
+                            
+
+                            }}
                             className="px-3 py-1 text-black hover:bg-gray-200"
                           >
                             <Plus className="w-4 h-4" />
@@ -402,6 +407,38 @@ const updateQuantity = async (id: string, newQuantity: number) => {
           </div>
         </div>
       </div>
+      {showVerifyModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg w-[480px] shadow-lg relative">
+            <h3 className="text-lg font-semibold mb-4 text-black">Xác minh đơn hàng giá trị cao</h3>
+            <div className="mb-4 text-sm text-gray-700">
+              Tổng giá trị các sản phẩm đã chọn vượt quá 50.000.000<br />
+              Vui lòng xác nhận để tiếp tục thanh toán.
+            </div>
+            <div className="flex justify-end space-x-1">
+              <button
+                type="button"
+                onClick={() => setShowVerifyModal(false)}
+                className="border bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm transition duration-200"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowVerifyModal(false);
+                  const selected = cartItems.filter((item) => selectedItems.includes(item.id));
+                  localStorage.setItem("checkoutItems", JSON.stringify(selected));
+                  navigate("/checkout");
+                }}
+                className="border bg-[#5f518e] hover:opacity-90 text-white px-4 py-2 rounded-md text-sm transition duration-200"
+              >
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

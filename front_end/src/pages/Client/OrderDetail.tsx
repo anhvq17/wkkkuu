@@ -6,27 +6,17 @@ import OrderProgressBar from '../../components/OrderProgressBar';
   
 interface OrderItem {
   _id: string;
-  variantId: {
-    _id: string;
-    image: string;
-    productId: {
-      _id: string;
-      name: string;
-      image: string;
-    };
-    attributes?: {
-      attributeId: {
-        _id: string;
-        name: string;
-      };
-      valueId: {
-        _id: string;
-        value: string;
-      };
-    }[];
-  };
+  variantId: string;
   quantity: number;
   price: number;
+  snapshot: {
+    productName: string;
+    productImage?: string;
+    attributes?: {
+      name: string;
+      value: string;
+    }[];
+  };
 }
 
 const OrderDetail = () => {
@@ -283,19 +273,21 @@ const OrderDetail = () => {
                 <tr key={item._id} className="hover:bg-gray-50 transition">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      {item.variantId?.productId?.image && (
+                      {item.snapshot?.productImage && (
                         <img
-                          src={item.variantId.productId.image}
-                          alt={item.variantId.productId.name}
+                          src={item.snapshot.productImage}
+                          alt={item.snapshot.productName}
                           className="w-14 h-14 object-cover rounded border"
                         />
                       )}
                       <div>
-                        <p className="font-medium text-gray-900">{item.variantId?.productId?.name || 'Sản phẩm'}</p>
+                        <p className="font-medium text-gray-900">
+                          {item.snapshot?.productName || 'Sản phẩm'}
+                        </p>
                         <p className="text-xs text-gray-500">
-                          {item.variantId?.attributes?.map((attr, i) => (
+                          {item.snapshot?.attributes?.map((attr, i) => (
                             <span key={i} className="mr-2">
-                              {attr.attributeId?.name}: {attr.valueId?.value}
+                              {attr.name}: {attr.value}
                             </span>
                           ))}
                         </p>
@@ -304,7 +296,9 @@ const OrderDetail = () => {
                   </td>
                   <td className="px-4 py-3 text-gray-900">{item.quantity}</td>
                   <td className="px-4 py-3 text-gray-900">{item.price.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-gray-900">{(item.price * item.quantity).toLocaleString()}</td>
+                  <td className="px-4 py-3 text-gray-900">
+                    {(item.price * item.quantity).toLocaleString()}
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -6,27 +6,17 @@ import OrderProgressBar from "../../../components/OrderProgressBar";
 
 interface OrderItem {
   _id: string;
-  variantId: {
-    _id: string;
-    image: string;
-    productId: {
-      _id: string;
-      name: string;
-      image: string;
-    };
-    attributes?: {
-      attributeId: {
-        _id: string;
-        name: string;
-      };
-      valueId: {
-        _id: string;
-        value: string;
-      };
-    }[];
-  };
+  variantId: string;
   quantity: number;
   price: number;
+  snapshot: {
+    productName: string;
+    productImage?: string;
+    attributes?: {
+      name: string;
+      value: string;
+    }[];
+  };
 }
 
 interface OrderWithItems {
@@ -55,6 +45,12 @@ const DetailOrder = () => {
   const [cancelReason, setCancelReason] = useState('');
   const [showReturnModal, setShowReturnModal] = useState(false);
   const [returnAction, setReturnAction] = useState<'approve' | 'reject'>('approve');
+
+  const API_URL = 'http://localhost:3000';
+  const resolveImageUrl = (url?: string) => {
+    if (!url) return '';
+    return url.startsWith('http') ? url : `${API_URL}${url}`;
+  };
 
   useEffect(() => {
     if (id) {
@@ -414,14 +410,26 @@ const DetailOrder = () => {
               </div>
             )}
             
-            {(order.orderStatus === 'Yêu cầu hoàn hàng' || order.orderStatus === 'Đã hoàn hàng' || order.orderStatus === 'Từ chối hoàn hàng') && order.returnReason && (
+            {(order.orderStatus === 'Yêu cầu hoàn hàng' || order.orderStatus === 'Đã hoàn hàng' || order.orderStatus === 'Từ chối hoàn hàng') && (
               <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-md">
-                <div className="flex items-start">
-                  <div>
+                <div className="flex items-start gap-4">
+                  <div className="flex-1">
                     <p className="text-sm font-medium text-orange-800 mb-1">Lý do hoàn hàng:</p>
-                    <p className="text-sm text-orange-700">{order.returnReason}</p>
+                    <p className="text-sm text-orange-700">{order.returnReason || '—'}</p>
                   </div>
                 </div>
+                {Array.isArray((order as any).returnImages) && (order as any).returnImages.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-sm font-medium text-gray-800 mb-2">Ảnh minh chứng:</p>
+                    <div className="grid grid-cols-6 gap-2">
+                      {(order as any).returnImages.map((img: string, idx: number) => (
+                        <a key={idx} href={resolveImageUrl(img)} target="_blank" rel="noreferrer" className="block w-16 h-16 border rounded overflow-hidden">
+                          <img src={resolveImageUrl(img)} alt="return" className="w-full h-full object-cover" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -451,7 +459,6 @@ const DetailOrder = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Tên sản phẩm</th>
-                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Thuộc tính</th>
                 <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Số lượng</th>
                 <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Đơn giá</th>
                 <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">Thành tiền</th>
@@ -463,23 +470,16 @@ const DetailOrder = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <img 
-                        src={item.variantId?.productId?.image || item.variantId?.image} 
-                        alt={item.variantId?.productId?.name}
+                        src={item.snapshot.productImage}
+                        alt={item.snapshot.productName}
                         className="w-12 h-12 object-cover rounded border mr-3"
                       />
                       <div>
                         <div className="text-sm font-medium text-gray-900">
-                          {item.variantId?.productId?.name || 'Sản phẩm'}
+                          {item.snapshot?.productName || 'Sản phẩm'}
                         </div>
                       </div>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.variantId?.attributes?.map((attr, i) => (
-                      <span key={i} className="mr-2">
-                        {attr.attributeId?.name}: {attr.valueId?.value}
-                      </span>
-                    ))}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.quantity}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.price.toLocaleString()}</td>
