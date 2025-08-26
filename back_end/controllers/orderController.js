@@ -108,7 +108,10 @@ export const createOrder = async (req, res) => {
     }
 
     await Promise.all(items.map(async (item) => {
-      const variant = await VariantModel.findById(item.variantId).populate("productId");
+      const variant = await VariantModel.findById(item.variantId)
+              .populate('productId')
+        .populate('attributes.attributeId')
+        .populate('attributes.valueId');
       if (!variant) throw new Error("Biến thể không tồn tại");
 
       if (variant.stock < item.quantity) {
@@ -124,9 +127,13 @@ export const createOrder = async (req, res) => {
         quantity: item.quantity,
         price: item.price,
         snapshot: {
-          productName: variant.productId.name,
-          productImage: variant.productId.image,
-          variantName: variant.attributes?.map(a => a.valueId?.value).join(" / ") || "",
+          productId: variant.productId?._id,
+          productName: variant.productId?.name || '',
+          productImage: variant.productId?.image || '',
+          variantId: variant._id,
+          variantName: variant.attributes?.map(a => a.valueId?.value).join(" / ") || '',
+          variantImage: variant.image || variant.productId?.image || '',
+          variantPrice: item.price
         }
       });
     }));
@@ -182,16 +189,18 @@ export const getOrderById = async (req, res) => {
     const order = await Order.findById(req.params.id).populate('userId');
     if (!order) return res.status(404).json({ error: 'Order not found' });
 
-    const items = await OrderItem.find({ orderId: order._id }).populate({
-      path: 'variantId',
-      populate: [
-        { path: 'productId', model: 'products' },
-        { path: 'attributes.attributeId', model: 'attributes' },
-        { path: 'attributes.valueId', model: 'attribute_values' }
-      ]
-    });
+    const items = await OrderItem.find({ orderId: order._id }).lean();
 
-    return res.status(200).json({ order, items });
+    return res.status(200).json({
+      order,
+      items: items.map(i => ({
+        _id: i._id,
+        quantity: i.quantity,
+        price: i.price,
+        isReviewed: i.isReviewed,
+        snapshot: i.snapshot
+      }))
+    });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
@@ -211,15 +220,17 @@ export const getOrdersByUserWithItems = async (req, res) => {
     const orders = await Order.find({ userId: req.params.userId });
     const ordersWithItems = await Promise.all(
       orders.map(async (order) => {
-        const items = await OrderItem.find({ orderId: order._id }).populate({
-          path: 'variantId',
-          populate: [
-            { path: 'productId', model: 'products' },
-            { path: 'attributes.attributeId', model: 'attributes' },
-            { path: 'attributes.valueId', model: 'attribute_values' }
-          ]
-        });
-        return { ...order.toObject(), items };
+        const items = await OrderItem.find({ orderId: order._id }).lean();
+        return {
+          ...order.toObject(),
+          items: items.map(i => ({
+            _id: i._id,
+            quantity: i.quantity,
+            price: i.price,
+            isReviewed: i.isReviewed,
+            snapshot: i.snapshot
+          }))
+        };
       })
     );
     return res.status(200).json(ordersWithItems);

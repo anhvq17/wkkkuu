@@ -8,9 +8,13 @@ const orderItemSchema = new mongoose.Schema(
     price: { type: Number, required: true },
     isReviewed: { type: Boolean, default: false },
     snapshot: {
+      productId: { type: mongoose.Schema.Types.ObjectId, ref: "products", required: true },
       productName: { type: String, required: true },
       productImage: { type: String, required: true },
+      variantId: { type: mongoose.Schema.Types.ObjectId, ref: "product_variants" },
       variantName: { type: String },
+      variantImage: { type: String },
+      variantPrice: { type: Number, required: true }
     },
   },
   { timestamps: true }

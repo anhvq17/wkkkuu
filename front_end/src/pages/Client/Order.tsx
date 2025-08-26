@@ -3,7 +3,6 @@ import { io, Socket } from 'socket.io-client';
 import { Link } from 'react-router-dom';
 import { getOrdersByUserWithItems, updateOrder } from '../../services/Order';
 
-
 interface OrderItem {
   _id: string;
   variantId: {
@@ -91,13 +90,10 @@ const OrderList = () => {
     }
   };
 
-  // (Đã xoá hàm updateOrderStatus vì không sử dụng)
-
   useEffect(() => {
     fetchOrders();
     didMountRef.current = true;
 
-    // Connect directly to backend to avoid dev-proxy 404s
     const socket = io('http://localhost:3000', { transports: ['websocket', 'polling'] });
     socket.on('connect_error', (err) => {
       console.error('socket connect_error:', (err && (err as any).message) || err);
@@ -109,7 +105,6 @@ const OrderList = () => {
 
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     const handleRealtime = (payload: { orderId: string; status: string; userId?: string }) => {
-      // If the event relates to current user, refetch orders
       if (!user?._id || (payload.userId && payload.userId !== user._id)) return;
       fetchOrders();
     };
@@ -171,10 +166,9 @@ const OrderList = () => {
     return orderStatus === 'Chờ xử lý' || orderStatus === 'Đã xử lý';
   };
 
- const canRequestReturn = (orderStatus: string) => {
-  return orderStatus === 'Đã nhận hàng' || orderStatus === 'Từ chối hoàn hàng';
-};
-
+  const canRequestReturn = (orderStatus: string) => {
+    return orderStatus === 'Đã nhận hàng' || orderStatus === 'Từ chối hoàn hàng';
+  };
 
   const canConfirmReceived = (orderStatus: string) => {
     return orderStatus === 'Đã giao hàng';
@@ -248,7 +242,6 @@ const OrderList = () => {
         await updateOrder(selectedOrderId, { 
           orderStatus: 'Yêu cầu hoàn hàng',
           returnReason: returnReason.trim(),
-          // @ts-ignore
           returnItems
         } as any);
       }
@@ -312,7 +305,6 @@ const OrderList = () => {
 
   const filteredOrders = tab === 'all' ? orderList : orderList.filter((o) => o.orderStatus === tab);
   const sortedOrders = [...filteredOrders].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
   
   return (
     <div className="container mx-auto px-4 py-8">
@@ -460,41 +452,78 @@ const OrderList = () => {
               </div>
               <div className="border-t pt-4 mt-4">
                 {item.items && item.items.length > 0 ? (
-                  item.items.map((prod: OrderItem) => {
-                    const returnedQty = (item.returnItems || []).find(ri => ri.orderItemId === prod._id)?.quantity || 0;
-                    const isReturned = item.orderStatus === 'Đã hoàn hàng' && returnedQty > 0;
+                  item.items.map((prod: any) => {
+                    const returnedItem = (item.returnItems || []).find(
+                      (ri: any) => ri.orderItemId === prod._id
+                    );
+                    const returnedQty = returnedItem?.quantity || 0;
+                    const isReturned = returnedQty > 0;
+                    const snap = prod.snapshot || {};
                     return (
-                    <div key={prod._id} className="flex items-center gap-4 py-2 border-b last:border-b-0">
-                      <img src={ prod.variantId?.image} alt={prod.variantId?.productId?.name} className="w-20 h-20 object-cover rounded border" />
-                      <div className="flex-1">
-                        <div className="text-lg font-medium text-gray-900">{prod.variantId?.productId?.name || 'Sản phẩm'}</div>
-                        <div className="text-xs text-gray-500">
-                          {prod.variantId?.attributes?.map((attr, i) => (
-                            <span key={i} className="mr-2">{attr.attributeId?.name}: {attr.valueId?.value}</span>
-                          ))}
-                        </div>
-                        <div className="text-xs text-gray-500">Số lượng: {prod.quantity}</div>
-                        {isReturned && (
-                          <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
-                            Đã hoàn: {returnedQty}
+                      <div
+                        key={prod._id}
+                        className="flex items-center gap-4 py-2 border-b last:border-b-0"
+                      >
+                        <img
+                          src={
+                            snap.variantImage ||
+                            snap.productImage ||
+                            prod.variantId?.image ||
+                            "/img/default.jpg"
+                          }
+                          alt={
+                            snap.productName ||
+                            prod.variantId?.productId?.name ||
+                            "Sản phẩm"
+                          }
+                          className="w-20 h-20 object-cover rounded border"
+                        />
+                        <div className="flex-1">
+                          <div className="text-lg font-medium text-gray-900">
+                            {snap.productName ||
+                              prod.variantId?.productId?.name ||
+                              "Sản phẩm"}
                           </div>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        <div className="text-base font-bold text-red-500">{prod.price.toLocaleString()}</div>
-                       {item.orderStatus === 'Đã nhận hàng' && !prod.isReviewed && (
+                          <div className="text-xs text-gray-500">
+                            {snap.variantName ? (
+                              <span>{snap.variantName}</span>
+                            ) : (
+                              prod.variantId?.attributes?.map((attr: any, i: number) => (
+                                <span key={i} className="mr-2">
+                                  {attr.attributeId?.name}: {attr.valueId?.value}
+                                </span>
+                              ))
+                            )}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Số lượng: {prod.quantity}
+                          </div>
+
+                          {isReturned && (
+                            <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
+                              Đã hoàn: {returnedQty}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <div className="text-base font-bold text-red-500">
+                            {(snap.variantPrice ?? prod.price).toLocaleString()}
+                          </div>
+                          {item.orderStatus === "Đã nhận hàng" && !prod.isReviewed && (
                             <Link
-                              to={`/review/${prod.variantId?.productId?._id}/${prod._id}`}
+                              to={`/review/${snap.productId || prod.variantId?.productId?._id}/${prod._id}`}
                               className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-blue-700 transition text-sm"
                             >
                               Đánh giá
                             </Link>
                           )}
                           {prod.isReviewed && (
-                            <span className="inline-block text-sm text-gray-500 italic">Đã đánh giá</span>
+                            <span className="inline-block text-sm text-gray-500 italic">
+                              Đã đánh giá
+                            </span>
                           )}
+                        </div>
                       </div>
-                    </div>
                     );
                   })
                 ) : (
@@ -575,8 +604,9 @@ const OrderList = () => {
               </p>
 
               <div className="mb-4 max-h-64 overflow-auto border rounded-md">
-                {(orderList.find(o => o._id === selectedOrderId)?.items || []).map((it) => {
+                {(orderList.find(o => o._id === selectedOrderId)?.items || []).map((it: any) => {
                   const isChecked = (returnSelections[it._id] || 0) > 0;
+                  const snap = it.snapshot || {};
                   return (
                     <div key={it._id} className="flex items-center justify-between gap-2 p-2 border-b last:border-b-0">
                       <div className="flex items-center gap-2">
@@ -592,9 +622,9 @@ const OrderList = () => {
                           }}
                           className="w-4 h-4"
                         />
-                        <img src={it.variantId?.image} alt="" className="w-12 h-12 object-cover rounded border" />
+                        <img src={snap.variantImage || snap.productImage || it.variantId?.image || '/img/default.jpg'} alt={snap.productName || ''} className="w-12 h-12 object-cover rounded border" />
                         <div className="text-sm">
-                          <div className="font-medium">{it.variantId?.productId?.name}</div>
+                          <div className="font-medium">{snap.productName || it.variantId?.productId?.name}</div>
                           <div className="text-gray-500">Số lượng: {it.quantity}</div>
                         </div>
                       </div>
