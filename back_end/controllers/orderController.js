@@ -115,14 +115,19 @@ export const createOrder = async (req, res) => {
         throw new Error(`Sản phẩm ${variant.productId.name} không đủ hàng`);
       }
 
-     variant.stock_quantity -= item.quantity;
-    await variant.save();
+      variant.stock_quantity -= item.quantity;
+      await variant.save();
 
       await OrderItem.create({
         orderId: order._id,
         variantId: item.variantId,
         quantity: item.quantity,
-        price: item.price
+        price: item.price,
+        snapshot: {
+          productName: variant.productId.name,
+          productImage: variant.productId.image,
+          variantName: variant.attributes?.map(a => a.valueId?.value).join(" / ") || "",
+        }
       });
     }));
 
@@ -451,20 +456,17 @@ export const payOrder = async (req, res) => {
     const userId = req.user._id;
     const paymentMethod = req.body.paymentMethod || "wallet";
 
-    // Lấy đơn hàng
     const order = await Order.findById(orderId);
     if (!order) return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
     if (order.paymentStatus === "Đã thanh toán") {
       return res.status(400).json({ message: "Đơn hàng đã được thanh toán" });
     }
 
-    // Lấy các sản phẩm trong đơn
     const orderItems = await OrderItem.find({ orderId }).populate("variantId");
     if (!orderItems.length) {
       return res.status(400).json({ message: "Đơn hàng không có sản phẩm" });
     }
 
-    // ✅ Thanh toán bằng ví
     if (paymentMethod === "wallet") {
       const user = await User.findById(userId);
       if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng" });
@@ -483,7 +485,6 @@ export const payOrder = async (req, res) => {
       await user.save();
     }
 
-    // ✅ Trừ kho
     for (const item of orderItems) {
       const updated = await Variant.findOneAndUpdate(
         { _id: item.variantId, stock_quantity: { $gte: item.quantity } },
@@ -498,12 +499,10 @@ export const payOrder = async (req, res) => {
       }
     }
 
-    // ✅ Cập nhật trạng thái đơn hàng
     order.paymentStatus = "Đã thanh toán";
     order.paymentMethod = paymentMethod;
     await order.save();
 
-    // Emit real-time event for payment update
     try {
       notifyOrderStatus(order._id.toString(), order.orderStatus, order.userId?.toString?.());
     } catch (_) {}
@@ -514,8 +513,6 @@ export const payOrder = async (req, res) => {
     res.status(500).json({ message: "Lỗi server" });
   }
 };
-
-
 
 export const deleteOrder = async (req, res) => {
   try {

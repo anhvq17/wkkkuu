@@ -1,12 +1,19 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const orderItemSchema = new mongoose.Schema({
-  orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'orders', required: true },
-  variantId: { type: mongoose.Schema.Types.ObjectId, ref: 'product_variants', required: true },
-  quantity: { type: Number, required: true },
-  price: { type: Number, required: true },
-  isReviewed: { type: Boolean, default: false }
-}, { timestamps: true });
+const orderItemSchema = new mongoose.Schema(
+  {
+    orderId: { type: mongoose.Schema.Types.ObjectId, ref: "orders", required: true },
+    variantId: { type: mongoose.Schema.Types.ObjectId, ref: "product_variants", required: true },
+    quantity: { type: Number, required: true },
+    price: { type: Number, required: true },
+    isReviewed: { type: Boolean, default: false },
+    snapshot: {
+      productName: { type: String, required: true },
+      productImage: { type: String, required: true },
+      variantName: { type: String },
+    },
+  },
+  { timestamps: true }
+);
 
-export default mongoose.model('order_items', orderItemSchema);
-
+export default mongoose.model("order_items", orderItemSchema);
