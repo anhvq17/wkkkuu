@@ -447,7 +447,7 @@ const OrderList = () => {
                       (ri: any) => ri.orderItemId === prod._id
                     );
                     const returnedQty = returnedItem?.quantity || 0;
-                    const isReturned = returnedQty > 0;
+                    const fullyReturned = returnedQty >= prod.quantity;
                     const snap = prod.snapshot || {};
                     return (
                       <div
@@ -504,12 +504,12 @@ const OrderList = () => {
                             Số lượng: {prod.quantity}
                           </div>
 
-                          {isReturned && item.orderStatus === 'Đã hoàn hàng' && (
+                          {returnedQty > 0 && item.orderStatus === 'Đã hoàn hàng' && (
                             <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
                               Đã hoàn hàng:{returnedQty > 0 ? ` (${returnedQty}/${prod.quantity})` : ''} đơn
                             </div>
                           )}
-                          {isReturned && item.orderStatus === 'Đã hoàn hàng' && (
+                          {returnedQty > 0 && item.orderStatus === 'Đã hoàn hàng' && (
                             <div className="mt-1 ml-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800">
                               Đã hoàn tiền
                             </div>
@@ -519,7 +519,12 @@ const OrderList = () => {
                           <div className="text-base font-bold text-red-500">
                             {(snap.variantPrice ?? prod.price).toLocaleString()}
                           </div>
-                          {item.orderStatus === "Đã nhận hàng" && !prod.isReviewed && (
+                          {(
+                            (!prod.isReviewed) && (
+                              item.orderStatus === "Đã nhận hàng" ||
+                              (item.orderStatus === "Đã hoàn hàng" && !fullyReturned)
+                            )
+                          ) && (
                             <Link
                               to={`/review/${snap.productId || prod.variantId?.productId?._id}/${prod._id}`}
                               className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-blue-700 transition text-sm"
