@@ -63,7 +63,7 @@ const DetailOrder = () => {
       setLoading(true);
       const data = await getOrderById(id!);
       setOrderData(data);
-      setNewStatus(data.order.orderStatus);
+      setNewStatus(data.order.orderStatus === 'Yêu cầu hoàn hàng' ? '' : data.order.orderStatus);
       setStatusError('');
     } catch (err: any) {
       setError(err.message || 'Đã xảy ra lỗi khi tải dữ liệu.');
@@ -274,6 +274,8 @@ const DetailOrder = () => {
     return orderStatus === 'Yêu cầu hoàn hàng';
   };
 
+
+
   const getAvailableStatuses = (currentStatus: string): string[] => {
     const statusOrder = [
       'Chờ xử lý',
@@ -283,12 +285,17 @@ const DetailOrder = () => {
       'Đã nhận hàng'
     ];
 
+    if (currentStatus === 'Yêu cầu hoàn hàng') {
+      return [];
+    }
+
     const currentIndex = statusOrder.indexOf(currentStatus);
     const availableStatuses = [];
 
     availableStatuses.push(currentStatus);
 
-    if (currentIndex < statusOrder.length - 1) {
+    // Only offer the next status when current status is inside the main flow
+    if (currentIndex >= 0 && currentIndex < statusOrder.length - 1) {
       availableStatuses.push(statusOrder[currentIndex + 1]);
     }
 
@@ -296,9 +303,7 @@ const DetailOrder = () => {
       availableStatuses.push('Đã huỷ đơn hàng');
     }
 
-    if (currentStatus === 'Đã nhận hàng') {
-      availableStatuses.push('Yêu cầu hoàn hàng');
-    }
+    // Bỏ trạng thái 'Yêu cầu hoàn hàng' khỏi danh sách cập nhật thủ công
 
     return availableStatuses;
   };
@@ -360,10 +365,10 @@ const DetailOrder = () => {
           )}
           <button
             onClick={() => {
-              if (order.orderStatus !== 'Đã huỷ đơn hàng') setIsModalOpen(true);
+              if (order.orderStatus !== 'Đã huỷ đơn hàng' && order.orderStatus !== 'Yêu cầu hoàn hàng') setIsModalOpen(true);
             }}
-            className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition duration-200${order.orderStatus === 'Đã huỷ đơn hàng' ? ' opacity-50 cursor-not-allowed' : ''}`}
-            disabled={order.orderStatus === 'Đã huỷ đơn hàng'}
+            className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition duration-200${(order.orderStatus === 'Đã huỷ đơn hàng' || order.orderStatus === 'Yêu cầu hoàn hàng') ? ' opacity-50 cursor-not-allowed' : ''}`}
+            disabled={order.orderStatus === 'Đã huỷ đơn hàng' || order.orderStatus === 'Yêu cầu hoàn hàng'}
           >
             Cập nhật trạng thái
           </button>
