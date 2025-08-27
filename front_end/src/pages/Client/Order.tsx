@@ -509,9 +509,8 @@ const OrderList = () => {
                               Đã hoàn hàng:{returnedQty > 0 ? ` (${returnedQty}/${prod.quantity})` : ''} đơn
                             </div>
                           )}
-                          <br />
                           {isReturned && item.orderStatus === 'Đã hoàn hàng' && (
-                            <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800">
+                            <div className="mt-1 ml-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800">
                               Đã hoàn tiền
                             </div>
                           )}
