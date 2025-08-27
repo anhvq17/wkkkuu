@@ -216,7 +216,6 @@ const OrderManager = () => {
     { value: 'Đang giao hàng', label: 'Đang giao hàng' },
     { value: 'Đã giao hàng', label: 'Đã giao hàng' },
     { value: 'Đã nhận hàng', label: 'Đã nhận hàng' },
-    { value: 'Yêu cầu hoàn hàng', label: 'Yêu cầu hoàn hàng' },
     { value: 'Đã hoàn hàng', label: 'Đã hoàn hàng' },
     { value: 'Từ chối hoàn hàng', label: 'Từ chối hoàn hàng' },
     { value: 'Đã huỷ đơn hàng', label: 'Đã huỷ đơn hàng' },
