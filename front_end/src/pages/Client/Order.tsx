@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { getOrderStatusBadgeClass, getPaymentStatusBadgeClass } from '../../utils/statusStyles';
 import { Link } from 'react-router-dom';
 import { getOrdersByUserWithItems, updateOrder } from '../../services/Order';
 
@@ -236,7 +237,7 @@ const OrderList = () => {
         form.append('orderStatus', 'Yêu cầu hoàn hàng');
         form.append('returnReason', returnReason.trim());
         form.append('returnItems', JSON.stringify(returnItems));
-        returnImages.forEach((file) => form.append('returnImages', file));
+        returnImages.slice(0, 3).forEach((file) => form.append('returnImages', file));
         await updateOrder(selectedOrderId, form as any);
       } else {
         await updateOrder(selectedOrderId, { 
@@ -370,21 +371,10 @@ const OrderList = () => {
                       </p>
                     </div>
                     <div className="flex flex-col gap-1 mt-2 md:mt-0">
-                      <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold shadow-sm ${
-                        item.orderStatus === 'Đã xử lý' ? 'bg-green-100 text-green-800' :
-                        item.orderStatus === 'Chờ xử lý' ? 'bg-yellow-100 text-yellow-800' :
-                        item.orderStatus === 'Đang giao hàng' ? 'bg-blue-100 text-blue-800' :
-                        item.orderStatus === 'Đã giao hàng' ? 'bg-green-100 text-green-800' :
-                        item.orderStatus === 'Đã nhận hàng' ? 'bg-green-200 text-green-900' :
-                        'bg-red-100 text-red-800'
-                      }`}>
+                      <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold shadow-sm ${getOrderStatusBadgeClass(item.orderStatus)}`}>
                         {getStatusText(item.orderStatus)}
                       </span>
-                      <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${
-                        getPaymentStatusText(item.paymentStatus) === 'Đã thanh toán' ? 'bg-green-100 text-green-800' :
-                        getPaymentStatusText(item.paymentStatus) === 'Đã hoàn tiền' ? 'bg-blue-100 text-blue-800' :
-                        'bg-yellow-100 text-yellow-800'}`}
-                      >
+                      <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${getPaymentStatusBadgeClass(getPaymentStatusText(item.paymentStatus))}`}>
                         {getPaymentStatusText(item.paymentStatus)}
                       </span>
                     </div>
@@ -485,23 +475,44 @@ const OrderList = () => {
                               "Sản phẩm"}
                           </div>
                           <div className="text-xs text-gray-500">
-                            {snap.variantName ? (
-                              <span>{snap.variantName}</span>
-                            ) : (
-                              prod.variantId?.attributes?.map((attr: any, i: number) => (
-                                <span key={i} className="mr-2">
-                                  {attr.attributeId?.name}: {attr.valueId?.value}
+                            {(() => {
+                              const attrs = (prod.variantId?.attributes || []) as any[];
+                              const byName = (n: string) => attrs.find(a => (a.attributeId?.name || '').toLowerCase() === n);
+                              let fragrance = byName('mùi hương')?.valueId?.value as string | undefined;
+                              let capacity = byName('dung tích')?.valueId?.value as string | undefined;
+                              if ((!fragrance || !capacity) && typeof snap.variantName === 'string' && snap.variantName.includes('/')) {
+                                const parts = snap.variantName.split('/').map((s: string) => s.trim());
+                                if (!fragrance && parts[0]) fragrance = parts[0];
+                                if (!capacity && parts[1]) capacity = parts[1];
+                              }
+                              if (fragrance || capacity) {
+                                return (
+                                  <span>
+                                    {fragrance && <>Mùi hương: {fragrance} </>} /
+                                    {capacity && <> Dung tích: {capacity}</>}
+                                  </span>
+                                );
+                              }
+                              return (
+                                <span>
+                                  {(attrs || []).map((attr: any) => `${attr.attributeId?.name}: ${attr.valueId?.value}`).join(', ')}
                                 </span>
-                              ))
-                            )}
+                              );
+                            })()}
                           </div>
                           <div className="text-xs text-gray-500">
                             Số lượng: {prod.quantity}
                           </div>
 
-                          {isReturned && (
+                          {isReturned && item.orderStatus === 'Đã hoàn hàng' && (
                             <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
-                              Đã hoàn: {returnedQty}
+                              Đã hoàn hàng:{returnedQty > 0 ? ` (${returnedQty}/${prod.quantity})` : ''} đơn
+                            </div>
+                          )}
+                          <br />
+                          {isReturned && item.orderStatus === 'Đã hoàn hàng' && (
+                            <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800">
+                              Đã hoàn tiền
                             </div>
                           )}
                         </div>
@@ -661,7 +672,7 @@ const OrderList = () => {
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Lý do hoàn hàng <span className="text-red-500">*</span>
+                  Lý do hoàn hàng (tối đa 250 ký tự) <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   value={returnReason}
@@ -669,23 +680,31 @@ const OrderList = () => {
                   placeholder="Vui lòng nhập lý do hoàn hàng..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
                   rows={4}
+                  maxLength={250}
                   required
                 />
+                <div className="mt-1 text-xs text-gray-500 text-right">{returnReason.length}/250</div>
                 {(!returnReason.trim() || Object.values(returnSelections).every(v => (v||0) === 0)) && (
                   <p className="text-red-500 text-xs mt-1">Chọn ít nhất 1 sản phẩm & bắt buộc nhập lý do hoàn hàng</p>
                 )}
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Ảnh minh chứng (tối đa 6 ảnh)
+                  Ảnh minh chứng (tối đa 3 ảnh)
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   multiple
                   onChange={(e) => {
-                    const files = Array.from(e.target.files || []).slice(0, 6);
-                    setReturnImages(files as File[]);
+                    const selected = Array.from(e.target.files || []);
+                    if (selected.length === 0) return;
+                    setReturnImages((prev) => {
+                      const merged = [...prev, ...selected];
+                      return merged.slice(0, 3) as File[];
+                    });
+                    // allow choosing the same file again if needed
+                    (e.target as HTMLInputElement).value = '';
                   }}
                   className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
                 />

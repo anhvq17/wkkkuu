@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { getOrderById, updateOrder } from "../../../services/Order";
 import type { Order } from "../../../types/Order";
 import OrderProgressBar from "../../../components/OrderProgressBar";
+import { getOrderStatusBadgeClass, getPaymentStatusBadgeClass } from "../../../utils/statusStyles";
 
 interface OrderItem {
   _id: string;
@@ -63,7 +64,7 @@ const DetailOrder = () => {
       setLoading(true);
       const data = await getOrderById(id!);
       setOrderData(data);
-      setNewStatus(data.order.orderStatus);
+      setNewStatus(data.order.orderStatus === 'Yêu cầu hoàn hàng' ? '' : data.order.orderStatus);
       setStatusError('');
     } catch (err: any) {
       setError(err.message || 'Đã xảy ra lỗi khi tải dữ liệu.');
@@ -189,28 +190,9 @@ const DetailOrder = () => {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    let color = '';
-    switch (status) {
-      case 'Đã giao hàng': 
-      case 'Đã nhận hàng': 
-        color = 'bg-green-100 text-green-800'; 
-        break;
-      case 'Chờ xử lý': 
-      case 'Đã xử lý': 
-        color = 'bg-yellow-100 text-yellow-800'; 
-        break;
-      case 'Đang giao hàng': 
-        color = 'bg-blue-100 text-blue-800'; 
-        break;
-      case 'Đã huỷ đơn hàng': 
-        color = 'bg-red-100 text-red-800'; 
-        break;
-      default: 
-        color = 'bg-gray-100 text-gray-800';
-    }
-    return <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${color}`}>{status}</span>;
-  };
+  const getStatusBadge = (status: string) => (
+    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getOrderStatusBadgeClass(status)}`}>{status}</span>
+  );
 
   const getPaymentMethodText = (method: string) => {
     switch (method) {
@@ -230,16 +212,8 @@ const DetailOrder = () => {
 
   const getPaymentBadge = (paymentStatus: string) => {
     const statusText = getPaymentStatusText(paymentStatus);
-    let badgeClass = 'bg-yellow-100 text-yellow-800';
-    
-    if (statusText === 'Đã thanh toán') {
-      badgeClass = 'bg-green-100 text-green-800';
-    } else if (statusText === 'Đã hoàn tiền') {
-      badgeClass = 'bg-blue-100 text-blue-800';
-    }
-    
     return (
-      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${badgeClass}`}>
+      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getPaymentStatusBadgeClass(statusText)}`}>
         {statusText}
       </span>
     );
@@ -274,6 +248,8 @@ const DetailOrder = () => {
     return orderStatus === 'Yêu cầu hoàn hàng';
   };
 
+
+
   const getAvailableStatuses = (currentStatus: string): string[] => {
     const statusOrder = [
       'Chờ xử lý',
@@ -283,12 +259,17 @@ const DetailOrder = () => {
       'Đã nhận hàng'
     ];
 
+    if (currentStatus === 'Yêu cầu hoàn hàng') {
+      return [];
+    }
+
     const currentIndex = statusOrder.indexOf(currentStatus);
     const availableStatuses = [];
 
     availableStatuses.push(currentStatus);
 
-    if (currentIndex < statusOrder.length - 1) {
+    // Only offer the next status when current status is inside the main flow
+    if (currentIndex >= 0 && currentIndex < statusOrder.length - 1) {
       availableStatuses.push(statusOrder[currentIndex + 1]);
     }
 
@@ -296,9 +277,7 @@ const DetailOrder = () => {
       availableStatuses.push('Đã huỷ đơn hàng');
     }
 
-    if (currentStatus === 'Đã nhận hàng') {
-      availableStatuses.push('Yêu cầu hoàn hàng');
-    }
+    // Bỏ trạng thái 'Yêu cầu hoàn hàng' khỏi danh sách cập nhật thủ công
 
     return availableStatuses;
   };
@@ -360,10 +339,10 @@ const DetailOrder = () => {
           )}
           <button
             onClick={() => {
-              if (order.orderStatus !== 'Đã huỷ đơn hàng') setIsModalOpen(true);
+              if (order.orderStatus !== 'Đã huỷ đơn hàng' && order.orderStatus !== 'Yêu cầu hoàn hàng') setIsModalOpen(true);
             }}
-            className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition duration-200${order.orderStatus === 'Đã huỷ đơn hàng' ? ' opacity-50 cursor-not-allowed' : ''}`}
-            disabled={order.orderStatus === 'Đã huỷ đơn hàng'}
+            className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition duration-200${(order.orderStatus === 'Đã huỷ đơn hàng' || order.orderStatus === 'Yêu cầu hoàn hàng') ? ' opacity-50 cursor-not-allowed' : ''}`}
+            disabled={order.orderStatus === 'Đã huỷ đơn hàng' || order.orderStatus === 'Yêu cầu hoàn hàng'}
           >
             Cập nhật trạng thái
           </button>
@@ -374,7 +353,7 @@ const DetailOrder = () => {
         <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
           Tiến trình đơn hàng
         </h3>
-        <OrderProgressBar currentStatus={order.orderStatus} />
+        <OrderProgressBar currentStatus={order.orderStatus} theme="green" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -479,6 +458,7 @@ const DetailOrder = () => {
                           {item.snapshot?.productName || 'Sản phẩm'}
                         </div>
                       </div>
+                      
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.quantity}</td>
@@ -649,6 +629,28 @@ const DetailOrder = () => {
               <p className="text-gray-700 text-sm mb-4">
                 Bạn muốn xử lý yêu cầu hoàn hàng này như thế nào?
               </p>
+              {order && (
+                <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded">
+                  {(order as any).returnReason && (
+                    <div className="mb-3">
+                      <p className="text-sm font-medium text-orange-800">Lý do khách hàng:</p>
+                      <p className="text-sm text-orange-700">{(order as any).returnReason}</p>
+                    </div>
+                  )}
+                  {Array.isArray((order as any).returnImages) && (order as any).returnImages.length > 0 && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-800 mb-2">Ảnh minh chứng:</p>
+                      <div className="grid grid-cols-5 gap-2">
+                        {(order as any).returnImages.map((img: string, idx: number) => (
+                          <a key={idx} href={resolveImageUrl(img)} target="_blank" rel="noreferrer" className="block w-16 h-16 border rounded overflow-hidden">
+                            <img src={resolveImageUrl(img)} alt="return" className="w-full h-full object-cover" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
               
               <div className="mb-4">
                 <div className="space-y-2">
@@ -674,15 +676,8 @@ const DetailOrder = () => {
                   </label>
                 </div>
               </div>
-
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700 mb-2">
-                {returnAction === 'approve' 
-                  ? 'Đồng ý hoàn hàng sẽ chuyển trạng thái đơn hàng thành "Đã hoàn hàng". Nếu thanh toán qua VNPAY, trạng thái thanh toán sẽ tự động chuyển thành "Đã hoàn tiền".'
-                  : 'Từ chối hoàn hàng sẽ chuyển trạng thái đơn hàng thành "Từ chối hoàn hàng"'
-                }
-              </div>
               <div className="p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-700">
-                Lưu ý: Khi đơn hàng chuyển sang trạng thái "Đã nhận hàng", trạng thái thanh toán sẽ tự động chuyển thành "Đã thanh toán" (áp dụng cho cả COD và VNPAY)
+                Lưu ý: Đọc kỹ nội dung khi ấn đồng ý hoàn hàng hoặc từ chối hoàn hàng.
               </div>
             </div>
             <div className="flex justify-end space-x-1">
