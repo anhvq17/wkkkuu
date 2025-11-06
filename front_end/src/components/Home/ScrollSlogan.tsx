@@ -44,30 +44,30 @@ const ScrollSlogan = () => {
       <div className="overflow-hidden whitespace-nowrap pt-60 pb-10 bg-[#f5f5f5]">
         <div className="animate-marquee-slow inline-flex">
             {[
-            "Outerwear",
-            "Sweatshirts",
-            "Tees",
-            "Shirts",
-            "Tops",
-            "Bottom",
-            "Handwear",
-            "Bags",
-            "Shoes",
+            "Creative Director",
+            "Art Director",
+            "Designer",
+            "Photographer",
+            "Videographer",
+            "Stylist / Visual Curator",
+            "Production Manager",
+            "Marketing & Communications",
+            "Operations / Project Coordinator"
             ].map((item, i) => (
             <span key={i} className="text-4xl text-[#939393] font-normal tracking-tight mx-14">
                 {item}
             </span>
             ))}
             {[
-            "Outerwear",
-            "Sweatshirts",
-            "Tees",
-            "Shirts",
-            "Tops",
-            "Bottom",
-            "Handwear",
-            "Bags",
-            "Shoes",
+            "Creative Director",
+            "Art Director",
+            "Designer",
+            "Photographer",
+            "Videographer",
+            "Stylist / Visual Curator",
+            "Production Manager",
+            "Marketing & Communications",
+            "Operations / Project Coordinator"
             ].map((item, i) => (
             <span key={"dup" + i} className="text-4xl text-[#939393] font-normal tracking-tight mx-14">
                 {item}

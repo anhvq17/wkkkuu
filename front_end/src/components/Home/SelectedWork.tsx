@@ -33,7 +33,7 @@ const SelectedWork = () => {
           <div className="overflow-hidden">
             <img
               src={works[0].img}
-              className="w-full aspect-[16/9] object-cover transition-all duration-700 group-hover:blur-[3px] group-hover:scale-[1.03]"
+              className="w-full aspect-[16/9] object-cover transition-all duration-700 group-hover:scale-[1.03]"
             />
           </div>
           <p className="text-gray-500 text-sm mt-1">{works[0].info}</p>
@@ -46,7 +46,7 @@ const SelectedWork = () => {
             <div className="overflow-hidden">
               <img
                 src={item.img}
-                className="w-full aspect-[16/9] object-cover transition-all duration-700 group-hover:blur-[3px] group-hover:scale-[1.03]"
+                className="w-full aspect-[16/9] object-cover transition-all duration-700 group-hover:scale-[1.03]"
               />
             </div>
             <p className="text-gray-500 text-sm mt-1">{item.info}</p>

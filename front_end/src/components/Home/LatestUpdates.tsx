@@ -34,7 +34,7 @@ const LatestUpdates = () => {
             <div className="overflow-hidden">
               <img
                 src={item.img}
-                className="w-full h-[400px] object-cover transition-all duration-500 ease-in-out group-hover:blur-sm group-hover:scale-105"
+                className="w-full h-[400px] object-cover transition-all duration-500 ease-in-out group-hover:scale-105"
               />
             </div>
             <p className="text-sm text-gray-500 mt-2">{item.date}</p>

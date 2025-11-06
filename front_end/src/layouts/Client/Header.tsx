@@ -11,7 +11,14 @@ const ClientHeader = () => {
           <Link to="/" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-black after:transition-all after:duration-300 hover:after:w-full">Home</Link>
           <Link to="/about" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-black after:transition-all after:duration-300 hover:after:w-full">About</Link>
           <Link to="/work" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-black after:transition-all after:duration-300 hover:after:w-full">Work (17)</Link>
-          <Link to="/contact" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-black after:transition-all after:duration-300 hover:after:w-full">Contact</Link>
+          <button
+            onClick={() => {
+              const footer = document.querySelector("footer");
+              footer?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-black after:transition-all after:duration-300 hover:after:w-full">
+            Contact
+          </button>
         </nav>
       </div>
     </header>

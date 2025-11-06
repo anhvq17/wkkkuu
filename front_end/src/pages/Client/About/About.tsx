@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import Team from "../../../components/About/Team";
+import Kayo from "../../../components/About/Kayo";
 
 const About = () => {
   const ref = useRef(null);
@@ -34,6 +35,8 @@ const About = () => {
       </section>
 
       <Team />
+
+      <Kayo />
     </div>
   );
 };

@@ -1,83 +1,83 @@
 const us = [
   {
-    img: "/img/About Us/1.png",
+    img: "/img/about/1.png",
     name: "Michael Bierut",
-    exp: "New York"
+    exp: "Creative Director"
   },
   {
-    img: "/img/About Us/2.png",
+    img: "/img/about/2.png",
     name: "Michael Gericke",
-    exp: "New York"
+    exp: "Art Director"
   },
   {
-    img: "/img/About Us/3.png",
+    img: "/img/about/3.png",
     name: "Luke Hayman",
-    exp: "New York"
+    exp: "Art Director"
   },
   {
-    img: "/img/About Us/4.png",
+    img: "/img/about/4.png",
     name: "Jody Hudson-Powell",
-    exp: "London"
+    exp: "Art Director"
   },
   {
-    img: "/img/About Us/5.png",
+    img: "/img/about/5.png",
     name: "Angus Hyland",
-    exp: "London"
+    exp: "Senior Designer"
   },
   {
-    img: "/img/About Us/6.png",
+    img: "/img/about/6.png",
     name: "Natasha Jen",
-    exp: "New York"
+    exp: "Designer"
   },
   {
-    img: "/img/About Us/7.png",
+    img: "/img/about/7.png",
     name: "Domenic Lippa",
-    exp: "London"
+    exp: "Designer"
   },
   {
-    img: "/img/About Us/8.png",
+    img: "/img/about/8.png",
     name: "Giorgia Lupi",
-    exp: "New York"
+    exp: "Photographer"
   },
   {
-    img: "/img/About Us/9.png",
+    img: "/img/about/9.png",
     name: "Samar Maakaroun",
-    exp: "London"
+    exp: "Photographer"
   },
   {
-    img: "/img/About Us/10.png",
+    img: "/img/about/10.png",
     name: "Jon Marshall",
-    exp: "London"
+    exp: "Videographer"
   },
   {
-    img: "/img/About Us/11.png",
+    img: "/img/about/11.png",
     name: "Abbott Miller",
-    exp: "New York"
+    exp: "Videographer"
   },
   {
-    img: "/img/About Us/12.png",
+    img: "/img/about/12.png",
     name: "Hugh Miller",
-    exp: "London"
+    exp: "Stylist / Visual Curator"
   },
   {
-    img: "/img/About Us/13.png",
+    img: "/img/about/13.png",
     name: "Emily Oberman",
-    exp: "New York"
+    exp: "Stylist / Visual Curator"
   },
   {
-    img: "/img/About Us/14.png",
+    img: "/img/about/14.png",
     name: "Justus Oehler",
-    exp: "Berlin"
+    exp: "Production Manager"
   },
   {
-    img: "/img/About Us/15.png",
+    img: "/img/about/15.png",
     name: "Eddie Opara",
-    exp: "New York"
+    exp: "Marketing & Communications"
   },
   {
-    img: "/img/About Us/16.png",
+    img: "/img/about/16.png",
     name: "Harry Pearce",
-    exp: "London"
+    exp: "Operations / Project Coordinator"
   },
 ];
 
