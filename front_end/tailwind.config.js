@@ -18,6 +18,9 @@ export default {
       animation: {
         'marquee-slow': 'marqueeSlow 90s linear infinite',
       },
+      fontFamily: {
+        impact: ["Anton", "sans-serif"],
+      }
     }
   },
   plugins: [],

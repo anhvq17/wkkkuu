@@ -4,7 +4,7 @@ const ClientHeader = () => {
   return (
     <header className="fixed top-0 left-0 w-full h-[77px] bg-white z-50">
       <div className="max-w-[1280px] mx-auto px-14 h-full flex items-center justify-between">
-        <Link to="/" className="text-3xl tracking-tighter font-medium">
+        <Link to="/" className="text-4xl tracking-loose font-impact">
           KAY<span className="text-[#5f518e]">O</span>
         </Link>
         <nav className="flex items-center text-black space-x-24 text-xl font-sans tracking-tighter">
