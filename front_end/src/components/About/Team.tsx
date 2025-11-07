@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const us = [
   {
     img: "/img/about/1.png",
@@ -90,7 +92,7 @@ const Team = () => {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
         {us.map((item, index) => (
-          <div key={index} className="group cursor-pointer">
+          <Link to={`/about/details/${index}`} key={index} className="group cursor-pointer">
             <div className="overflow-hidden">
               <img
                 src={item.img}
@@ -99,7 +101,7 @@ const Team = () => {
             </div>
             <p className="text-sm text-gray-500 mt-2">{item.exp}</p>
             <h3 className="text-lg font-semibold leading-snug mb-8">{item.name}</h3>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

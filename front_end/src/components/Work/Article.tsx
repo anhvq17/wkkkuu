@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const works = [
   { img: "/img/5.png", info: "GREAT MINDS THINK ALIKE, 2025" },
@@ -24,7 +25,7 @@ const Article = () => {
     <section className="px-10 pt-32 pb-40 max-w-[1280px] mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
         {works.slice(0, visible).map((item, index) => (
-          <div key={index} className="group cursor-pointer">
+          <Link to={`/work/details/${index}`} key={index} className="group cursor-pointer">
             <div className="overflow-hidden">
               <img
                 src={item.img}
@@ -32,7 +33,7 @@ const Article = () => {
               />
             </div>
             <p className="text-gray-500 text-sm mt-1">{item.info}</p>
-          </div>
+          </Link>
         ))}
       </div>
 
