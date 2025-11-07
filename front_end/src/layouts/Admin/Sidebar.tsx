@@ -22,11 +22,19 @@ const AdminSidebar = ({ collapsed, setCollapsed }: Props) => {
 
       <div className={`p-4 transition-all ${collapsed ? 'px-2' : 'px-6'}`}>
         <nav>
-          <ul className="space-y-2 mt-10 text-sm text-gray-800">
-            <Link to="/admin" className="text-4xl tracking-loose font-impact">
+          <ul className="space-y-2 mt-8 text-sm text-gray-800">
+            <Link
+              to="/admin"
+              className={`tracking-loose mb-8 font-impact block ${
+                collapsed ? "text-xl text-center" : "text-4xl text-center"
+              }`}
+            >
               KAY<span className="text-[#5f518e]">O</span>
             </Link>
-            <SidebarItem to="/admin/products" icon="fas fa-cube" label="Sản phẩm" collapsed={collapsed} />
+            <div className="flex flex-col gap-5">
+              <SidebarItem to="/admin/products" icon="fas fa-user" label="About Us" collapsed={collapsed} />
+              <SidebarItem to="/admin/work" icon="fas fa-newspaper" label="Selected Work" collapsed={collapsed} />
+            </div>
           </ul>
         </nav>
       </div>
