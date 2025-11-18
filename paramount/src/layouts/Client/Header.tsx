@@ -47,10 +47,10 @@ const ClientHeader = () => {
       initial={{ y: 0 }}
       animate={{ y: visible ? 0 : -100 }}
       transition={{ duration: 0.4, ease: "easeInOut" }}
-      className="fixed top-0 left-0 w-full h-[77px] bg-white/80 backdrop-blur-md z-50"
+      className="fixed top-0 left-0 w-full z-50 py-5"
     >
-      <div className="max-w-[1280px] mx-auto px-8 h-full flex items-center justify-between">
-        <Link to="/" className="text-4xl md:text-4xl font-orbitron font-bold">
+      <div className="max-w-[1280px] mx-auto px-5 h-full flex items-center justify-between">
+        <Link to="/" className="text-4x md:text-4xl text-white font-orbitron font-bold">
           Patagon
         </Link>
 
@@ -58,7 +58,7 @@ const ClientHeader = () => {
           <button
             ref={buttonRef}
             onClick={() => setOpen(!open)}
-            className="relative px-4 py-2 rounded-full overflow-hidden text-black bg-[#eae7da] duration-300 flex items-center gap-1 font-normal font-mono transition"
+            className="relative px-4 py-1.5 rounded-full overflow-hidden text-black bg-white duration-300 flex items-center gap-1 font-normal font-mono transition"
           >
             Menu
             <ChevronDown
@@ -71,9 +71,8 @@ const ClientHeader = () => {
 
           <Link
             to="/contact"
-            className="relative px-4 py-2 rounded-full overflow-hidden text-white bg-[#e34447] font-normal font-mono transition-all duration-300"
+            className="relative px-4 py-1.5 rounded-full overflow-hidden text-white bg-red-700 hover:bg-red-600 font-normal font-mono transition-all duration-300"
           >
-            <span className="absolute inset-0 bg-red-600 origin-left scale-x-0 hover:scale-x-100 transition-transform duration-300 ease-out"></span>
             <span className="relative z-10">Contact</span>
           </Link>
         </div>
@@ -87,7 +86,7 @@ const ClientHeader = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.35, ease: "easeInOut", when: "afterChildren" }}
-            className="absolute right-8 top-[77px] bg-[#eae7da] shadow-xl rounded-xl p-8 grid grid-cols-4 gap-20 text-gray-800 origin-top overflow-hidden"
+            className="absolute right-8 top-[77px] bg-white shadow-xl rounded-xl p-8 grid grid-cols-4 gap-20 text-gray-800 origin-top overflow-hidden"
           >
             <motion.div
               initial="hidden"

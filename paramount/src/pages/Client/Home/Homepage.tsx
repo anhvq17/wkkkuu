@@ -12,19 +12,22 @@ const Homepage = () => {
   const y = useTransform(scrollYProgress, [0, 0.5], [0, -100]);
 
   return (
-    <div className="relative w-full">
-      <section ref={ref} className="flex flex-col md:flex-row items-center justify-between max-w-[1280px] mx-auto px-8 pt-16 md:pt-32 pb-3">
-        <motion.div style={{ opacity, y }} className="md:w-2/3 space-y-4 md:ml-20">
-          <h1 className="text-5xl indent-28 md:text-7xl font-serif">
-            <span className="leading-tight tracking-tighter">Building the next</span> <br />
-            <span className="leading-tight tracking-tighter">generation of </span> <br />
-            <span className="leading-tight tracking-tighter">products, brands </span>
-            <span style={{ fontFamily: "'Playfair Display', serif" }} className="italic leading-none">&</span> <br />
-            <span className="leading-tight tracking-tighter">experiences.</span>
-          </h1>
-        </motion.div>
-        <motion.div style={{ opacity, y }} className="md:w-1/2 flex justify-center mt-10 md:mt-8">
-          <img src="/img/banner.jpg" className="w-[280px] h-[420px] object-cover" />
+    <div className="relative w-full overflow-hidden">
+      <section
+        ref={ref}
+        className="relative w-full flex justify-center px-0 pb-3"
+      >
+        <motion.div style={{ opacity, y }} className="relative w-full flex justify-center">
+          <img src="/img/6.2.png" className="w-full  h-[639px] object-cover mx-auto" />
+          <div className="max-w-[1280px] font-mono text-white sm:text-base [&>p]:leading-tight [&>p]:drop-shadow-[3px_3px_6px_rgba(0,0,0,0.9)]">
+            <p className="absolute bottom-6 left-6 w-[300px]">
+              We are a branding and creative agency specializing in strategy, identity and digital design for companies ready to stand.
+            </p>
+            <p className="absolute bottom-6 right-6 w-[300px] text-right">
+              We craft bold strategies and striking visual identities that empower brands to stand taller with clarity and precision.
+            </p>
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray/40 pointer-events-none"></div>
         </motion.div>
       </section>
     </div>
