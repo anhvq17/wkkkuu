@@ -71,7 +71,7 @@ const ClientHeader = () => {
 
           <Link
             to="/contact"
-            className="relative px-4 py-1.5 rounded-full overflow-hidden text-white bg-[#f57e81] font-normal font-mono transition-all duration-300"
+            className="relative px-4 py-1.5 rounded-full overflow-hidden text-white bg-[#f5797e] font-normal font-mono transition-all duration-300"
           >
             <span className="relative z-10">Contact</span>
           </Link>
