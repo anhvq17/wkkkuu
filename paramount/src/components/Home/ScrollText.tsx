@@ -9,36 +9,46 @@ const ScrollText = () => {
   });
 
   const lines = [
-    "We design brands that shape environments and influence culture. Our partners are forward thinkers who view",
-    "design as an engine for change, people who build futures and reshape spaces."
+    "Patagon works with startups in fashion and lifestyle brands ready to scale their identity. We bring strategy and creativity together to build brands that inspire, connect and grow."
   ];
 
-  const words = lines.map(line => line.split(" "));
-
   return (
-    <section ref={ref} className="py-32 max-w-[1250px] mx-auto px-8 leading-[1.1]">
-      <h2 className="text-7xl md:text-7xl font-medium tracking-tighter">
-        {words.map((line, lineIndex) => (
-          <div key={lineIndex} className="flex flex-wrap mb-1">
-            {line.map((word, i) => {
-              const index = lineIndex * words[0].length + i;
-              const start = (index / (words.flat().length)) * 0.7;
-              const end = start + 1 / words.flat().length;
+    <section ref={ref} className="py-14 max-w-[1280px] mx-auto px-8 leading-[1.5]">
+      <h2 className="md:text-6xl font-medium font-mono tracking-tighter mr-10 text-justify [text-justify:inter-word]">
+        {lines.map((line, lineIndex) => {
+          const words = line.split(" ");
+          const totalWords = lines.flatMap(l => l.split(" ")).length;
+          return (
+            <div key={lineIndex} className="mb-2">
+              {words.map((word, wordIndex) => {
+                const globalIndex =
+                  lines
+                    .slice(0, lineIndex)
+                    .reduce((acc, l) => acc + l.split(" ").length, 0) +
+                  wordIndex;
 
-              const color = useTransform(
-                scrollYProgress,
-                [start, end],
-                ["#eeeeee", "#000000"]
-              );
+                const start = (globalIndex / totalWords) * 0.7;
+                const end = start + 1 / totalWords;
 
-              return (
-                <motion.span key={index} style={{ color }} className="mr-3 inline-block transition-colors duration-300">
-                  {word}
-                </motion.span>
-              );
-            })}
-          </div>
-        ))}
+                const color = useTransform(
+                  scrollYProgress,
+                  [start, end],
+                  ["#aeaa9e", "#f4f4f1"]
+                );
+
+                return (
+                  <motion.span
+                    key={wordIndex}
+                    style={{ color }}
+                    className="contents transition-colors duration-300"
+                  >
+                    {word + (wordIndex !== words.length - 1 ? " " : "")}
+                  </motion.span>
+                );
+              })}
+            </div>
+          );
+        })}
       </h2>
     </section>
   );

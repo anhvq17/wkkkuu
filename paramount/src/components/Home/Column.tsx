@@ -37,12 +37,14 @@ const items: ColumnItem[] = [
 
 const Column = () => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
+  const isInView = useInView(ref);
   const controls = useAnimation();
 
   useEffect(() => {
     if (isInView) {
       controls.start("visible");
+    } else {
+      controls.start("hidden");
     }
   }, [isInView, controls]);
 
@@ -57,14 +59,14 @@ const Column = () => {
         {items.map((item) => (
           <motion.div
             key={item.number}
-            className="flex flex-col items-start text-left border-r border-gray-200 last:border-r-0 pr-4"
+            className="flex flex-col items-start text-left border-r border-[#aeaa9e] last:border-r-0 pr-4"
             variants={itemVariants}
             initial="hidden"
             animate={controls}
           >
             <span className="text-4xl font-orbitron text-[#f57e81] mb-2">{item.number}</span>
-            <h3 className="md:text-2xl font-black font-mono tracking-tight mb-2">{item.title}</h3>
-            <p className="text-gray-700 font-mono tracking-tight mb-4">{item.description}</p>
+            <h3 className="md:text-2xl text-[#aeaa9e] font-black font-mono tracking-tight mb-2">{item.title}</h3>
+            <p className="text-[#f4f4f1] font-mono tracking-tight mb-4">{item.description}</p>
             <div className="relative w-full h-48 overflow-hidden group">
               <img src={item.image} className="w-full h-full object-cover" />
               <img src={item.image} className="absolute inset-0 w-full h-full object-cover grayscale opacity-100 transition-opacity duration-700 group-hover:opacity-0" />

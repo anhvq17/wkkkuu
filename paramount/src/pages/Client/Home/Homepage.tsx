@@ -1,11 +1,12 @@
 import { useRef } from "react";
 import Column from "../../../components/Home/Column";
+import ScrollText from "../../../components/Home/ScrollText";
 
 const Homepage = () => {
   const ref = useRef(null);
 
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className="bg-[#464134] relative w-full overflow-hidden">
       <section
         ref={ref}
         className="relative w-full flex justify-center px-0 pb-3"
@@ -25,6 +26,8 @@ const Homepage = () => {
       </section>
 
       <Column />
+
+      <ScrollText />
     </div>
   )
 }
