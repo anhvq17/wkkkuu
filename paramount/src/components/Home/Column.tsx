@@ -65,7 +65,7 @@ const Column = () => {
             animate={controls}
           >
             <span className="text-4xl font-orbitron text-[#f57e81] mb-2">{item.number}</span>
-            <h3 className="md:text-2xl text-[#aeaa9e] font-black font-mono tracking-tight mb-2">{item.title}</h3>
+            <h3 className="md:text-2xl text-[#aeaa9e] font-black font-orbitron tracking-tight mb-2">{item.title}</h3>
             <p className="text-[#f4f4f1] font-mono tracking-tight mb-4">{item.description}</p>
             <div className="relative w-full h-48 overflow-hidden group">
               <img src={item.image} className="w-full h-full object-cover" />

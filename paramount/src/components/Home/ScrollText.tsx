@@ -9,12 +9,12 @@ const ScrollText = () => {
   });
 
   const lines = [
-    "Patagon works with startups in fashion and lifestyle brands ready to scale their identity. We bring strategy and creativity together to build brands that inspire, connect and grow."
+    "Patagon works with startups in fashion and lifestyle brands to scale their identity. We bring strategy and creativity together to build brands that inspire, connect and grow."
   ];
 
   return (
     <section ref={ref} className="py-20 max-w-[1280px] mx-auto px-8">
-      <h2 className="md:text-6xl font-medium font-mono tracking-tighter mr-10 text-justify [text-justify:inter-word]">
+      <h2 className="md:text-6xl font-bold font-orbitron tracking-tighter mr-14 text-justify [text-justify:inter-word]">
         {lines.map((line, lineIndex) => {
           const words = line.split(" ");
           const totalWords = lines.flatMap(l => l.split(" ")).length;

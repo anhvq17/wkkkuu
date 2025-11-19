@@ -51,7 +51,7 @@ const works = [
 const Projects = () => {
   return (
     <section className="px-10 pt-20 pb-28 max-w-[1280px] mx-auto">
-      <h1 className="text-7xl text-center text-[#f4f4f1] font-medium font-orbitron tracking-tight mb-20">
+      <h1 className="text-7xl text-center text-[#f4f4f1] font-bold font-orbitron tracking-tight mb-20">
         Projects
       </h1>
 
@@ -72,7 +72,7 @@ const Projects = () => {
               <span className="text-[#f57e81] text-4xl font-orbitron">
                 {item.number}
               </span>
-              <h3 className="text-3xl font-bold mt-2 mb-4">{item.title}</h3>
+              <h3 className="text-3xl font-bold font-orbitron mt-2 mb-4">{item.title}</h3>
               <p className="text-gray-400 mb-4">{item.description}</p>
               <ul className="list-disc list-inside space-y-1 text-gray-400">
                 {item.points.map((point, i) => (

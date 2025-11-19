@@ -3,6 +3,7 @@ import Column from "../../../components/Home/Column";
 import ScrollText from "../../../components/Home/ScrollText";
 import Projects from "../../../components/Home/Projects";
 import Testimonials from "../../../components/Home/Testimonials";
+import News from "../../../components/Home/News";
 
 const Homepage = () => {
   const ref = useRef(null);
@@ -34,6 +35,8 @@ const Homepage = () => {
       <Projects />
 
       <Testimonials />
+
+      <News />
     </div>
   )
 }
