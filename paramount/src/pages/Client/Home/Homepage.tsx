@@ -2,6 +2,7 @@ import { useRef } from "react";
 import Column from "../../../components/Home/Column";
 import ScrollText from "../../../components/Home/ScrollText";
 import Projects from "../../../components/Home/Projects";
+import Testimonials from "../../../components/Home/Testimonials";
 
 const Homepage = () => {
   const ref = useRef(null);
@@ -31,6 +32,8 @@ const Homepage = () => {
       <ScrollText />
 
       <Projects />
+
+      <Testimonials />
     </div>
   )
 }
