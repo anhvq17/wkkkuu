@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 
 const ClientFooter = () => {
   return (
-    <footer className="max-w-[1280px] mx-auto">
+    <footer className="mx-auto">
       <div className="bg-[#464134] px-6 border-t border-b border-[#605a4b] py-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-14">
           <h1 className="md:text-4xl text-[#f4f4f1] font-bold font-orbitron mt-2.5">

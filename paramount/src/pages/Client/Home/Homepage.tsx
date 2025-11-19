@@ -16,11 +16,11 @@ const Homepage = () => {
       >
         <div className="relative w-full flex justify-center">
           <img src="/img/banner.png" className="w-full  h-[639px] object-cover mx-auto" />
-          <div className="max-w-[1280px] font-mono text-white sm:text-base [&>p]:leading-tight [&>p]:drop-shadow-[3px_3px_6px_rgba(0,0,0,0.9)]">
-            <p className="absolute bottom-6 left-6 w-[300px]">
+          <div className="absolute inset-0 flex justify-between items-end px-6 pb-6 max-w-[1280px] mx-auto pointer-events-none">
+            <p className="w-[300px] text-white font-mono text-sm sm:text-base leading-tight drop-shadow-[3px_3px_6px_rgba(0,0,0,0.9)]">
               We are a branding and creative agency specializing in strategy, identity and digital design for companies ready to stand.
             </p>
-            <p className="absolute bottom-6 right-6 w-[300px] text-right">
+            <p className="w-[300px] text-white font-mono text-sm sm:text-base leading-tight drop-shadow-[3px_3px_6px_rgba(0,0,0,0.9)] text-right">
               We craft bold strategies and striking visual identities that empower brands to stand taller with clarity and precision.
             </p>
           </div>

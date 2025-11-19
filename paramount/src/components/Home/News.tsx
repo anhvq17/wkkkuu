@@ -12,7 +12,7 @@ const newsData = [
     id: 2,
     date: "October 26, 2023",
     title: "Community Climate Resilience Program",
-    description: "Transformed schoolyard at Public School 107, Bronx, New York",
+    description: "Revitalized the schoolyard at Public School 107 in the Bronx, New York, creating a more vibrant and functional space for students.",
     image: "/img/news/02.jpg"
   }
 ];
@@ -43,7 +43,7 @@ const News = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="px-10 pb-28">
+    <section ref={sectionRef} className="px-10 pt-14 pb-32">
       <h1 className="text-7xl text-[#f4f4f1] font-bold font-orbitron tracking-tight text-center mb-10">
         News
       </h1>

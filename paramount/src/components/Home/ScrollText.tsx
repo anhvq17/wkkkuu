@@ -13,7 +13,7 @@ const ScrollText = () => {
   ];
 
   return (
-    <section ref={ref} className="py-20 max-w-[1280px] mx-auto px-8">
+    <section ref={ref} className="max-w-[1280px] mx-auto px-8 pt-14 pb-28">
       <h2 className="md:text-6xl font-bold font-orbitron tracking-tighter mr-14 text-justify [text-justify:inter-word]">
         {lines.map((line, lineIndex) => {
           const words = line.split(" ");

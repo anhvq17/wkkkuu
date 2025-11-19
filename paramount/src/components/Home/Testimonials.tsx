@@ -51,7 +51,7 @@ const Testimonials = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="px-10 pt-20 pb-28">
+    <section ref={sectionRef} className="px-10 pt-14 pb-28">
       <h1 className="text-7xl text-[#f4f4f1] font-bold font-orbitron tracking-tight text-center mb-10">
         Client Words
       </h1>

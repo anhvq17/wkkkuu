@@ -1,10 +1,10 @@
-const works = [
+const projects = [
   {
     img: "/img/projects/01.jpeg",
     number: "01",
     title: "Carry With Intent",
     description:
-      "Defining Auré's brand story, visual identity, and digital presence as a premium lifestyle brand.",
+      "Crafting Auré’s complete brand foundation—from narrative to visual language—to position the label as a premium lifestyle brand with purpose-driven elegance. The process included refining how the brand communicates, behaves and appears across every touchpoint.",
     points: [
       "Timeless brand identity system",
       "Defined elegant brand voice",
@@ -16,7 +16,7 @@ const works = [
     number: "02",
     title: "Shades of Summer",
     description:
-      "Created a bold brand identity and campaign visuals to captura Solara's summer lifestyle.",
+      "Building a bold and expressive identity for Solara by capturing the essence of summer through color, motion, and mood. The work spanned visual direction, campaign storytelling, and a cohesive design system tailored for seasonal brand expression.",
     points: [
       "Distinctive brand identity system",
       "Poolside-inspired lifestyle photography",
@@ -28,7 +28,7 @@ const works = [
     number: "03",
     title: "Built to Move",
     description:
-      "Developing a clear brand strategy and dynamic design system for Vetra athletes and everyday movers.",
+      "Developing a strategic and design-forward brand system for Vetra, shaped around movement, performance, and modern athletic culture. We refined their positioning, messaging, and visual execution to empower both athletes and everyday movers.",
     points: [
       "Market positioning strategy",
       "Brand voice and messaging framework",
@@ -39,7 +39,8 @@ const works = [
     img: "/img/projects/04.jpg",
     number: "04",
     title: "Evolution of Time",
-    description: "Shaping Chrono's strategy and design direction to highlight innovation, usability, and everyday appeal.",
+    description:
+      "Leading Chrono’s brand evolution through a refined strategic framework and elevated design direction. The goal was to communicate precision, innovation and everyday wearability — resulting in a clear identity system that strengthens the brand’s long-term presence.",
     points: [
       "Distinctive brand identity system",
       "Poolside-inspired lifestyle photography",
@@ -50,31 +51,43 @@ const works = [
 
 const Projects = () => {
   return (
-    <section className="px-10 pt-20 pb-28 max-w-[1280px] mx-auto">
-      <h1 className="text-7xl text-center text-[#f4f4f1] font-bold font-orbitron tracking-tight mb-20">
+    <section className="px-10 pt-14 pb-28 max-w-[1280px] mx-auto">
+      <h1 className="text-7xl text-center text-[#f4f4f1] font-bold font-orbitron tracking-tight mb-12">
         Projects
       </h1>
 
       <div className="grid grid-cols-1 gap-16">
-        {works.map((item, index) => (
+        {projects.map((item, index) => (
           <div
             key={index}
             className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start"
           >
-            <div className="overflow-hidden group cursor-pointer">
+            <div className="relative w-full aspect-[16/9] overflow-hidden group cursor-pointer">
               <img
                 src={item.img}
-                className="w-full aspect-[16/9] object-cover transition-all duration-700 group-hover:scale-[1.03]"
+                className="w-full h-full object-cover"
               />
+
+              <img
+                src={item.img}
+                className="absolute inset-0 w-full h-full object-cover grayscale opacity-100 transition-opacity duration-700 group-hover:opacity-0"
+              />
+
+              <div className="absolute inset-0 flex">
+                <div className="w-1/2 h-full bg-black/20 transition-transform duration-700 group-hover:-translate-x-full"></div>
+                <div className="w-1/2 h-full bg-black/20 transition-transform duration-700 group-hover:translate-x-full"></div>
+              </div>
             </div>
 
-            <div className="text-[#f4f4f1] font-mono">
+            <div className="text-[#aeaa9e] font-mono">
               <span className="text-[#f57e81] text-4xl font-orbitron">
                 {item.number}
               </span>
-              <h3 className="text-3xl font-bold font-orbitron mt-2 mb-4">{item.title}</h3>
-              <p className="text-gray-400 mb-4">{item.description}</p>
-              <ul className="list-disc list-inside space-y-1 text-gray-400">
+              <h3 className="text-2xl font-bold font-orbitron mt-2 mb-4">
+                {item.title}
+              </h3>
+              <p className="text-[#f4f4f1] mb-4">{item.description}</p>
+              <ul className="list-disc list-inside space-y-1 text-[#f4f4f1]">
                 {item.points.map((point, i) => (
                   <li key={i}>{point}</li>
                 ))}

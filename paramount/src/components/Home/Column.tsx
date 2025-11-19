@@ -54,7 +54,7 @@ const Column = () => {
   };
 
   return (
-    <section ref={ref} className="max-w-[1280px] mx-auto px-8 py-14">
+    <section ref={ref} className="max-w-[1280px] mx-auto px-8 pt-28 pb-28">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {items.map((item) => (
           <motion.div
@@ -70,7 +70,7 @@ const Column = () => {
             <div className="relative w-full h-48 overflow-hidden group">
               <img src={item.image} className="w-full h-full object-cover" />
               <img src={item.image} className="absolute inset-0 w-full h-full object-cover grayscale opacity-100 transition-opacity duration-700 group-hover:opacity-0" />
-              <div className="absolute inset-0 flex">
+              <div className="absolute inset-0 flex cursor-pointer">
                 <div className="w-1/2 h-full bg-black/20 transition-transform duration-700 group-hover:-translate-x-full"></div>
                 <div className="w-1/2 h-full bg-black/20 transition-transform duration-700 group-hover:translate-x-full"></div>
               </div>   
