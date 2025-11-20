@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 const newsData = [
   {
@@ -49,8 +50,8 @@ const News = () => {
       </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[1280px] mx-auto">
-        <div 
-          className="group cursor-pointer"
+        <Link to={"/news"} 
+          className="group"
           onMouseEnter={() => setActiveCard(0)}
           style={{
             transform: activeCard === 0 ? 'scale(1)' : 'scale(0.98)',
@@ -68,16 +69,16 @@ const News = () => {
           <p className="text-sm text-[#f4f4f1] font-mono mb-3">{newsData[0].date}</p>
           <h2 className="text-4xl text-[rgb(244,244,241)] font-bold font-orbitron mb-4 leading-tight">{newsData[0].title}</h2>
           <p className="text-[#f4f4f1] font-mono mb-6 leading-relaxed">{newsData[0].description}</p>
-          <button className="inline-flex items-center gap-3 px-8 py-3 bg-[#eae7da] text-[#443f32] rounded-full text-sm font-medium font-mono transition-all duration-300 hover:gap-5">
+          <Link to={"/news"} className="inline-flex items-center gap-3 px-8 py-3 bg-[#eae7da] text-[#443f32] rounded-full text-sm font-medium font-mono transition-all duration-300 hover:gap-5">
             Read Post
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </button>
-        </div>
+          </Link>
+        </Link>
 
-        <div 
-          className="group cursor-pointer"
+        <Link to={"/news"}
+          className="group"
           onMouseEnter={() => setActiveCard(1)}
           style={{
             transform: activeCard === 1 ? 'scale(1)' : 'scale(0.98)',
@@ -95,13 +96,13 @@ const News = () => {
           <p className="text-sm text-[#f4f4f1] font-mono mb-3">{newsData[1].date}</p>
           <h2 className="text-4xl text-[#f4f4f1] font-bold font-orbitron mb-4 leading-tight">{newsData[1].title}</h2>
           <p className="text-[#f4f4f1] font-mono mb-6 leading-relaxed">{newsData[1].description}</p>
-          <button className="inline-flex items-center gap-3 px-8 py-3 bg-[#eae7da] text-[#443f32] rounded-full text-sm font-medium font-mono transition-all duration-300 hover:gap-5">
+          <Link to={"/news"} className="inline-flex items-center gap-3 px-8 py-3 bg-[#eae7da] text-[#443f32] rounded-full text-sm font-medium font-mono transition-all duration-300 hover:gap-5">
             Read Post
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </button>
-        </div>
+          </Link>
+        </Link>
       </div>
     </section>
   );

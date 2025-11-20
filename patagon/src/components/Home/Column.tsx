@@ -1,5 +1,6 @@
 import { motion, useInView, useAnimation } from "framer-motion";
 import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 
 interface ColumnItem {
   number: string;
@@ -70,10 +71,10 @@ const Column = () => {
             <div className="relative w-full h-48 overflow-hidden group">
               <img src={item.image} className="w-full h-full object-cover" />
               <img src={item.image} className="absolute inset-0 w-full h-full object-cover grayscale opacity-100 transition-opacity duration-700 group-hover:opacity-0" />
-              <div className="absolute inset-0 flex cursor-pointer">
+              <Link to={"/services"} className="absolute inset-0 flex">
                 <div className="w-1/2 h-full bg-black/20 transition-transform duration-700 group-hover:-translate-x-full"></div>
                 <div className="w-1/2 h-full bg-black/20 transition-transform duration-700 group-hover:translate-x-full"></div>
-              </div>   
+              </Link>   
             </div>
           </motion.div>
         ))}

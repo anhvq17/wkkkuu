@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const projects = [
   {
     img: "/img/projects/01.jpeg",
@@ -62,7 +64,7 @@ const Projects = () => {
             key={index}
             className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start"
           >
-            <div className="relative w-full aspect-[16/9] overflow-hidden group cursor-pointer">
+            <Link to={"/projects"} className="relative w-full aspect-[16/9] overflow-hidden group">
               <img
                 src={item.img}
                 className="w-full h-full object-cover"
@@ -77,7 +79,7 @@ const Projects = () => {
                 <div className="w-1/2 h-full bg-black/20 transition-transform duration-700 group-hover:-translate-x-full"></div>
                 <div className="w-1/2 h-full bg-black/20 transition-transform duration-700 group-hover:translate-x-full"></div>
               </div>
-            </div>
+            </Link>
 
             <div className="text-[#aeaa9e] font-mono">
               <span className="text-[#f57e81] text-4xl font-orbitron">

@@ -54,7 +54,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-[#464134] flex items-center justify-center p-24 relative">
       {showNotification && (
-        <div className="fixed top-8 right-8 bg-white rounded-xl shadow-2xl p-5 flex items-center gap-3 animate-slide-in z-50">
+        <div className="fixed top-8 right-8 bg-white shadow-2xl p-5 flex items-center gap-3 animate-slide-in z-50">
           <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
             notificationType === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}>
@@ -77,7 +77,7 @@ const Contact = () => {
         </div>
       )}
 
-      <div className="w-full max-w-5xl rounded-3xl bg-[#f4f4f1] p-12">
+      <div className="w-full max-w-5xl bg-[#f4f4f1] p-12">
         <h1 className="text-7xl text-[#464134] font-bold font-orbitron tracking-tight mb-12">Contact</h1>
         <div className="grid grid-cols-2 gap-x-12 gap-y-10 mb-12">
           <div className="text-[#464134]">
@@ -90,7 +90,6 @@ const Contact = () => {
             <p className="font-mono mb-1">us@patagon.com</p>
             <p className="font-mono">help@patagon.com</p>
           </div>
-
           <div className="text-[#464134]">
             <h2 className="text-3xl font-bold font-orbitron mb-3">Visit</h2>
             <p className="font-mono">3/98 Vu Trong Phung,</p>
@@ -110,79 +109,61 @@ const Contact = () => {
           <div className="space-y-5 font-mono">
             <div className="grid grid-cols-2 gap-5">
               <div>
-                <label className="block text-[#464134] font-normal mb-2">
-                  First Name
-                </label>
                 <input
                   type="text"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
                   placeholder="Enter your first name"
-                  className="w-full px-4 py-3 bg-white border-none rounded-lg tracking-tight focus:outline-none"
+                  className="w-full px-4 py-3 bg-white border-none  tracking-tight focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block text-[#464134] font-normal mb-2">
-                  Last Name
-                </label>
                 <input
                   type="text"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
                   placeholder="Enter your last name"
-                  className="w-full px-4 py-3 bg-white border-none rounded-lg tracking-tight focus:outline-none"
+                  className="w-full px-4 py-3 bg-white border-none tracking-tight focus:outline-none"
                 />
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-5">
               <div>
-                <label className="block text-[#464134] font-normal mb-2">
-                  Email Address
-                </label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="Enter your email"
-                  className="w-full px-4 py-3 bg-white border-none rounded-lg tracking-tight focus:outline-none"
+                  className="w-full px-4 py-3 bg-white border-none tracking-tight focus:outline-none"
                 />
               </div>
               <div>
-                <label className="block text-[#464134] font-normal mb-2">
-                  Phone
-                </label>
                 <input
                   type="tel"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="Enter your phone number"
-                  className="w-full px-4 py-3 bg-white border-none rounded-lg tracking-tight focus:outline-none"
+                  className="w-full px-4 py-3 bg-white border-none tracking-tight focus:outline-none"
                 />
               </div>
             </div>
-
             <div>
-              <label className="block text-[#464134] font-normal mb-2">
-                Message
-              </label>
               <textarea
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="Write your message"
                 rows={4}
-                className="w-full px-4 py-3 bg-white border-none rounded-lg tracking-tight focus:outline-none resize-none"
+                className="w-full px-4 py-3 bg-white border-none tracking-tight focus:outline-none resize-none"
               />
             </div>
-
             <button
               onClick={handleSubmit}
-              className="w-full text-white bg-[#f5797e] font-normal font-mono py-3 rounded-2xl transition-colors duration-200"
+              className="w-full text-white bg-[#f5797e] font-normal font-mono py-3 transition-colors duration-200"
             >
               Send Message
             </button>

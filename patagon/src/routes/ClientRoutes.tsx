@@ -2,6 +2,10 @@ import ClientLayout from "../layouts/ClientLayout";
 import Homepage from "../pages/Client/Home/Homepage";
 import Contact from "../pages/Client/Contact/Contact";
 
+import OurServices from "../pages/Client/Services/OurServices";
+import Projects from "../pages/Client/Projects/Projects";
+import News from "../pages/Client/News/News";
+
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 
@@ -13,6 +17,10 @@ const ClientRoutes = {
   children: [
     { path: '', element: <Homepage /> },
     { path: 'contact', element: <Contact /> },
+
+    { path: 'services', element: <OurServices /> },
+    { path: 'projects', element: <Projects /> },
+    { path: 'news', element: <News /> },
 
     { path: 'login', element: <Login /> },
     { path: 'register', element: <Register /> },
