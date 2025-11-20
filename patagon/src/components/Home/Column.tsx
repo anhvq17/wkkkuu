@@ -12,25 +12,25 @@ const items: ColumnItem[] = [
   {
     number: "01",
     title: "Branding",
-    description: "We create brand identities that reflect your essence and build recognition.",
+    description: "We build identity \n systems that last.",
     image: "img/column/01.jpg",
   },
   {
     number: "02",
     title: "Marketing",
-    description: "We craft campaigns that connect audiences, increase reach, and drive growth.",
+    description: "Campaigns that connect \n and help drive growth.",
     image: "img/column/02.jpeg",
   },
   {
     number: "03",
     title: "Design",
-    description: "We deliver bold visuals that elevate brands across digital and print touchpoints.",
+    description: "Bold visuals for \n digital and print.",
     image: "img/column/03.jpg",
   },
   {
     number: "04",
     title: "Strategy",
-    description: "We align business goals with creative direction to ensure every move achieves success.",
+    description: "Creative direction fully aligned with your goals.",
     image: "img/column/04.jpeg",
   },
 ];
@@ -66,7 +66,7 @@ const Column = () => {
           >
             <span className="text-4xl font-orbitron text-[#f57e81] mb-2">{item.number}</span>
             <h3 className="md:text-2xl text-[#aeaa9e] font-black font-orbitron tracking-tight mb-2">{item.title}</h3>
-            <p className="text-[#f4f4f1] font-mono tracking-tight mb-4">{item.description}</p>
+            <p className="text-[#f4f4f1] font-mono tracking-tight mb-4 whitespace-pre-line">{item.description}</p>
             <div className="relative w-full h-48 overflow-hidden group">
               <img src={item.image} className="w-full h-full object-cover" />
               <img src={item.image} className="absolute inset-0 w-full h-full object-cover grayscale opacity-100 transition-opacity duration-700 group-hover:opacity-0" />

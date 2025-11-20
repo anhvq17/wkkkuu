@@ -4,11 +4,11 @@ const projects = [
     number: "01",
     title: "Carry With Intent",
     description:
-      "Crafting Auré’s complete brand foundation—from narrative to visual language—to position the label as a premium lifestyle brand with purpose-driven elegance. The process included refining how the brand communicates, behaves and appears across every touchpoint.",
+      "Building Auré’s brand foundation—from story to \n visuals—to shape a premium lifestyle identity.",
     points: [
-      "Timeless brand identity system",
-      "Defined elegant brand voice",
-      "Campaign visuals for launch",
+      "Timeless identity system",
+      "Elegant brand voice",
+      "Launch campaign visuals",
     ],
   },
   {
@@ -16,10 +16,10 @@ const projects = [
     number: "02",
     title: "Shades of Summer",
     description:
-      "Building a bold and expressive identity for Solara by capturing the essence of summer through color, motion, and mood. The work spanned visual direction, campaign storytelling, and a cohesive design system tailored for seasonal brand expression.",
+      "Capturing summer spirit through bold color, \n motion and a cohesive seasonal design system.",
     points: [
-      "Distinctive brand identity system",
-      "Poolside-inspired lifestyle photography",
+      "Distinctive identity system",
+      "Lifestyle photography",
       "Seasonal campaign design",
     ],
   },
@@ -28,11 +28,11 @@ const projects = [
     number: "03",
     title: "Built to Move",
     description:
-      "Developing a strategic and design-forward brand system for Vetra, shaped around movement, performance, and modern athletic culture. We refined their positioning, messaging, and visual execution to empower both athletes and everyday movers.",
+      "Creating a movement-driven brand system for Vetra, \n built on performance and modern athletic culture.",
     points: [
-      "Market positioning strategy",
-      "Brand voice and messaging framework",
-      "Product-focused campaign design",
+      "Positioning strategy",
+      "Messaging framework",
+      "Product-focused campaign",
     ],
   },
   {
@@ -40,10 +40,10 @@ const projects = [
     number: "04",
     title: "Evolution of Time",
     description:
-      "Leading Chrono’s brand evolution through a refined strategic framework and elevated design direction. The goal was to communicate precision, innovation and everyday wearability — resulting in a clear identity system that strengthens the brand’s long-term presence.",
+      "Evolving identity with a refined strategy and \n elevated design rooted in precision and innovation.",
     points: [
-      "Distinctive brand identity system",
-      "Poolside-inspired lifestyle photography",
+      "Distinctive identity system",
+      "Lifestyle photography",
       "Seasonal campaign design",
     ],
   },
@@ -56,7 +56,7 @@ const Projects = () => {
         Projects
       </h1>
 
-      <div className="grid grid-cols-1 gap-16">
+      <div className="grid grid-cols-1 gap-16 ml-20">
         {projects.map((item, index) => (
           <div
             key={index}
@@ -83,10 +83,10 @@ const Projects = () => {
               <span className="text-[#f57e81] text-4xl font-orbitron">
                 {item.number}
               </span>
-              <h3 className="text-2xl font-bold font-orbitron mt-2 mb-4">
+              <h3 className="text-2xl font-bold font-orbitron mt-6 mb-6">
                 {item.title}
               </h3>
-              <p className="text-[#f4f4f1] mb-4">{item.description}</p>
+              <p className="text-[#f4f4f1] tracking-tight mb-6 whitespace-pre-line">{item.description}</p>
               <ul className="list-disc list-inside space-y-1 text-[#f4f4f1]">
                 {item.points.map((point, i) => (
                   <li key={i}>{point}</li>

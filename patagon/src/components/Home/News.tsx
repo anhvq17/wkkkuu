@@ -5,14 +5,14 @@ const newsData = [
     id: 1,
     date: "October 31, 2025",
     title: "A London Hub for Sport, Creativity and Community",
-    description: "Nike and Palace are joining forces to open Manor Place: a free, public hub for sport, creativity and community in South London.",
+    description: "Palace are joining forces to open Manor Place: a free, public hub for sport, creativity and community in South London...",
     image: "/img/news/01.jpg"
   },
   {
     id: 2,
     date: "October 26, 2023",
     title: "Community Climate Resilience Program",
-    description: "Revitalized the schoolyard at Public School 107 in the Bronx, New York, creating a more vibrant and functional space for students.",
+    description: "Revitalized the schoolyard at Public School 107 in the Bronx, New York, creating a more vibrant and functional space...",
     image: "/img/news/02.jpg"
   }
 ];
@@ -62,13 +62,13 @@ const News = () => {
             <img
               src={newsData[0].image}
               alt={newsData[0].title}
-              className="w-full h-[500px] object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              className="w-full h-[400px] object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             />
           </div>
           <p className="text-sm text-[#f4f4f1] font-mono mb-3">{newsData[0].date}</p>
-          <h2 className="text-4xl text-[#f4f4f1] font-bold font-orbitron mb-4 leading-tight">{newsData[0].title}</h2>
+          <h2 className="text-4xl text-[rgb(244,244,241)] font-bold font-orbitron mb-4 leading-tight">{newsData[0].title}</h2>
           <p className="text-[#f4f4f1] font-mono mb-6 leading-relaxed">{newsData[0].description}</p>
-          <button className="inline-flex items-center gap-3 px-8 py-3 bg-[#d4d2c8] rounded-full text-sm font-medium font-mono transition-all duration-300 hover:gap-5">
+          <button className="inline-flex items-center gap-3 px-8 py-3 bg-[#eae7da] text-[#443f32] rounded-full text-sm font-medium font-mono transition-all duration-300 hover:gap-5">
             Read Post
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -89,13 +89,13 @@ const News = () => {
             <img
               src={newsData[1].image}
               alt={newsData[1].title}
-              className="w-full h-[500px] object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              className="w-full h-[400px] object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             />
           </div>
           <p className="text-sm text-[#f4f4f1] font-mono mb-3">{newsData[1].date}</p>
           <h2 className="text-4xl text-[#f4f4f1] font-bold font-orbitron mb-4 leading-tight">{newsData[1].title}</h2>
           <p className="text-[#f4f4f1] font-mono mb-6 leading-relaxed">{newsData[1].description}</p>
-          <button className="inline-flex items-center gap-3 px-8 py-3 bg-[#d4d2c8] rounded-full text-sm font-medium font-mono transition-all duration-300 hover:gap-5">
+          <button className="inline-flex items-center gap-3 px-8 py-3 bg-[#eae7da] text-[#443f32] rounded-full text-sm font-medium font-mono transition-all duration-300 hover:gap-5">
             Read Post
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
