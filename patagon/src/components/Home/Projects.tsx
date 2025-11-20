@@ -56,11 +56,11 @@ const Projects = () => {
         Projects
       </h1>
 
-      <div className="grid grid-cols-1 gap-16 ml-20">
+      <div className="grid grid-cols-1 gap-16 ml-24">
         {projects.map((item, index) => (
           <div
             key={index}
-            className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start"
+            className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start"
           >
             <div className="relative w-full aspect-[16/9] overflow-hidden group cursor-pointer">
               <img
@@ -83,10 +83,10 @@ const Projects = () => {
               <span className="text-[#f57e81] text-4xl font-orbitron">
                 {item.number}
               </span>
-              <h3 className="text-2xl font-bold font-orbitron mt-6 mb-6">
+              <h3 className="text-2xl font-bold font-orbitron mt-5 mb-5">
                 {item.title}
               </h3>
-              <p className="text-[#f4f4f1] tracking-tight mb-6 whitespace-pre-line">{item.description}</p>
+              <p className="text-[#f4f4f1] tracking-tight mb-5 whitespace-pre-line">{item.description}</p>
               <ul className="list-disc list-inside space-y-1 text-[#f4f4f1]">
                 {item.points.map((point, i) => (
                   <li key={i}>{point}</li>
