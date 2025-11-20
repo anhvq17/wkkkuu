@@ -9,6 +9,10 @@ const Contact = () => {
     message: ''
   });
 
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationType, setNotificationType] = useState<'success' | 'error'>('success');
+  const [notificationMessage, setNotificationMessage] = useState('');
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
@@ -17,12 +21,62 @@ const Contact = () => {
   };
 
   const handleSubmit = () => {
+    const emptyFields = [];
+    if (!formData.firstName.trim()) emptyFields.push('First Name');
+    if (!formData.lastName.trim()) emptyFields.push('Last Name');
+    if (!formData.email.trim()) emptyFields.push('Email');
+    if (!formData.phone.trim()) emptyFields.push('Phone');
+    if (!formData.message.trim()) emptyFields.push('Message');
+
+    if (emptyFields.length > 0) {
+      setNotificationType('error');
+      setNotificationMessage(`Please fill in: ${emptyFields.join(', ')}`);
+      setShowNotification(true);
+      setTimeout(() => {
+        setShowNotification(false);
+      }, 4000);
+      return;
+    }
+
     console.log('Form submitted:', formData);
-    alert('Message sent successfully!');
+    setNotificationType('success');
+    setNotificationMessage('We\'ll get back to you soon');
+    setShowNotification(true);
+
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    }, 1000);
   };
 
   return (
-    <div className="min-h-screen bg-[#464134] flex items-center justify-center p-24">
+    <div className="min-h-screen bg-[#464134] flex items-center justify-center p-24 relative">
+      {showNotification && (
+        <div className="fixed top-8 right-8 bg-white rounded-xl shadow-2xl p-5 flex items-center gap-3 animate-slide-in z-50">
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+            notificationType === 'success' ? 'bg-green-500' : 'bg-red-500'
+          }`}>
+            {notificationType === 'success' ? (
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            ) : (
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            )}
+          </div>
+          <div>
+            <h3 className="font-orbitron font-bold text-[#464134] mb-1">
+              {notificationType === 'success' ? 'Message Sent Successfully!' : 'Missing Required Fields'}
+            </h3>
+            <p className="text-sm font-mono tracking-tight text-[#464134]">{notificationMessage}!</p>
+          </div>
+        </div>
+      )}
+
       <div className="w-full max-w-5xl rounded-3xl bg-[#f4f4f1] p-12">
         <h1 className="text-7xl text-[#464134] font-bold font-orbitron tracking-tight mb-12">Contact</h1>
         <div className="grid grid-cols-2 gap-x-12 gap-y-10 mb-12">
@@ -65,7 +119,7 @@ const Contact = () => {
                   value={formData.firstName}
                   onChange={handleChange}
                   placeholder="Enter your first name"
-                  className="w-full px-4 py-3 bg-white border-none rounded-lg text-sm focus:outline-none"
+                  className="w-full px-4 py-3 bg-white border-none rounded-lg tracking-tight focus:outline-none"
                 />
               </div>
               <div>
@@ -78,7 +132,7 @@ const Contact = () => {
                   value={formData.lastName}
                   onChange={handleChange}
                   placeholder="Enter your last name"
-                  className="w-full px-4 py-3 bg-white border-none rounded-lg text-sm focus:outline-none"
+                  className="w-full px-4 py-3 bg-white border-none rounded-lg tracking-tight focus:outline-none"
                 />
               </div>
             </div>
@@ -94,7 +148,7 @@ const Contact = () => {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="Enter your email"
-                  className="w-full px-4 py-3 bg-white border-none rounded-lg text-sm focus:outline-none"
+                  className="w-full px-4 py-3 bg-white border-none rounded-lg tracking-tight focus:outline-none"
                 />
               </div>
               <div>
@@ -107,7 +161,7 @@ const Contact = () => {
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="Enter your phone number"
-                  className="w-full px-4 py-3 bg-white border-none rounded-lg text-sm focus:outline-none"
+                  className="w-full px-4 py-3 bg-white border-none rounded-lg tracking-tight focus:outline-none"
                 />
               </div>
             </div>
@@ -122,7 +176,7 @@ const Contact = () => {
                 onChange={handleChange}
                 placeholder="Write your message"
                 rows={4}
-                className="w-full px-4 py-3 bg-white border-none rounded-lg text-sm focus:outline-none resize-none"
+                className="w-full px-4 py-3 bg-white border-none rounded-lg tracking-tight focus:outline-none resize-none"
               />
             </div>
 
@@ -135,6 +189,22 @@ const Contact = () => {
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes slide-in {
+          from {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        .animate-slide-in {
+          animation: slide-in 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 };
