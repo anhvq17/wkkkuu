@@ -1,24 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { newsData } from '../../data/News';
 
-const newsData = [
-  {
-    id: 1,
-    date: "October 31, 2025",
-    title: "A London Hub for Sport, Creativity and Community",
-    description: "Palace are joining forces to open Manor Place: a free, public hub for sport, creativity and community in South London...",
-    image: "/img/news/01.jpg"
-  },
-  {
-    id: 2,
-    date: "October 26, 2023",
-    title: "Community Climate Resilience Program",
-    description: "Revitalized the schoolyard at Public School 107 in the Bronx, New York, creating a more vibrant and functional space...",
-    image: "/img/news/02.jpg"
-  }
-];
-
-const News = () => {
+const NewsList = () => {
   const [activeCard, setActiveCard] = useState<number | null>(null);
   const sectionRef = useRef(null);
 
@@ -50,62 +34,33 @@ const News = () => {
       </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[1280px] mx-auto">
-        <Link to={"/news"} 
-          className="group"
-          onMouseEnter={() => setActiveCard(0)}
-          style={{
-            transform: activeCard === 0 ? 'scale(1)' : 'scale(0.98)',
-            opacity: activeCard === 0 || activeCard === null ? 1 : 0.7,
-            transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
-          }}
-        >
-          <div className="overflow-hidden mb-6">
-            <img
-              src={newsData[0].image}
-              alt={newsData[0].title}
-              className="w-full h-[400px] object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            />
-          </div>
-          <p className="text-sm text-[#f4f4f1] font-mono mb-3">{newsData[0].date}</p>
-          <h2 className="text-4xl text-[rgb(244,244,241)] font-bold font-orbitron mb-4 leading-tight">{newsData[0].title}</h2>
-          <p className="text-[#f4f4f1] font-mono mb-6 leading-relaxed">{newsData[0].description}</p>
-          <Link to={"/news"} className="inline-flex items-center gap-3 px-8 py-3 bg-[#eae7da] text-[#443f32] rounded-full text-sm font-medium font-mono transition-all duration-300 hover:gap-5">
-            Read Post
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+        {newsData.map((news, index) => (
+          <Link 
+            key={news.id}
+            to={`/news/${news.id}`} 
+            className="group"
+            onMouseEnter={() => setActiveCard(index)}
+            style={{
+              transform: activeCard === index ? 'scale(1)' : 'scale(0.98)',
+              opacity: activeCard === index || activeCard === null ? 1 : 0.7,
+              transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+            }}
+          >
+            <div className="overflow-hidden mb-6">
+              <img
+                src={news.image}
+                alt={news.title}
+                className="w-full h-[400px] object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+            </div>
+            <p className="text-sm text-[#f4f4f1] font-mono mb-3">{news.date}</p>
+            <h2 className="text-4xl text-[#f4f4f1] font-bold font-orbitron mb-4 leading-tight">{news.title}</h2>
+            <p className="text-[#f4f4f1] font-mono leading-relaxed">{news.description}</p>
           </Link>
-        </Link>
-
-        <Link to={"/news"}
-          className="group"
-          onMouseEnter={() => setActiveCard(1)}
-          style={{
-            transform: activeCard === 1 ? 'scale(1)' : 'scale(0.98)',
-            opacity: activeCard === 1 || activeCard === null ? 1 : 0.7,
-            transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
-          }}
-        >
-          <div className="overflow-hidden mb-6">
-            <img
-              src={newsData[1].image}
-              alt={newsData[1].title}
-              className="w-full h-[400px] object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            />
-          </div>
-          <p className="text-sm text-[#f4f4f1] font-mono mb-3">{newsData[1].date}</p>
-          <h2 className="text-4xl text-[#f4f4f1] font-bold font-orbitron mb-4 leading-tight">{newsData[1].title}</h2>
-          <p className="text-[#f4f4f1] font-mono mb-6 leading-relaxed">{newsData[1].description}</p>
-          <Link to={"/news"} className="inline-flex items-center gap-3 px-8 py-3 bg-[#eae7da] text-[#443f32] rounded-full text-sm font-medium font-mono transition-all duration-300 hover:gap-5">
-            Read Post
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </Link>
-        </Link>
+        ))}
       </div>
     </section>
   );
 };
 
-export default News;
+export default NewsList;

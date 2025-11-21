@@ -20,7 +20,7 @@ const ClientRoutes = {
 
     { path: 'services', element: <OurServices /> },
     { path: 'projects/:id', element: <Projects /> },
-    { path: 'news', element: <News /> },
+    { path: 'news/:id', element: <News /> },
 
     { path: 'login', element: <Login /> },
     { path: 'register', element: <Register /> },
