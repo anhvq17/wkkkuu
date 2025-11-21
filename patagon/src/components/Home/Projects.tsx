@@ -1,55 +1,5 @@
 import { Link } from "react-router-dom";
-
-const projects = [
-  {
-    img: "/img/projects/01.jpeg",
-    number: "01",
-    title: "Carry With Intent",
-    description:
-      "Building Auré’s brand foundation—from story to \n visuals—to shape a premium lifestyle identity.",
-    points: [
-      "Timeless identity system",
-      "Elegant brand voice",
-      "Launch campaign visuals",
-    ],
-  },
-  {
-    img: "/img/projects/02.jpg",
-    number: "02",
-    title: "Shades of Summer",
-    description:
-      "Capturing summer spirit through bold color, \n motion and a cohesive seasonal design system.",
-    points: [
-      "Distinctive identity system",
-      "Lifestyle photography",
-      "Seasonal campaign design",
-    ],
-  },
-  {
-    img: "/img/projects/03.jpg",
-    number: "03",
-    title: "Built to Move",
-    description:
-      "Creating a movement-driven brand system for Vetra, \n built on performance and modern athletic culture.",
-    points: [
-      "Positioning strategy",
-      "Messaging framework",
-      "Product-focused campaign",
-    ],
-  },
-  {
-    img: "/img/projects/04.jpg",
-    number: "04",
-    title: "Evolution of Time",
-    description:
-      "Evolving identity with a refined strategy and \n elevated design rooted in precision and innovation.",
-    points: [
-      "Distinctive identity system",
-      "Lifestyle photography",
-      "Seasonal campaign design",
-    ],
-  },
-];
+import { projectItems } from "../../data/Projects";
 
 const Projects = () => {
   return (
@@ -59,12 +9,12 @@ const Projects = () => {
       </h1>
 
       <div className="grid grid-cols-1 gap-16 ml-24">
-        {projects.map((item, index) => (
+        {projectItems.map((item) => (
           <div
-            key={index}
+            key={item.id}
             className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start"
           >
-            <Link to={"/projects"} className="relative w-full aspect-[16/9] overflow-hidden group">
+            <Link to={`/projects/${item.id}`} className="relative w-full aspect-[16/9] overflow-hidden group">
               <img
                 src={item.img}
                 className="w-full h-full object-cover"

@@ -114,19 +114,19 @@ const OurServices = () => {
                   ))}
                 </div>
 
-                <div className="bg-[#5a5a52] p-6 font-mono flex items-center gap-4 mt-8">
+                <div className="bg-[#aeaa9e] p-6 font-mono flex items-center gap-4 mt-8">
                   <img 
                     src={item.caseStudy.thumbnail}
                     className="w-20 h-20 object-cover flex-shrink-0"
                   />
                   <div className="flex-1">
-                    <h3 className="text-white font-bold text-xl mb-2">
+                    <h3 className="text-[#464134] font-bold text-xl mb-2">
                       {item.caseStudy.title}
                     </h3>
-                    <p className="text-gray-300 text-sm leading-relaxed">
+                    <p className="text-[#464134] text-sm leading-relaxed">
                       {item.caseStudy.description}
                     </p>
-                    <Link to={"/contact"} className="text-white text-sm mt-3 flex items-center gap-2 hover:gap-3 transition-all">
+                    <Link to={"/contact"} className="text-[#464134] text-sm mt-3 flex items-center gap-2 hover:gap-3 transition-all">
                       Get In Touch <span>→</span>
                     </Link>
                   </div>
