@@ -109,4 +109,4 @@ export const workData = [
       { type: "text", text: "Clothing becomes a medium for self-expression, with careful attention to styling details that emphasize individuality and contemporary urban aesthetics." }
     ]
   }
-]
+];
