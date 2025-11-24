@@ -21,6 +21,7 @@ export default {
       fontFamily: {
         impact: ["Anton", "sans-serif"],
         orbitron: ["Orbitron", "sans-serif"],
+        oswald: ["Oswald", "sans-serif"],
       }
     }
   },
