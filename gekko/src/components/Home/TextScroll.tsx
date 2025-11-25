@@ -21,7 +21,7 @@ const TextScroll = () => {
   ];
 
   return (
-    <section ref={ref} className="relative py-40">
+    <section ref={ref} className="relative py-28">
       <div className="max-w-7xl mx-auto px-6">
         {lines.map((line, index) => {
           const start = index / lines.length;

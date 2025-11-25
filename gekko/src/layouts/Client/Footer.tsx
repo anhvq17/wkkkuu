@@ -53,7 +53,7 @@ const ClientFooter = () => {
           )}
         </div>
 
-        <div className="flex justify-center gap-16 mb-14 text-white italic font-light text-xl tracking-tight">
+        <div className="flex justify-center gap-16 mb-16 text-white italic font-light text-xl tracking-tight">
           <Link to="#" className="inline-block transition-all duration-300 hover:tracking-wider">
             STYLE GUIDE
           </Link>
