@@ -43,7 +43,7 @@ const ProjectDetail = () => {
                   <div key={index} className="h-8" />
                 ) : (
                   <div key={index} className="flex gap-2">
-                    <span>.</span>
+                    <span>•</span>
                     <span>{line}</span>
                   </div>
                 )
@@ -73,8 +73,24 @@ const ProjectDetail = () => {
             {project.description}
           </p>
           <div className="flex flex-col relative h-[400px] gap-16">
-            <img src={project.images[2]?.url} className="w-full h-full object-cover" />
-            <img src={project.images[3]?.url} className="w-full h-full object-cover" />
+            {project.images[2] && (
+              <img
+                src={project.images[2].url}
+                className="w-full h-full object-cover"
+              />
+            )}
+            {project.images[3] && (
+              <img
+                src={project.images[3].url}
+                className="w-full h-full object-cover"
+              />
+            )}
+            {project.images[4] && (
+              <img
+                src={project.images[4].url}
+                className="w-full h-full object-cover"
+              />
+            )}
           </div>
         </div>
       </div>
