@@ -59,11 +59,11 @@ const Homepage = () => {
   }, [isHovering]);
 
   return (
-    <div className="bg-[#464134] relative w-full overflow-hidden">
+    <div className="bg-black relative w-full overflow-hidden">
       <section ref={ref} className="relative w-full flex justify-center px-0 pb-3 cursor-none">
         <div className="relative w-full flex justify-center h-[639px]">
           <div className="absolute inset-0 w-full h-full">
-            <img src="img/banner.jpg" className="w-full h-full object-cover" alt="Banner" />
+            <img src="img/banner.jpg" className="w-full h-full object-cover" />
           </div>
 
           <div

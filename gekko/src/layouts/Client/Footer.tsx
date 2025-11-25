@@ -1,91 +1,88 @@
 import { Link } from "react-router-dom"
+import { useState } from "react"
 
 const ClientFooter = () => {
+  const [submitted, setSubmitted] = useState(false);
+  const [email, setEmail] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim()) {
+      setSubmitted(true);
+      setEmail("");
+    }
+  };
+
   return (
-    <footer className="mx-auto">
-      <div className="bg-[#464134] px-6 border-t border-b border-[#605a4b] py-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-14">
-          <h1 className="md:text-4xl text-[#f4f4f1] font-bold font-orbitron mt-2.5">
-            Patagon
+    <footer className="mx-auto bg-black font-oswald">
+      <div className="max-w-7xl mx-auto px-6 py-3">
+        <div className="text-center mt-6 mb-12">
+          <h1 className="text-5xl font-light text-white mb-2 leading-tight tracking-tight inline-block max-w-full text-center">
+            I WOULD LOVE TO HEAR FOR YOU
           </h1>
-          <div className="ml-36 font-mono">
-            <h3 className="text-[#aeaa9e] font-semibold font-mono text-lg mb-2">Email</h3>
-            <ul className="text-[#f4f4f1] space-y-2">
-              <li>us@patagon.com</li>
-            </ul>
-          </div>
-          <div className="ml-32 font-mono">
-            <h3 className="text-[#aeaa9e] font-semibold text-lg mb-2">Call</h3>
-            <ul className="text-[#f4f4f1] space-y-2">
-              <li>0977 907 877</li>
-            </ul>
-          </div>
-          <div className="ml-28 font-mono">
-            <h3 className="text-[#aeaa9e] font-semibold font-mono text-lg mb-2">Social</h3>
-            <ul className="text-[#f4f4f1] space-y-2">
-              <li>Instagram, X</li>
-            </ul>
-          </div>
+          <p className="text-gray-400 font-light text-xl">
+            For questions, queries or just to say hi, your message is welcome. Don't be shy!
+          </p>
         </div>
-      </div>
 
-      <div className="bg-[#464134] px-6 border-b border-[#605a4b] py-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-14">
-          <div className="space-y-4  font-mono tracking-tight">
-            <h1 className="md:text-[1rem] text-[#a8a498] font-bold">
-              Join our newsletter
-            </h1>
-            <div className="flex flex-col space-y-3 w-80 mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full px-4 py-2 rounded-full text-[#4f4d47] bg-[#f2f2ef] outline-none"
-              />
-              <button className="w-full px-4 py-2 rounded-full bg-[#eae7da] hover:bg-[#f2f2ef] text-[#443f32]">
-                Join 1K+ Subscribers
-              </button>
+        <div className="max-w-3xl mx-auto mb-20">
+          {submitted ? (
+            <div className="border-2 border-white font-light text-center py-12 px-6">
+              <p className="text-white text-2xl mb-2">Thank you!</p>
+              <p className="text-white text-2xl">Your submission has been received!</p>
             </div>
-          </div>
-          
-          <div className="ml-36 font-mono tracking-tight">
-            <h3 className="text-[#aeaa9e] font-semibold font-mono text-lg mb-2">Pages</h3>
-            <ul className="text-[#f4f4f1] space-y-1">
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Main Page</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">About Us</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Our Services</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Get In Touch</Link></li>
-            </ul>
-          </div>
-          <div className="ml-32 font-mono tracking-tight">
-            <h3 className="text-[#aeaa9e] font-semibold text-lg mb-2">Pages (CMS)</h3>
-            <ul className="text-[#f4f4f1] space-y-1">
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">All Projects</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Single Project</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Blog</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Blog Post</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Team</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Team Members</Link></li>
-            </ul>
-          </div>
-          <div className="ml-28 font-mono tracking-tight">
-            <h3 className="text-[#aeaa9e] font-semibold font-mono text-lg mb-2">Resources</h3>
-            <ul className="text-[#f4f4f1] space-y-1">
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Style Guide</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Licenses</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Change Log</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Instructions</Link></li>
-            </ul>
-          </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="relative">
+              <input 
+                type="email" 
+                placeholder="Your Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-2 py-5 bg-transparent border-b-2 border-gray-600 text-white placeholder-gray-500 outline-none focus:border-white transition-colors text-lg"
+              />
+              <button 
+                type="submit"
+                className="absolute right-0 top-1/2 -translate-y-1/2 w-24 h-10 rounded-full border-2 text-white border-white flex items-center justify-center hover:w-32 transition-all duration-300"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </button>
+            </form>
+          )}
         </div>
-      </div>
 
-      <div className="bg-[#464134] border-t border-[#605a4b] text-sm px-6 py-3">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center font-semibold font-mono text-lg tracking-tight">
-          <div className="flex gap-14">
-            <p className="text-white">Designed by <span className="text-[#f57e81]">Wkkkuu</span></p>
-            <p className="text-white">Powered by <span className="text-[#f57e81]">Webflow</span></p>
+        <div className="flex justify-center gap-16 mb-14 text-white italic font-light text-xl tracking-tight">
+          <Link to="#" className="inline-block transition-all duration-300 hover:tracking-wider">
+            STYLE GUIDE
+          </Link>
+          <Link to="#" className="inline-block transition-all duration-300 hover:tracking-wider">
+            LICENSING
+          </Link>
+          <Link to="#" className="inline-block transition-all duration-300 hover:tracking-wider">
+            CHANGE LOG
+          </Link>
+          <Link to="#" className="inline-block transition-all duration-300 hover:tracking-wider">
+            INSTRUCTIONS
+          </Link>
+        </div>
+
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center font-light text-xl tracking-tight italic">
+          <div className="flex gap-16">
+            <p className="text-white inline-block transition-all duration-300 hover:tracking-wider">
+              DEVELOPED BY <span className="text-[#f57e81]">WKKKUU</span>
+            </p>
+            <p className="text-white inline-block transition-all duration-300 hover:tracking-wider">
+              POWERED BY <span className="text-[#f57e81]">WEBFLOW</span>
+            </p>
           </div>
-          <button className="text-white mt-3 sm:mt-0 flex items-center" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Scroll to Top<i className="text-[#f57e81] fas fa-angle-up ml-2"></i></button>
+          <button 
+            className="text-white mt-3 sm:mt-0 items-center italic inline-block transition-all duration-300 hover:tracking-wider" 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            SCROLL TO<span className="text-[#f57e81] ml-1">TOP</span>
+          </button>
         </div>
       </div>
     </footer>
