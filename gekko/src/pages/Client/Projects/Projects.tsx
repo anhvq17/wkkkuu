@@ -32,7 +32,7 @@ const ProjectDetail = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 border-t border-gray-300 pt-16 mb-16 font-oswald text-white">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 border-t border-gray-300 pt-20 mb-16 font-oswald text-white">
           <div>
             <h2 className="text-4xl font-black mb-8">
               WHAT TO KNOW
@@ -68,8 +68,8 @@ const ProjectDetail = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 text-white font-oswald">
-          <p className="text-2xl font-extralight mb-6 max-w-xl whitespace-pre-line">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 border-b text-white font-oswald">
+          <p className="text-2xl font-extralight mb-20 max-w-xl whitespace-pre-line">
             {project.description}
           </p>
           <div className="flex flex-col relative h-[400px] gap-16">

@@ -18,7 +18,7 @@ const ClientFooter = () => {
       <div className="max-w-7xl mx-auto px-6 py-3">
         <div className="text-center mt-6 mb-12">
           <h1 className="text-5xl font-light text-white mb-2 leading-tight tracking-tight inline-block max-w-full text-center">
-            I WOULD LOVE TO HEAR FOR YOU
+            I WOULD LOVE TO HEAR <span className="text-[#f57e81]">FOR YOU</span>
           </h1>
           <p className="text-gray-400 font-light text-xl">
             For questions, queries or just to say hi, your message is welcome. Don't be shy!
