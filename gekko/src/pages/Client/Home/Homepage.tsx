@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import TextLayer from "../../../components/Home/TextLayer";
+import TextScroll from "../../../components/Home/TextScroll";
 
 const Homepage = () => {
   const ref = useRef<HTMLElement>(null);
@@ -102,6 +103,8 @@ const Homepage = () => {
             ))}
         </div>
       </section>
+
+      <TextScroll />
     </div>
   );
 };

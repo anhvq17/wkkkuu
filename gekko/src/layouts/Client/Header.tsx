@@ -40,14 +40,13 @@ const ClientHeader = () => {
           GEKKO
         </Link>
         <nav className="flex items-center text-white space-x-10 text-xl font-oswald font-bold  tracking-tight">
-          <Link to="/about" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 hover:after:w-full">ABOUT</Link>
-          <Link to="/work" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 hover:after:w-full">WORK</Link>
+          <Link to="/about">ABOUT</Link>
+          <Link to="/work">WORK</Link>
           <button
             onClick={() => {
               const footer = document.querySelector("footer");
               footer?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-white after:transition-all after:duration-300 hover:after:w-full">
+            }}>
             CONTACT
           </button>
         </nav>

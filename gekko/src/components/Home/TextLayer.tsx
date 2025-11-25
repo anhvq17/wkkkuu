@@ -9,7 +9,7 @@ const TextLayer = () => {
 
   return (
     <section ref={ref} className="max-w-[1280px] mx-auto px-2">
-      <h2 className="text-7xl font-extralight font-oswald leading-normal tracking-tight mx-44 text-justify [text-justify:inter-word]" style={{ transform: "scaleX(1.4) scaleY(0.6)" }}>
+      <h2 className="text-7xl font-semibold font-oswald leading-normal tracking-tight mx-48 text-justify [text-justify:inter-word]" style={{ transform: "scaleX(1.4) scaleY(0.6)" }}>
         {lines.map((line, lineIndex) => {
           const words = line.split(" ");
           return (
