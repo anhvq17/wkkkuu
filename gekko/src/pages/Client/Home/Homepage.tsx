@@ -68,15 +68,7 @@ const Homepage = () => {
             <img src="img/banner.jpg" className="w-full h-full object-cover" />
           </div>
 
-          <div
-            className="absolute inset-0 w-full h-full bg-black"
-            style={{
-              clipPath: isHovering
-                ? `circle(250px at ${mousePosition.x}px ${mousePosition.y}px)`
-                : "circle(0px at 50% 50%)",
-              transition: isHovering ? "none" : "clip-path 0.5s ease-out",
-            }}
-          >
+          <div className="absolute inset-0 w-full h-full bg-black" style={{ clipPath: isHovering ? `circle(250px at ${mousePosition.x}px ${mousePosition.y}px)` : "circle(0px at 50% 50%)", transition: isHovering ? "none" : "clip-path 0.5s ease-out" }}>
             <div className="absolute inset-0 flex justify-center items-center">
               <div className="text-white text-6xl font-extralight font-oswald text-center px-8 leading-tight">
                 <div className="drop-shadow-[3px_3px_6px_rgba(0,0,0,0.9)]">
@@ -105,9 +97,13 @@ const Homepage = () => {
         </div>
       </section>
 
-      <TextScroll />
+      <div id="about">
+        <TextScroll />
+      </div>
 
-      <Projects />
+      <div id="work">
+        <Projects />
+      </div>
     </div>
   );
 };
