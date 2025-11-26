@@ -73,15 +73,9 @@ const ClientHeader = () => {
           >
             WORK
           </button>
-          <button
-            onClick={() => {
-              const footer = document.querySelector("footer");
-              footer?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="text-white"
-          >
+          <Link to={"/contact"}>
             CONTACT
-          </button>
+          </Link>
         </nav>
       </div>
     </motion.header>
