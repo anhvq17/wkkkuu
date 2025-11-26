@@ -5,7 +5,7 @@ const TextScroll = () => {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start 0.5", "end 0.5"]
+    offset: ["start 0.9", "end 0.1"]
   });
 
   const lines = [
@@ -21,7 +21,7 @@ const TextScroll = () => {
   ];
 
   return (
-    <section ref={ref} className="relative py-28">
+    <section ref={ref} className="relative py-28 bg-black">
       <div className="max-w-7xl mx-auto px-6">
         {lines.map((line, index) => {
           const start = index / lines.length;
@@ -29,19 +29,19 @@ const TextScroll = () => {
           
           const opacity = useTransform(
             scrollYProgress,
-            [start - 0.15, start + 0.05, end - 0.05, end + 0.15],
+            [start - 0.2, start, end, end + 0.2],
             [0.15, 1, 1, 0.15]
           );
 
           const blur = useTransform(
             scrollYProgress,
-            [start - 0.15, start + 0.05, end - 0.05, end + 0.15],
+            [start - 0.2, start, end, end + 0.2],
             [10, 0, 0, 10]
           );
 
           const scale = useTransform(
             scrollYProgress,
-            [start - 0.15, start + 0.05, end - 0.05, end + 0.15],
+            [start - 0.2, start, end, end + 0.2],
             [0.95, 1, 1, 0.95]
           );
 

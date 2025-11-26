@@ -1,7 +1,7 @@
 const Contact = () => {
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-24 relative">
-      <div className="w-full max-w-5xl bg-[#f4f4f1] p-12">
+      <div className="w-full max-w-5xl bg-white p-12">
         <h1 className="text-7xl font-bold font-oswald tracking-tight mb-12">Get in Touch</h1>
         <div className="grid grid-cols-2 gap-x-12 gap-y-10">
           <div>
