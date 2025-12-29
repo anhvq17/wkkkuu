@@ -19,7 +19,8 @@ export default {
         'marquee-slow': 'marqueeSlow 90s linear infinite',
       },
       fontFamily: {
-        impact: ["Anton", "sans-serif"],
+        bbh: ['"BBH Bartle"', 'sans-serif'],
+        sans: ['"DM Sans"', 'sans-serif']
       }
     }
   },
