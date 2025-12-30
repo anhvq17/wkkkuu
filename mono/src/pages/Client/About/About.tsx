@@ -1,42 +1,18 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import Team from "../../../components/About/Team";
-import Kayo from "../../../components/About/Kayo";
-
 const About = () => {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const y = useTransform(scrollYProgress, [0, 0.5], [0, -100]);
 
   return (
-    <div className="relative w-full">
-      <section 
-        ref={ref} 
-        className="flex flex-col justify-center max-w-[1280px] mx-auto px-8 pt-16 md:pt-32 pb-3"
-      >
-        <motion.div 
-          style={{ opacity, y }} 
-          className="max-w-[1200px]"
-        >
-          <h1 className="text-8xl md:text-8xl leading-[1.1] indent-48">
-            <span className="font-semibold tracking-tighter">Studio Kayo, rooted in </span> <br />
-            <span className="font-serif italic">Vietnam</span>
-            <span className="font-semibold tracking-tighter">, fuses motion, </span> <br />
-            <span className="font-semibold tracking-tighter">design and creativity to shape </span> <br />
-            <span className="font-semibold tracking-tighter">powerful visuals and </span> <br />
-            <span className="font-semibold tracking-tighter">experiences.</span>
+    <div className="relative w-full bg-black">
+      <section className="flex flex-col justify-center max-w-[1280px] mx-auto px-8 pt-28 pb-3">
+        <div className="max-w-[1200px]">
+          <h1 className="text-6xl leading-[1.1] indent-28 text-white">
+            <span className="font-medium tracking-tighter">Founded to preserve and celebrate art, history and culture, our
+              museum brings together treasures from across centuries and
+              continents. Whether you’re passionate about ancient civilizations,
+              fascinated by modern art or looking for an inspiring day out, our
+              galleries and experiences offer something for everyone.</span> <br />
           </h1>
-        </motion.div>
+        </div>
       </section>
-
-      <Team />
-
-      <Kayo />
     </div>
   );
 };

@@ -5,7 +5,6 @@ import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 
 import About from "../pages/Client/About/About";
-import AboutDetails from "../pages/Client/About/AboutDetails";
 
 import Work from "../pages/Client/Work/Work";
 import WorkDetails from "../pages/Client/Work/WorkDetails";
@@ -22,7 +21,6 @@ const ClientRoutes = {
     { path: 'register', element: <Register /> },
 
     { path: 'about', element: <About /> },
-    { path: 'about/details/:id', element: <AboutDetails /> },
 
     { path: 'work', element: <Work /> },
     { path: 'work/details/:id', element: <WorkDetails /> },

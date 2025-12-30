@@ -7,7 +7,7 @@ const ClientFooter = () => {
         ©MONO
       </div>
 
-      <div className="px-10 pt-20 pb-56 relative z-10">
+      <div className="px-10 pt-12 pb-48 relative z-10">
         <div className="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-20">
           <div className="text-center md:text-left">
             <p className="text-4xl text-white font-sans tracking-tighter">
