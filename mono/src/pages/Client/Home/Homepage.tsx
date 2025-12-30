@@ -1,6 +1,6 @@
 const Homepage = () => {
   return (
-    <div className="relative w-full">
+    <div className="relative w-full bg-black">
       <section className="relative h-screen bg-[#5a5a5a] overflow-hidden">
         <img src="./img/banner.jpg" className="w-full h-full object-cover object-center" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent"></div>
@@ -46,6 +46,7 @@ const Homepage = () => {
           </a>
         </div>
       </section>
+      
     </div>
   );
 };

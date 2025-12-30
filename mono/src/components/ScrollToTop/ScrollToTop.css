@@ -3,9 +3,9 @@
   bottom: 25px;
   right: 25px;
   z-index: 9999;
-  background: #5f518e;
+  background: black;
   color: white;
-  border: none;
+  border: 2px solid white;
   border-radius: 50%;
   width: 44px;
   height: 44px;
