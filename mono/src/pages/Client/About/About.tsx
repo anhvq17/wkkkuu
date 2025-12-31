@@ -1,3 +1,5 @@
+import Gallery from "../../../components/About/Gallery";
+
 const About = () => {
 
   return (
@@ -13,6 +15,8 @@ const About = () => {
           </h1>
         </div>
       </section>
+
+      <Gallery />
     </div>
   );
 };

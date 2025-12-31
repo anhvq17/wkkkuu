@@ -5,9 +5,7 @@ import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 
 import About from "../pages/Client/About/About";
-
-import Work from "../pages/Client/Work/Work";
-import WorkDetails from "../pages/Client/Work/WorkDetails";
+import Collections from "../pages/Client/Collections/Collections";
 
 import NotFound from "../pages/NotFound";
 
@@ -21,9 +19,7 @@ const ClientRoutes = {
     { path: 'register', element: <Register /> },
 
     { path: 'about', element: <About /> },
-
-    { path: 'work', element: <Work /> },
-    { path: 'work/details/:id', element: <WorkDetails /> },
+    { path: 'collections', element: <Collections /> },
 
     { path: '*', element: <NotFound homePath="/"/> },
   ]
