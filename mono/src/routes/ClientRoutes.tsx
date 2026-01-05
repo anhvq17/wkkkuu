@@ -6,6 +6,7 @@ import Register from "../pages/Auth/Register";
 
 import About from "../pages/Client/About/About";
 import Collections from "../pages/Client/Collections/Collections";
+import Testimonials from "../pages/Client/Testimonials/Testimonials";
 
 import NotFound from "../pages/NotFound";
 
@@ -20,6 +21,7 @@ const ClientRoutes = {
 
     { path: 'about', element: <About /> },
     { path: 'collections', element: <Collections /> },
+    { path: 'testimonials', element: <Testimonials /> },
 
     { path: '*', element: <NotFound homePath="/"/> },
   ]
