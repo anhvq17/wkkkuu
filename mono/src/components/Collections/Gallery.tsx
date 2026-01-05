@@ -16,29 +16,29 @@ const Gallery = () => {
     {
       id: 1,
       title: "Visions in Color",
-      artist: "John Smith",
-      year: "1642",
+      artist: "Zhang Wei",
+      year: "1885",
       imageUrl: "./img/collections/1.jpg"
     },
     {
       id: 2,
-      title: "The Dancer",
+      title: "Magnolia",
       artist: "Marie Laurent",
-      year: "1889",
+      year: "1892",
       imageUrl: "./img/collections/2.jpg"
     },
     {
       id: 3,
-      title: "Portrait of Grace",
-      artist: "Alessandro Rossi",
-      year: "1825",
+      title: "Imeless Brushstrokes",
+      artist: "Classical Greek",
+      year: "350 BC",
       imageUrl: "./img/collections/3.jpg"
     },
     {
       id: 4,
-      title: "Eternal Beauty",
-      artist: "Sofia Chen",
-      year: "1920",
+      title: "Whispers on Canvas",
+      artist: "Alessandro Rossi",
+      year: "1825",
       imageUrl: "./img/collections/4.jpg"
     }
   ];
@@ -100,8 +100,8 @@ const Gallery = () => {
                   }}
                 >
                   <div className="relative group cursor-pointer">
-                    <div className="absolute -inset-8 bg-[#1a1a1a] shadow-2xl"></div>
-                    <div className="relative bg-[#f5f5f0] p-10 shadow-2xl">
+                    <div></div>
+                    <div className="relative bg-[#f5f5f0] p-5 shadow-2xl">
                       <div className="relative w-[700px] h-[480px] overflow-hidden bg-white border border-gray-200">
                         <img
                           src={artwork.imageUrl}
@@ -109,9 +109,9 @@ const Gallery = () => {
                         />
                       </div>
                     </div>
-                    <div className="absolute -bottom-20 left-8 text-left">
-                      <h3 className="text-3xl font-bbh mb-2 text-white">{artwork.title}</h3>
-                      <p className="text-gray-400 text-sm">{artwork.artist} — {artwork.year}</p>
+                    <div className="absolute -bottom-9 flex items-end justify-between w-full">
+                      <h3 className="text-xl font-bbh text-white">{artwork.title}</h3>
+                      <p className="text-gray-400 mb-1 text-sm">{artwork.artist} — {artwork.year}</p>
                     </div>
                   </div>
                 </div>
@@ -161,11 +161,9 @@ const Gallery = () => {
             <div>
               <div className="text-2xl font-bbh mb-2">40+</div>
               <div className="text-gray-500 text-sm uppercase tracking-wider">Artists</div>
-            </div>
+            </div>    
           </div>
-          <button className="px-12 py-4 bg-white text-black tracking-widest text-sm hover:bg-gray-200 transition-all duration-300 group">
-            <span className="cursor-pointer">EXPLORE COLLECTION</span>
-          </button>
+          <div className="w-96 h-0.5 bg-white mx-auto"></div>
         </div>
       </div>
     </div>
