@@ -50,8 +50,8 @@ const ClientHeader = () => {
       className="fixed top-0 left-0 w-full z-50 py-5"
     >
       <div className="max-w-[1280px] mx-auto px-5 h-full flex items-center justify-between">
-        <Link to="/" className="md:text-4xl text-white font-orbitron font-bold">
-          Patagon
+        <Link to="/" className="text-4xl text-[#e11010] font-black">
+          B<span className="text-white">⚈⚈</span>WAVE
         </Link>
 
         <div className="flex items-center gap-2">

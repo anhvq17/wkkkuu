@@ -19,8 +19,7 @@ export default {
         'marquee-slow': 'marqueeSlow 90s linear infinite',
       },
       fontFamily: {
-        impact: ["Anton", "sans-serif"],
-        orbitron: ["Orbitron", "sans-serif"],
+        sans: ["Jost", "sans-serif"],
       }
     }
   },
