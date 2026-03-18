@@ -95,12 +95,12 @@ const ClientHeader = () => {
                     <span className="underline">www.boowave.com</span>
                   </div>
                   <div className="flex items-center gap-2 pr-14">
-                    <button className="bg-black text-white font-bold px-6 py-2.5 rounded-full text-sm hover:bg-gray-800 transition">
+                    <button className="bg-black text-white font-bold px-6 py-2.5 rounded-full text-sm transition">
                       ALL PAGES
                     </button>
                     <button
                       onClick={() => setOpen(false)}
-                      className="bg-[#e11010] text-white font-bold px-6 py-2.5 rounded-full text-sm hover:bg-red-700 transition"
+                      className="bg-[#e11010] text-white font-bold px-6 py-2.5 rounded-full text-sm transition"
                     >
                       CONTACT US
                     </button>
@@ -115,7 +115,7 @@ const ClientHeader = () => {
                 <p className="text-white font-bold text-2xl leading-tight tracking-tight">
                   CREATIVE DIGITAL AGENCY<br />WEBFLOW TEMPLATE.
                 </p>
-                <button className="bg-white text-black font-bold px-6 py-3 rounded-full text-sm hover:bg-gray-100 transition">
+                <button className="bg-white text-black font-bold px-6 py-3 rounded-full text-sm transition">
                   LEARN MORE
                 </button>
                 <div className="w-full bg-white rounded-xl p-4 mt-2">
