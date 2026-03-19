@@ -1,91 +1,75 @@
 import { Link } from "react-router-dom"
+import type { ReactNode } from "react"
+
+const NavPill = ({ to, children }: { to: string; children: ReactNode }) => (
+  <Link
+    to={to}
+    className="inline-block text-white px-4 py-2 border border-[#c8c4bb] rounded-full text-xs font-black tracking-wide transition-all duration-200 hover:bg-white hover:text-black"
+  >
+    {children}
+  </Link>
+)
 
 const ClientFooter = () => {
   return (
-    <footer className="mx-auto">
-      <div className="bg-[#464134] px-6 border-t border-b border-[#605a4b] py-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-14">
-          <h1 className="md:text-4xl text-[#f4f4f1] font-bold font-orbitron mt-2.5">
-            Patagon
-          </h1>
-          <div className="ml-36 font-mono">
-            <h3 className="text-[#aeaa9e] font-semibold font-mono text-lg mb-2">Email</h3>
-            <ul className="text-[#f4f4f1] space-y-2">
-              <li>us@patagon.com</li>
-            </ul>
-          </div>
-          <div className="ml-32 font-mono">
-            <h3 className="text-[#aeaa9e] font-semibold text-lg mb-2">Call</h3>
-            <ul className="text-[#f4f4f1] space-y-2">
-              <li>0977 907 877</li>
-            </ul>
-          </div>
-          <div className="ml-28 font-mono">
-            <h3 className="text-[#aeaa9e] font-semibold font-mono text-lg mb-2">Social</h3>
-            <ul className="text-[#f4f4f1] space-y-2">
-              <li>Instagram, X</li>
-            </ul>
-          </div>
+    <footer className="mx-auto bg-black">
+      <div className="px-12 pt-12">
+        <div className="text-[#d0190f] font-black leading-none tracking-tighter select-none mb-10 text-[clamp(80px,14vw,200px)] text-center">
+          B<span className="text-white">⚈⚈</span>WAVE.
         </div>
-      </div>
 
-      <div className="bg-[#464134] px-6 border-b border-[#605a4b] py-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-14">
-          <div className="space-y-4  font-mono tracking-tight">
-            <h1 className="md:text-[1rem] text-[#a8a498] font-bold">
-              Join our newsletter
-            </h1>
-            <div className="flex flex-col space-y-3 w-80 mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full px-4 py-2 rounded-full text-[#4f4d47] bg-[#f2f2ef] outline-none"
-              />
-              <button className="w-full px-4 py-2 rounded-full bg-[#eae7da] hover:bg-[#f2f2ef] text-[#443f32]">
-                Join 1K+ Subscribers
-              </button>
+        <div className="grid grid-cols-2 gap-20 pb-12">
+          <div>
+            <p className="font-black text-white uppercase leading-tight mt-5 max-w-sm text-2xl">
+              CREATING MEANINGFUL BRANDS THROUGH <br />STRATEGY AND DESIGN. <span className="text-[#d0190f]">ALWAYS & ALL WAYS.</span>
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-10">
+            <div>
+              <p className="text-white mb-4">Explore</p>
+              <div className="flex flex-wrap gap-2">
+                {["HOME", "ABOUT", "SERVICES", "PROJECTS", "BLOGS", "CONTACT US"].map((item) => (
+                  <NavPill key={item} to="#">{item}</NavPill>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-white mb-4">Utilities</p>
+              <div className="flex flex-wrap gap-2">
+                {["STYLE GUIDE", "LICENSE", "PROTECTED PASSWORD", "404 ERROR", "CHANGELOG"].map((item) => (
+                  <NavPill key={item} to="#">{item}</NavPill>
+                ))}
+              </div>
             </div>
           </div>
-          
-          <div className="ml-36 font-mono tracking-tight">
-            <h3 className="text-[#aeaa9e] font-semibold font-mono text-lg mb-2">Pages</h3>
-            <ul className="text-[#f4f4f1] space-y-1">
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Main Page</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">About Us</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Our Services</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Get In Touch</Link></li>
-            </ul>
-          </div>
-          <div className="ml-32 font-mono tracking-tight">
-            <h3 className="text-[#aeaa9e] font-semibold text-lg mb-2">Pages (CMS)</h3>
-            <ul className="text-[#f4f4f1] space-y-1">
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">All Projects</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Single Project</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Blog</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Blog Post</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Team</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Team Members</Link></li>
-            </ul>
-          </div>
-          <div className="ml-28 font-mono tracking-tight">
-            <h3 className="text-[#aeaa9e] font-semibold font-mono text-lg mb-2">Resources</h3>
-            <ul className="text-[#f4f4f1] space-y-1">
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Style Guide</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Licenses</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Change Log</Link></li>
-              <li><Link to="#" className="relative transition-all after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#f4f4f1] after:transition-all after:duration-300 hover:after:w-full">Instructions</Link></li>
-            </ul>
-          </div>
         </div>
       </div>
 
-      <div className="bg-[#464134] border-t border-[#605a4b] text-sm px-6 py-3">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center font-semibold font-mono text-lg tracking-tight">
-          <div className="flex gap-14">
-            <p className="text-white">Designed by <span className="text-[#f57e81]">Wkkkuu</span></p>
-            <p className="text-white">Powered by <span className="text-[#f57e81]">Webflow</span></p>
+      <div className="border-t border-white px-12 py-6 flex flex-wrap justify-between items-center gap-4">
+        <div>
+          <p className="text-white">wave us</p>
+          <p className="font-black text-[#d0190f] tracking-wide">
+            BOOWAVE@GMAIL.COM
+          </p>
+        </div>
+
+        <p className="text-white text-center mt-2">
+          © Copyright - <span className="text-[#d0190f] font-bold">Boowave.</span> | Powered by{" "}
+          <span className="text-[#d0190f] font-bold">Webflow</span>
+          {" "}| Made By{" "}
+          <span className="text-[#d0190f] font-bold">Wkkkuu</span>
+        </p>
+
+        <div className="flex items-center bg-[#1a1a1a] rounded-full pl-4 pr-2 py-2 gap-3">
+          <div className="flex gap-2 items-center">
+            <span className="w-7 h-7 rounded-full bg-gradient-to-br from-red-600 to-black block" />
+            <span className="w-7 h-7 rounded-full bg-gradient-to-br from-red-600 to-black block" />
           </div>
-          <button className="text-white mt-3 sm:mt-0 flex items-center" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Scroll to Top<i className="text-[#f57e81] fas fa-angle-up ml-2"></i></button>
+          <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="text-white flex items-center gap-1 bg-transparent border-none cursor-pointer">
+            scroll to <span className="text-[14px]">↑</span>
+          </button>
         </div>
       </div>
     </footer>
