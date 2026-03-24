@@ -23,7 +23,7 @@ const Testimonials = () => {
       <p className="text-white text-sm tracking-[0.2em] uppercase mb-4">( FAQ )</p>
 
       <h1 className="text-6xl text-white font-black mb-10">
-        HELP & <span className="text-[#d0190f]">ANSWERS.</span>
+        HELP & <span className="text-[#e11010]">ANSWERS.</span>
       </h1>
 
       <div className="grid grid-cols-2 gap-6 max-w-6xl">
@@ -37,7 +37,7 @@ const Testimonials = () => {
                 className="w-full flex justify-between items-center px-6 py-5 text-left"
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
               >
-                <span className={`font-black text-sm tracking-wide ${openIndex === i ? 'text-[#d0190f]' : 'text-[#1a1a1a]'}`}>
+                <span className={`font-black text-sm tracking-wide ${openIndex === i ? 'text-[#e11010]' : 'text-[#1a1a1a]'}`}>
                   {faq.question}
                 </span>
                 <span className="text-2xl font-light text-[#1a1a1a] ml-4 flex-shrink-0">

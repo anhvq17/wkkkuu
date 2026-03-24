@@ -52,7 +52,7 @@ const News = () => {
       <div className="w-screen relative left-1/2 -translate-x-1/2 overflow-hidden pb-20">
         <div className="marquee-track">
           {[...MARQUEE_IMAGES, ...MARQUEE_IMAGES].map((src, i) => (
-            <div key={i} className="flex-shrink-0 w-[300px] h-[360px] mr-2">
+            <div key={i} className="flex-shrink-0 w-[220px] h-[280px] mr-2">
               <img
                 src={src}
                 className="w-full h-full object-cover"
