@@ -1,192 +1,77 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 
-const testimonials = [
+const faqs = [
   {
-    quote: "Patagon completely redefined how we present ourselves. Their team turned our scattered ideas into a cohesive brand identity.",
-    name: "Philip H. Knight",
-    title: "Chairman Emeritus",
-    img: "/img/testimonials/01.jpg"
+    question: "HOW LONG DOES A TYPICAL PROJECT TAKE?",
+    answer: "Smaller pages take 3–5 days. Full sites or apps vary between 2–4 weeks depending on complexity."
   },
   {
-    quote: "Patagon was like an extension of our team. They brought clarity to our strategy and delivered campaign assets that actually moved the needle.",
-    name: "Mark Parker",
-    title: "Executive Chairman",
-    img: "/img/testimonials/02.jpg"
+    question: "DO YOU HANDLE DEVELOPMENT?",
+    answer: "Yes, we handle both design and development end-to-end, from wireframes to production-ready code."
   },
   {
-    quote: "We wanted a brand presence that would impress Fortune 500 clients while still feeling approachable. Patagon struck that balance perfectly.",
-    name: "Nicole Graham",
-    title: "Chief Marketing Officer",
-    img: "/img/testimonials/03.jpg"
-  },
-  {
-    quote: "From logo to launch campaign, Patagon guided us every step of the way. Their process was seamless, and the end result elevated our brand to a new level.",
-    name: "Phil McCartney",
-    title: "Product Officer",
-    img: "/img/testimonials/04.jpg"
+    question: "WHAT DO I NEED TO GET STARTED?",
+    answer: "Just a brief about your project goals, target audience, and any references you like. We'll take it from there."
   }
 ];
 
 const Testimonials = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsVisible(entry.isIntersecting);
-      },
-      { threshold: 0.3 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, []);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section ref={sectionRef} className="px-10 pt-14 pb-28">
-      <h1 className="text-7xl text-[#f4f4f1] font-bold font-orbitron tracking-tight text-center mb-10">
-        Client Words
+    <section className="px-14 pt-14 pb-14">
+      <p className="text-white text-sm tracking-[0.2em] uppercase mb-4">( FAQ )</p>
+
+      <h1 className="text-6xl text-white font-black mb-10">
+        HELP & <span className="text-[#d0190f]">ANSWERS.</span>
       </h1>
 
-      <div className="relative flex items-center justify-center mx-auto" style={{ maxWidth: '1400px' }}>
-        <div 
-          className="absolute bg-[#eae7da] p-6 flex flex-col justify-between shadow-2xl"
-          style={{
-            width: '240px',
-            height: '420px',
-            transform: isVisible
-              ? 'translateX(-510px) translateY(0) scale(1)' 
-              : 'translateX(0) translateY(20px) scale(0.95)',
-            opacity: isVisible ? 1 : 0,
-            transition: 'all 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
-            zIndex: isVisible ? 1 : 5
-          }}
-        >
-          <p className="text-base mb-6 leading-relaxed font-mono text-center text-[#443f32]">
-            "{testimonials[0].quote}"
-          </p>
-          <div className="flex flex-col items-center text-center gap-3">
-            <img
-              src={testimonials[0].img}
-              className="w-20 h-20 rounded-full object-cover"
-              alt={testimonials[0].name}
-            />
-            <div className="font-mono">
-              <p className="font-semibold text-base text-[#443f32]">{testimonials[0].name}</p>
-              <p className="text-sm text-gray-500">{testimonials[0].title}</p>
+      <div className="grid grid-cols-2 gap-6 max-w-6xl">
+        <div className="mt-4 flex flex-col gap-4">
+          {faqs.map((faq, i) => (
+            <div
+              key={i}
+              className="bg-white rounded-lg overflow-hidden"
+            >
+              <button
+                className="w-full flex justify-between items-center px-6 py-5 text-left"
+                onClick={() => setOpenIndex(openIndex === i ? null : i)}
+              >
+                <span className={`font-black text-sm tracking-wide ${openIndex === i ? 'text-[#d0190f]' : 'text-[#1a1a1a]'}`}>
+                  {faq.question}
+                </span>
+                <span className="text-2xl font-light text-[#1a1a1a] ml-4 flex-shrink-0">
+                  {openIndex === i ? '−' : '+'}
+                </span>
+              </button>
+              {openIndex === i && (
+                <div className="px-6 pb-5">
+                  <p className="text-sm text-[#555]  leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </div>
+              )}
             </div>
-          </div>
+          ))}
         </div>
 
-        <div 
-          className="absolute bg-[#eae7da] p-6 flex flex-col justify-between shadow-2xl"
-          style={{
-            width: '240px',
-            height: '420px',
-            transform: isVisible
-              ? 'translateX(-270px) translateY(0) scale(1)' 
-              : 'translateX(0) translateY(20px) scale(0.95)',
-            opacity: isVisible ? 1 : 0,
-            transition: 'all 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s',
-            zIndex: isVisible ? 2 : 4
-          }}
-        >
-          <p className="text-base mb-6 leading-relaxed font-mono text-center text-[#443f32]">
-            "{testimonials[1].quote}"
-          </p>
-          <div className="flex flex-col items-center text-center gap-3">
-            <img
-              src={testimonials[1].img}
-              className="w-20 h-20 rounded-full object-cover"
-              alt={testimonials[1].name}
-            />
-            <div className="font-mono">
-              <p className="font-semibold text-base text-[#443f32]">{testimonials[1].name}</p>
-              <p className="text-sm text-gray-500">{testimonials[1].title}</p>
-            </div>
-          </div>
-        </div>
-
-        <div 
-          className="relative shadow-2xl"
-          style={{
-            width: '300px',
-            height: '420px',
-            transform: isVisible ? 'scale(1)' : 'scale(0.95)',
-            opacity: isVisible ? 1 : 0.5,
-            transition: 'all 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s',
-            zIndex: 3
-          }}
-        >
+        <div className="grid grid-cols-2 rounded-lg overflow-hidden h-fit">
           <img
-            src="/img/testimonials/center.jpg"
+            src="/img/1.png"
             className="w-full h-full object-cover"
           />
-        </div>
-
-        <div 
-          className="absolute bg-[#eae7da] p-6 flex flex-col justify-between shadow-2xl"
-          style={{
-            width: '240px',
-            height: '420px',
-            transform: isVisible 
-              ? 'translateX(270px) translateY(0) scale(1)' 
-              : 'translateX(0) translateY(20px) scale(0.95)',
-            opacity: isVisible ? 1 : 0,
-            transition: 'all 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s',
-            zIndex: isVisible ? 2 : 4
-          }}
-        >
-          <p className="text-base mb-6 leading-relaxed font-mono text-center text-[#443f32]">
-            "{testimonials[2].quote}"
-          </p>
-          <div className="flex flex-col items-center text-center gap-3">
-            <img
-              src={testimonials[2].img}
-              className="w-20 h-20 rounded-full object-cover"
-              alt={testimonials[2].name}
-            />
-            <div className="font-mono">
-              <p className="font-semibold text-base text-[#443f32]">{testimonials[2].name}</p>
-              <p className="text-sm text-gray-500">{testimonials[2].title}</p>
+          <div className="bg-white p-8 flex flex-col justify-between">
+            <div>
+              <p className="font-black text-sm text-[#1a1a1a] mb-3 ">
+                STILL GOT UNANSWERED QUESTIONS?
+              </p>
+              <p className="text-sm text-[#555] leading-relaxed">
+                We're always ready to help you out!
+              </p>
             </div>
-          </div>
-        </div>
-
-        <div 
-          className="absolute bg-[#eae7da] p-6 flex flex-col justify-between shadow-2xl"
-          style={{
-            width: '240px',
-            height: '420px',
-            transform: isVisible 
-              ? 'translateX(510px) translateY(0) scale(1)' 
-              : 'translateX(0) translateY(20px) scale(0.95)',
-            opacity: isVisible ? 1 : 0,
-            transition: 'all 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
-            zIndex: isVisible ? 1 : 5
-          }}
-        >
-          <p className="text-base mb-6 leading-relaxed font-mono text-center text-[#443f32]">
-            "{testimonials[3].quote}"
-          </p>
-          <div className="flex flex-col items-center text-center gap-3">
-            <img
-              src={testimonials[3].img}
-              className="w-20 h-20 rounded-full object-cover"
-              alt={testimonials[3].name}
-            />
-            <div className="font-mono">
-              <p className="font-semibold text-base text-[#443f32]">{testimonials[3].name}</p>
-              <p className="text-sm text-gray-500">{testimonials[3].title}</p>
-            </div>
+            <button className="bg-black text-white text-xs font-black tracking-widest px-5 py-3 rounded-full hover:bg-black transition-colors duration-200  w-fit">
+              CONTACT SUPPORT
+            </button>
           </div>
         </div>
       </div>
